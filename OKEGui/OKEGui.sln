@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OKEGui", "OKEGui\OKEGui.csproj", "{BD980C51-9FCF-483E-BB88-B903952FDDDD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{815ED800-FAA3-4BC4-BCB0-418D04B378EE} = {815ED800-FAA3-4BC4-BCB0-418D04B378EE}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VSWarpper", "VSWarpper\VSWarpper.vcxproj", "{815ED800-FAA3-4BC4-BCB0-418D04B378EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewOKEProject", "NewOKEProject\NewOKEProject.csproj", "{97795DC9-AEE1-4B29-83E2-59FDF43D1B50}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BD980C51-9FCF-483E-BB88-B903952FDDDD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BD980C51-9FCF-483E-BB88-B903952FDDDD}.Debug|x64.Build.0 = Debug|Any CPU
+		{BD980C51-9FCF-483E-BB88-B903952FDDDD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BD980C51-9FCF-483E-BB88-B903952FDDDD}.Debug|x86.Build.0 = Debug|Any CPU
+		{BD980C51-9FCF-483E-BB88-B903952FDDDD}.Release|x64.ActiveCfg = Release|Any CPU
+		{BD980C51-9FCF-483E-BB88-B903952FDDDD}.Release|x64.Build.0 = Release|Any CPU
+		{BD980C51-9FCF-483E-BB88-B903952FDDDD}.Release|x86.ActiveCfg = Release|Any CPU
+		{BD980C51-9FCF-483E-BB88-B903952FDDDD}.Release|x86.Build.0 = Release|Any CPU
+		{815ED800-FAA3-4BC4-BCB0-418D04B378EE}.Debug|x64.ActiveCfg = Debug|x64
+		{815ED800-FAA3-4BC4-BCB0-418D04B378EE}.Debug|x64.Build.0 = Debug|x64
+		{815ED800-FAA3-4BC4-BCB0-418D04B378EE}.Debug|x86.ActiveCfg = Debug|Win32
+		{815ED800-FAA3-4BC4-BCB0-418D04B378EE}.Debug|x86.Build.0 = Debug|Win32
+		{815ED800-FAA3-4BC4-BCB0-418D04B378EE}.Release|x64.ActiveCfg = Release|x64
+		{815ED800-FAA3-4BC4-BCB0-418D04B378EE}.Release|x64.Build.0 = Release|x64
+		{815ED800-FAA3-4BC4-BCB0-418D04B378EE}.Release|x86.ActiveCfg = Release|Win32
+		{815ED800-FAA3-4BC4-BCB0-418D04B378EE}.Release|x86.Build.0 = Release|Win32
+		{97795DC9-AEE1-4B29-83E2-59FDF43D1B50}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{97795DC9-AEE1-4B29-83E2-59FDF43D1B50}.Debug|x64.Build.0 = Debug|Any CPU
+		{97795DC9-AEE1-4B29-83E2-59FDF43D1B50}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{97795DC9-AEE1-4B29-83E2-59FDF43D1B50}.Debug|x86.Build.0 = Debug|Any CPU
+		{97795DC9-AEE1-4B29-83E2-59FDF43D1B50}.Release|x64.ActiveCfg = Release|Any CPU
+		{97795DC9-AEE1-4B29-83E2-59FDF43D1B50}.Release|x64.Build.0 = Release|Any CPU
+		{97795DC9-AEE1-4B29-83E2-59FDF43D1B50}.Release|x86.ActiveCfg = Release|Any CPU
+		{97795DC9-AEE1-4B29-83E2-59FDF43D1B50}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
