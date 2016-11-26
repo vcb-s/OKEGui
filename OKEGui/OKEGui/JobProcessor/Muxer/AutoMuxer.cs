@@ -48,6 +48,9 @@ namespace OKEGui
         private Process proc = new Process();
         private ManualResetEvent mre = new ManualResetEvent(false);
 
+        public delegate void MuxingProgressChangedEventHandler(double progress);
+        public event MuxingProgressChangedEventHandler ProgressChanged;
+
         public AutoMuxer(string mkvMergePath, string mp4MuxerPath)
         {
             _mkvMergePath = mkvMergePath;
@@ -204,14 +207,14 @@ namespace OKEGui
                     Debugger.Log(0, "ReadStream", line + "\n");
 
                     Match progressMatch;
-                    int progress = 0;
+                    double progress = -1;
 
                     switch (_episode.OutputFileType) {
                         case OutputType.Mkv:
                             if (line.Contains("Progress: ")) {
                                 progressMatch = Regex.Match(line, @"Progress: (\d*?)%", RegexOptions.Compiled);
                                 if (progressMatch.Groups.Count < 2) return;
-                                progress = int.Parse(progressMatch.Groups[1].Value);
+                                progress = double.Parse(progressMatch.Groups[1].Value);
                             } else if (line.Contains("Muxing took")) {
                                 mre.Set();
                             }
@@ -220,11 +223,14 @@ namespace OKEGui
                             if (line.Contains("Importing: ")) {
                                 progressMatch = Regex.Match(line, @"Importing: (\d*?) bytes", RegexOptions.Compiled);
                                 if (progressMatch.Groups.Count < 2) return;
-                                progress = Convert.ToInt32(double.Parse(progressMatch.Groups[1].Value) / _episode.TotalFileSize * 100d);
+                                progress = Convert.ToDouble(double.Parse(progressMatch.Groups[1].Value) / _episode.TotalFileSize * 100d);
                             } else if (line.Contains("Muxing completed")) {
                                 mre.Set();
                             }
                             break;
+                    }
+                    if (progress > -1 && ProgressChanged != null) {
+                        ProgressChanged(progress);
                     }
                 }
             } catch (Exception) {
