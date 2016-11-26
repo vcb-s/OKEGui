@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace OKEGui
@@ -29,6 +30,8 @@ namespace OKEGui
 
             public OutputType OutputFileType { get; set; }
             public string OutputFile { get; set; }
+
+            public long TotalFileSize { get; set; }
         }
 
         private static List<string> s_AudioFileExtensions = new List<string> {
@@ -64,11 +67,13 @@ namespace OKEGui
                 SubtitleFiles = new List<string>(),
                 VideoFps = videoFps,
                 AudioLanguage = audioLanguage,
-                SubtitleLanguage = subtitleLanguage
+                SubtitleLanguage = subtitleLanguage,
+                TotalFileSize = 0
             };
 
             foreach (string file in inputFileNames) {
-                if (!new FileInfo(file).Exists) {
+                FileInfo fileInfo = new FileInfo(file);
+                if (!fileInfo.Exists) {
                     continue;
                 }
 
@@ -76,10 +81,12 @@ namespace OKEGui
 
                 if (!string.IsNullOrEmpty(s_AudioFileExtensions.Find(val => val == extension))) {
                     episode.AudioFiles.Add(file);
+                    episode.TotalFileSize += fileInfo.Length;
                     continue;
                 }
                 if (!string.IsNullOrEmpty(s_VideoFileExtensions.Find(val => val == extension))) {
                     episode.VideoFile = file;
+                    episode.TotalFileSize += fileInfo.Length;
                     continue;
                 }
                 switch (extension) {
@@ -190,31 +197,38 @@ namespace OKEGui
         private void readStream(StreamReader sr)
         {
             string line;
-            if (proc != null) {
-                try {
-                    while ((line = sr.ReadLine()) != null) {
-                        Debugger.Log(0, "ReadStream", line + "\n");
+            if (null == proc) return;
 
-                        if (_episode.OutputFileType == OutputType.Mkv) {
+            try {
+                while ((line = sr.ReadLine()) != null) {
+                    Debugger.Log(0, "ReadStream", line + "\n");
+
+                    Match progressMatch;
+                    int progress = 0;
+
+                    switch (_episode.OutputFileType) {
+                        case OutputType.Mkv:
                             if (line.Contains("Progress: ")) {
-                                try {
-                                    int percentageEnd = line.IndexOf("%");
-                                    string frameNumber = line.Substring(10, percentageEnd - 10).Trim();
-                                    int progress = Int32.Parse(frameNumber);
-                                } catch (Exception e) {
-                                }
+                                progressMatch = Regex.Match(line, @"Progress: (\d*?)%", RegexOptions.Compiled);
+                                if (progressMatch.Groups.Count < 2) return;
+                                progress = int.Parse(progressMatch.Groups[1].Value);
                             } else if (line.Contains("Muxing took")) {
                                 mre.Set();
                             }
-                        }
-
-                        if (line.ToLower().Contains("completed")) {
-                            mre.Set();
-                        }
+                            break;
+                        case OutputType.Mp4:
+                            if (line.Contains("Importing: ")) {
+                                progressMatch = Regex.Match(line, @"Importing: (\d*?) bytes", RegexOptions.Compiled);
+                                if (progressMatch.Groups.Count < 2) return;
+                                progress = Convert.ToInt32(double.Parse(progressMatch.Groups[1].Value) / _episode.TotalFileSize * 100d);
+                            } else if (line.Contains("Muxing completed")) {
+                                mre.Set();
+                            }
+                            break;
                     }
-                } catch (Exception e) {
-                    throw e;
                 }
+            } catch (Exception) {
+                throw;
             }
         }
 
