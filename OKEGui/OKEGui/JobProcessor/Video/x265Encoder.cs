@@ -29,7 +29,8 @@ namespace OKEGui
             job = j as VideoJob;
             getInputProperties(job);
 
-            executable = "c:\\windows\\system32\\cmd.exe";
+            // TODO: 改为系统路径
+            executable = "c:\\windows\\system32\\cmd.exe"; 
 
             if (File.Exists(job.config.EncoderPath)) {
                 this.x265Path = job.config.EncoderPath;
