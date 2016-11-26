@@ -87,7 +87,6 @@ namespace OKEGui
             if (vjob.config.ContainerFormat != "") {
                 // 封装
                 vjob.config.Status = "封装中";
-                vjob.config.ProgressValue = -1;
                 FileInfo mkvInfo = new FileInfo(".\\tools\\mkvtoolnix\\mkvmerge.exe");
                 if (!mkvInfo.Exists) {
                     throw new Exception("mkvmerge不存在");
@@ -99,6 +98,8 @@ namespace OKEGui
                 }
 
                 AutoMuxer muxer = new AutoMuxer(mkvInfo.FullName, lsmash.FullName);
+                muxer.ProgressChanged += progress => vjob.config.ProgressValue = progress;
+               
 
                 muxer.StartMerge(new List<string> {
                     vjob.config.InputFile + ".hevc",
