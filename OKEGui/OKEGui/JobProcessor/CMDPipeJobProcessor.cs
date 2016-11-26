@@ -115,7 +115,7 @@ namespace OKEGui
 
                 // 等待stdin端完成
                 new Thread(new ThreadStart(() => {
-                    inProcessor.waitForFinsih();
+                    inProcessor.waitForFinish();
                     SetFinish();
                 })).Start();
 
@@ -140,7 +140,7 @@ namespace OKEGui
             SetFinish();
         }
 
-        public void waitForFinsih()
+        public void waitForFinish()
         {
             mre.WaitOne();
         }

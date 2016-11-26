@@ -36,7 +36,7 @@
         /// <summary>
         /// wait until job is finished
         /// </summary>
-        void waitForFinsih();
+        void waitForFinish();
 
         /// <summary>
         /// changes the priority of the encoding process/thread

@@ -70,7 +70,7 @@ namespace OKEGui
 
                     CMDPipeJobProcessor cmdpipe = CMDPipeJobProcessor.NewCMDPipeJobProcessor(flac, qaac);
                     cmdpipe.start();
-                    cmdpipe.waitForFinsih();
+                    cmdpipe.waitForFinish();
 
                     audioTrack = aEncode.Output;
                 }
@@ -82,7 +82,7 @@ namespace OKEGui
             vjob.config.Status = "压制中";
             vjob.config.ProgressValue = 0.0;
             processor.start();
-            processor.waitForFinsih();
+            processor.waitForFinish();
 
             if (vjob.config.ContainerFormat != "") {
                 // 封装
