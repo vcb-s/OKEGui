@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace OKEGui
 {
@@ -114,6 +115,10 @@ namespace OKEGui
 
                 // 假设到这里已经获取完毕了
                 retrieved.Set();
+            } else if (line.Contains("SubSampling")) {
+                //目前还没有要处理subsampling的
+            } else  {
+                MessageBox.Show(line, "好像出问题了，请把这些截图给技术总监");
             }
         }
 
