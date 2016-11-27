@@ -14,6 +14,8 @@ namespace OKEGui
         protected long fps_n = 0, fps_d = 0;
         protected bool usesSAR = false;
         protected double speed;
+        protected double bitrate;
+        protected string unit;
 
         protected VideoJob job;
 
@@ -103,6 +105,24 @@ namespace OKEGui
             return false;
         }
 
+        protected bool setBitrate(string bitrate, string unit)
+        {
+            double rate;
+            this.unit = unit;
+            if (double.TryParse(bitrate, out rate)) {
+                if (rate > 0) {
+                    this.bitrate = rate;
+                } else {
+                    this.bitrate = 0;
+                }
+
+                Update();
+                return true;
+            }
+
+            return false;
+        }
+
         protected void Update()
         {
             if (speed == 0) {
@@ -113,7 +133,26 @@ namespace OKEGui
             job.config.Speed = speed.ToString() + " fps";
             job.config.ProgressValue = (double)currentFrameNumber / (double)numberOfFrames * 100;
 
+            if (bitrate == 0) {
+                job.config.BitRate = "未知";
+            } else {
+                job.config.BitRate = bitrate.ToString() + unit;
+            }
+
             // su.NbFramesDone = currentFrameNumber;
+        }
+
+        private static String HumanReadableFilesize(double size, int digit)
+        {
+            String[] units = new String[] { "B", "KB", "MB", "GB", "TB", "PB" };
+            double mod = 1024.0;
+            int i = 0;
+            while (size >= mod) {
+                size /= mod;
+                i++;
+            }
+
+            return Math.Round(size * Math.Pow(10, digit)) / Math.Pow(10, digit) + units[i];
         }
 
         protected void encodeFinish()
@@ -121,6 +160,12 @@ namespace OKEGui
             job.config.TimeRemain = TimeSpan.Zero;
             job.config.ProgressValue = 100;
             job.config.Status = "压制完成";
+
+            // TODO: 计算最终码率
+            // 这里显示文件最终大小
+            FileInfo vinfo = new FileInfo(job.config.InputFile + ".hevc");
+            job.config.BitRate = HumanReadableFilesize(vinfo.Length, 2);
+
             base.SetFinish();
         }
     }

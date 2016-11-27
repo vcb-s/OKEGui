@@ -192,6 +192,17 @@ namespace OKEGui
             }
         }
 
+        private string bitrate;
+
+        public string BitRate
+        {
+            get { return bitrate; }
+            set {
+                bitrate = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("BitRate"));
+            }
+        }
+
         private TimeSpan timeRemain;
 
         public TimeSpan TimeRemain

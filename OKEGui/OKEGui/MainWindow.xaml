@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OKEGui"
         mc:Ignorable="d"
-        Title="OKEGui" Height="500" Width="850" WindowStartupLocation="CenterScreen" Icon="App.ico">
+        Title="OKEGui" Height="500" Width="950" WindowStartupLocation="CenterScreen" Icon="App.ico">
     <Window.Resources>
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -35,7 +35,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="输出文件" Width="115">
+                    <GridViewColumn Header="输出文件" Width="125">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid VerticalAlignment="Top"  Margin="0, 0, 0, 0">
@@ -44,9 +44,9 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="状态" Width="75" DisplayMemberBinding="{Binding Path=Status}">
+                    <GridViewColumn Header="状态" Width="80" DisplayMemberBinding="{Binding Path=Status}">
                     </GridViewColumn>
-                    <GridViewColumn Header="进度" Width="105" x:Name="TaskProgress">
+                    <GridViewColumn Header="进度" Width="115" x:Name="TaskProgress">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid VerticalAlignment="Center" Margin="0, 0, 0, 0">
@@ -58,9 +58,11 @@
                     </GridViewColumn>
                     <GridViewColumn Header="速度" Width="75" DisplayMemberBinding="{Binding Path=Speed}">
                     </GridViewColumn>
-                    <GridViewColumn Header="剩余时间" Width="70" DisplayMemberBinding="{Binding Path=TimeRemainStr}">
+                    <GridViewColumn Header="码率" Width="75" DisplayMemberBinding="{Binding Path=Speed}">
                     </GridViewColumn>
-                    <GridViewColumn Header="工作单元" Width="70" DisplayMemberBinding="{Binding Path=WorkerName}">
+                    <GridViewColumn Header="剩余时间" Width="75" DisplayMemberBinding="{Binding Path=TimeRemainStr}">
+                    </GridViewColumn>
+                    <GridViewColumn Header="工作单元" Width="75" DisplayMemberBinding="{Binding Path=WorkerName}">
                     </GridViewColumn>
                 </GridView>
             </ListView.View>

@@ -169,8 +169,10 @@ namespace OKEGui
             // TODO
             isRunning = false;
 
-            if (bgworkerlist[name].IsBusy) {
-                bgworkerlist[name].CancelAsync();
+            if (bgworkerlist.ContainsKey(name)) {
+                if (bgworkerlist[name].IsBusy) {
+                    bgworkerlist[name].CancelAsync();
+                }
             }
         }
 
@@ -186,9 +188,6 @@ namespace OKEGui
                     lock (o) {
                         BackgroundWorker v;
                         bgworkerlist.TryRemove(args.Name, out v);
-
-                        WorkerType w;
-                        workerType.TryRemove(args.Name, out w);
 
                         if (bgworkerlist.Count == 0 && workerType.Count == 0) {
                             if (AfterFinish != null) {

@@ -198,7 +198,7 @@ namespace OKEGui
                 throw new Exception("Could not set mutex. pause failed");
         }
 
-        public void waitForFinish()
+        public virtual void waitForFinish()
         {
             finishMre.WaitOne();
         }

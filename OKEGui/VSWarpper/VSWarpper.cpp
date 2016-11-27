@@ -14,7 +14,7 @@ inline VSHelper::VSynthScript* GetVSLibrary(VSHANDLE vsLib)
 {
 	try {
 		return vsHandle->at(vsLib);
-	} catch (const std::out_of_range& oor) {
+	} catch (const std::out_of_range&) {
 		return nullptr;
 	}
 }

@@ -117,7 +117,7 @@ namespace OKEGui
             }
         }
 
-        public void waitForFinish()
+        public override void waitForFinish()
         {
             retrieved.WaitOne();
         }
