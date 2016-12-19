@@ -24,14 +24,14 @@ namespace OKEGui
         private ManualResetEvent retrieved = new ManualResetEvent(false);
 
         // TODO: 变更编码参数
-        public QAACEncoder(string QAACPath, AudioJob j) : base()
+        public QAACEncoder(string QAACPath, AudioJob j, int bitrate = 128) : base()
         {
             if (j.Input == "-") {
                 // stdin
             }
 
             executable = QAACPath;
-            commandLine = "-i -v 128 -q 2 --no-delay -o " + j.Output + " " + j.Input;
+            commandLine = "-i -v " + bitrate + " -q 2 --no-delay -o " + j.Output + " " + j.Input;
         }
 
         public override void ProcessLine(string line, StreamType stream)

@@ -121,10 +121,23 @@ namespace OKEGui
 
         public string AudioFormat
         {
-            get { return audioFormat; }
+            get { return audioFormat + " " + AudioBitrate.ToString(); }
             set {
                 audioFormat = value;
                 OnPropertyChanged(new PropertyChangedEventArgs("AudioFormat"));
+            }
+        }
+
+        // 音频码率
+        private int audioBitrate;
+
+        public int AudioBitrate
+        {
+            get { return audioBitrate; }
+            set
+            {
+                audioBitrate = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("audioBitrate"));
             }
         }
 

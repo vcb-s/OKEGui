@@ -66,7 +66,7 @@ namespace OKEGui
                     AudioJob aEncode = new AudioJob("AAC");
                     aEncode.Input = "-";
                     aEncode.Output = Path.ChangeExtension(audioTrack, ".aac");
-                    QAACEncoder qaac = new QAACEncoder(".\\tools\\qaac\\qaac.exe", aEncode);
+                    QAACEncoder qaac = new QAACEncoder(".\\tools\\qaac\\qaac.exe", aEncode, vjob.config.AudioBitrate);
 
                     CMDPipeJobProcessor cmdpipe = CMDPipeJobProcessor.NewCMDPipeJobProcessor(flac, qaac);
                     cmdpipe.start();
@@ -83,6 +83,11 @@ namespace OKEGui
             vjob.config.ProgressValue = 0.0;
             processor.start();
             processor.waitForFinish();
+
+            var audioFile = new FileInfo(audioTrack);
+            if (audioFile.Length < 1024) {
+                File.Move(audioTrack, Path.ChangeExtension(audioTrack, ".bak") + audioFile.Extension);
+            }
 
             if (vjob.config.ContainerFormat != "") {
                 // 封装

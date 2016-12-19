@@ -159,6 +159,19 @@ namespace OKEGui
                 }
             }
 
+            // 音频码率
+            private int audioBitrate;
+
+            public int AudioBitrate
+            {
+                get { return audioBitrate; }
+                set
+                {
+                    audioBitrate = value;
+                    OnPropertyChanged(new PropertyChangedEventArgs("audioBitrate"));
+                }
+            }
+
             private string encoderPath;
 
             public string EncoderPath
@@ -439,6 +452,7 @@ namespace OKEGui
             //ContainerFormat = mkv
             //VideoFormat = hevc
             //AudioFormat = flac
+            //AudioFormat = aac:128
             //InputScript = demo1.vpy
             //ExtractAudioTrack = true(暂时不使用)
 
@@ -493,6 +507,15 @@ namespace OKEGui
             comboItems[wizardInfo.VideoFormat].IsSelected = true;
 
             wizardInfo.AudioFormat = okeproj.ReadString("OKEProject", "AudioFormat", "").ToUpper();
+            wizardInfo.AudioBitrate = 128;
+            var audioParam = wizardInfo.AudioFormat.Split(':');
+            if (audioParam.Length == 2) {
+                int bitrate = 0;
+                if (int.TryParse(audioParam[1], out bitrate)) {
+                    wizardInfo.AudioBitrate = bitrate == 0 ? 128 : bitrate;
+                }
+            }
+
             if (wizardInfo.AudioFormat != "FLAC" && wizardInfo.AudioFormat != "AAC" &&
                 wizardInfo.AudioFormat != "ALAC") {
                 System.Windows.MessageBox.Show("音频编码格式不支持。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
