@@ -84,6 +84,11 @@ namespace OKEGui
             processor.start();
             processor.waitForFinish();
 
+            var audioFile = new FileInfo(audioTrack);
+            if (audioFile.Length < 1024) {
+                File.Move(audioTrack, Path.ChangeExtension(audioTrack, ".bak") + audioFile.Extension);
+            }
+
             if (vjob.config.ContainerFormat != "") {
                 // 封装
                 vjob.config.Status = "封装中";
