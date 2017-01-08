@@ -90,6 +90,7 @@
                 <ComboBoxItem Content="AVC" />
             </ComboBox>
             <Label>音频格式</Label>
+            <!--TODO: 多音轨支持-->
             <ComboBox Name="AudioFormat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="2">
                 <ComboBoxItem IsSelected="True" Content="FLAC" />
                 <ComboBoxItem Content="AAC" />

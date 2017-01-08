@@ -50,29 +50,48 @@ namespace OKEGui
                 }
             });
 
+            // 默认列表是按照顺序来
             string audioTrack = audioTracks[0].OutFileName;
 
             // 音频转码
-            if (vjob.config.ContainerFormat == "MP4" && vjob.config.AudioFormat == "AAC") {
-                vjob.config.Status = "音轨转码中";
-                vjob.config.ProgressValue = -1;
+            List<string> audioFile = new List<string>();
+            foreach (var track in vjob.config.AudioTracks) {
+                var audioOutput = audioTracks[track.TrackId];
+                string audioOutpath = audioOutput.OutFileName;
 
-                if (audioTracks[0].FileExtension == ".flac") {
-                    AudioJob aDecode = new AudioJob("WAV");
-                    aDecode.Input = audioTracks[0].OutFileName;
-                    aDecode.Output = "-";
-                    FLACDecoder flac = new FLACDecoder(".\\tools\\flac\\flac.exe", aDecode);
+                if (track.Format == "AAC") {
+                    vjob.config.Status = "音轨转码中";
+                    vjob.config.ProgressValue = -1;
 
-                    AudioJob aEncode = new AudioJob("AAC");
-                    aEncode.Input = "-";
-                    aEncode.Output = Path.ChangeExtension(audioTrack, ".aac");
-                    QAACEncoder qaac = new QAACEncoder(".\\tools\\qaac\\qaac.exe", aEncode, vjob.config.AudioBitrate);
+                    if (audioOutput.FileExtension == ".flac") {
+                        AudioJob aDecode = new AudioJob("WAV");
+                        aDecode.Input = audioOutput.OutFileName;
+                        aDecode.Output = "-";
+                        FLACDecoder flac = new FLACDecoder(".\\tools\\flac\\flac.exe", aDecode);
 
-                    CMDPipeJobProcessor cmdpipe = CMDPipeJobProcessor.NewCMDPipeJobProcessor(flac, qaac);
-                    cmdpipe.start();
-                    cmdpipe.waitForFinish();
+                        AudioJob aEncode = new AudioJob("AAC");
+                        aEncode.Input = "-";
+                        aEncode.Output = Path.ChangeExtension(audioOutpath, ".aac");
+                        QAACEncoder qaac = new QAACEncoder(".\\tools\\qaac\\qaac.exe", aEncode, track.Bitrate);
 
-                    audioTrack = aEncode.Output;
+                        CMDPipeJobProcessor cmdpipe = CMDPipeJobProcessor.NewCMDPipeJobProcessor(flac, qaac);
+                        cmdpipe.start();
+                        cmdpipe.waitForFinish();
+
+                        audioOutpath = aEncode.Output;
+                    }
+                }
+
+                var audioFileInfo = new FileInfo(audioOutpath);
+                if (audioFileInfo.Length < 1024) {
+                    // 无效音轨
+                    // TODO: 提示用户不能封装
+                    File.Move(audioOutpath, Path.ChangeExtension(audioOutpath, ".bak") + audioFileInfo.Extension);
+                    continue;
+                }
+
+                if (track.IsMux) {
+                    audioFile.Add(audioOutpath);
                 }
             }
 
@@ -83,11 +102,6 @@ namespace OKEGui
             vjob.config.ProgressValue = 0.0;
             processor.start();
             processor.waitForFinish();
-
-            var audioFile = new FileInfo(audioTrack);
-            if (audioFile.Length < 1024) {
-                File.Move(audioTrack, Path.ChangeExtension(audioTrack, ".bak") + audioFile.Extension);
-            }
 
             if (vjob.config.ContainerFormat != "") {
                 // 封装
@@ -104,13 +118,14 @@ namespace OKEGui
 
                 AutoMuxer muxer = new AutoMuxer(mkvInfo.FullName, lsmash.FullName);
                 muxer.ProgressChanged += progress => vjob.config.ProgressValue = progress;
-               
 
-                muxer.StartMerge(new List<string> {
+                List<string> mergeList = new List<string> {
                     vjob.config.InputFile + ".hevc",
-                    audioTrack,
                     Path.ChangeExtension(vjob.config.InputFile, ".txt"),
-                }, vjob.Output);
+                };
+                mergeList.AddRange(audioFile);
+
+                muxer.StartMerge(mergeList, vjob.Output);
             }
 
             vjob.config.Status = "完成";

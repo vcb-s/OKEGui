@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -119,25 +120,46 @@ namespace OKEGui
         // FLAC, AAC(m4a)
         private string audioFormat;
 
+        // 只显示第一条音轨
         public string AudioFormat
         {
-            get { return audioFormat + " " + AudioBitrate.ToString(); }
+            get {
+                // 无损不显示码率
+                if (audioFormat.ToLower() == "flac" || audioFormat.ToLower() == "alac") {
+                    return audioFormat;
+                }
+
+                if (AudioTracks.Count == 0) {
+                    return audioFormat;
+                }
+                return audioFormat + " " + AudioTracks[0].Bitrate.ToString();
+            }
             set {
                 audioFormat = value;
                 OnPropertyChanged(new PropertyChangedEventArgs("AudioFormat"));
             }
         }
 
-        // 音频码率
-        private int audioBitrate;
-
-        public int AudioBitrate
+        // 音轨信息
+        public class AudioInfo
         {
-            get { return audioBitrate; }
-            set
-            {
-                audioBitrate = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("audioBitrate"));
+            public int TrackId { get; set; }
+            public string Format { get; set; }
+            public int Bitrate { get; set; }
+            public string ExtraArg { get; set; }
+            public bool IsMux { get; set; }
+        }
+
+        private ObservableCollection<AudioInfo> audioTracks;
+
+        public ObservableCollection<AudioInfo> AudioTracks
+        {
+            get {
+                if (audioTracks == null) {
+                    audioTracks = new ObservableCollection<AudioInfo>();
+                }
+
+                return audioTracks;
             }
         }
 

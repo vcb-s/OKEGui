@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace OKEGui
 {
@@ -165,10 +166,22 @@ namespace OKEGui
             public int AudioBitrate
             {
                 get { return audioBitrate; }
-                set
-                {
+                set {
                     audioBitrate = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("audioBitrate"));
+                }
+            }
+
+            private ObservableCollection<JobDetails.AudioInfo> audioTracks;
+
+            public ObservableCollection<JobDetails.AudioInfo> AudioTracks
+            {
+                get {
+                    if (audioTracks == null) {
+                        audioTracks = new ObservableCollection<JobDetails.AudioInfo>();
+                    }
+
+                    return audioTracks;
                 }
             }
 
@@ -429,16 +442,117 @@ namespace OKEGui
             tm = t;
         }
 
+        public class JsonProfile
+        {
+            public int Version { get; set; }
+            public string ProjectName { get; set; }
+            public string EncoderType { get; set; }
+            public string Encoder { get; set; }
+            public string EnocderParam { get; set; }
+            public string ContainerFormat { get; set; }
+            public string VideoFormat { get; set; }
+            public List<JobDetails.AudioInfo> AudioTracks { get; set; }
+            public string InputScript { get; set; }
+        }
+
+        private bool LoadJsonProfile(string profile)
+        {
+            // TODO: 测试
+            string profileStr = File.ReadAllText(profile);
+            JsonProfile okeProj = JsonConvert.DeserializeObject<JsonProfile>(profileStr);
+            DirectoryInfo projDir = new DirectoryInfo(wizardInfo.ProjectFile).Parent;
+
+            // 检查参数
+            if (okeProj.Version != 2) {
+                return false;
+            }
+
+            if (okeProj.EncoderType.ToLower() != "x265") {
+                return false;
+            }
+            wizardInfo.EncoderType = okeProj.EncoderType.ToLower();
+
+            // 获取编码器全路径
+            FileInfo encoder = new FileInfo(projDir.FullName + "\\" + okeProj.Encoder);
+            if (encoder.Exists) {
+                wizardInfo.EncoderPath = encoder.FullName;
+                wizardInfo.EncoderInfo = this.GetEncoderInfo(wizardInfo.EncoderPath);
+            }
+
+            wizardInfo.EncoderParam = okeProj.EnocderParam;
+
+            Dictionary<string, ComboBoxItem> comboItems = new Dictionary<string, ComboBoxItem>() {
+                { "MKV",    MKVContainer},
+                { "MP4",    MP4Container },
+                { "HEVC",   HEVCVideo},
+                { "AVC",    AVCVideo },
+                { "FLAC",   FLACAudio },
+                { "AAC",    AACAudio},
+            };
+
+            // 设置封装格式
+            wizardInfo.ContainerFormat = okeProj.ContainerFormat.ToUpper();
+            if (wizardInfo.ContainerFormat != "MKV" && wizardInfo.ContainerFormat != "MP4" &&
+                wizardInfo.ContainerFormat != "NULL" && wizardInfo.ContainerFormat != "RAW") {
+                return false;
+            }
+            comboItems[wizardInfo.ContainerFormat].IsSelected = true;
+
+            // 设置视频编码
+            if (okeProj.VideoFormat.ToUpper() != "HEVC") {
+                return false;
+            }
+            wizardInfo.VideoFormat = okeProj.VideoFormat.ToUpper();
+            comboItems[wizardInfo.VideoFormat].IsSelected = true;
+
+            if (okeProj.AudioTracks.Count > 0) {
+                // 包含音轨
+                wizardInfo.AudioFormat = okeProj.AudioTracks[0].Format.ToUpper();
+                wizardInfo.AudioBitrate = okeProj.AudioTracks[0].Bitrate;
+
+                foreach (var track in okeProj.AudioTracks) {
+                    wizardInfo.AudioTracks.Add(track);
+                }
+            }
+
+            if (wizardInfo.AudioFormat != "FLAC" && wizardInfo.AudioFormat != "AAC" &&
+                wizardInfo.AudioFormat != "ALAC") {
+                return false;
+            }
+            comboItems[wizardInfo.AudioFormat].IsSelected = true;
+
+            wizardInfo.InputScript = new FileInfo(projDir.FullName + "\\" + okeProj.InputScript).FullName;
+            wizardInfo.VSScript = File.ReadAllText(wizardInfo.InputScript);
+
+            // 预览
+            wizardInfo.ProjectPreview += "项目名字: " + wizardInfo.TaskNamePrefix;
+            wizardInfo.ProjectPreview += "\n\n编码器类型: " + wizardInfo.EncoderType;
+            wizardInfo.ProjectPreview += "\n编码器路径: \n" + wizardInfo.EncoderPath;
+            wizardInfo.ProjectPreview += "\n编码参数: \n" + wizardInfo.EncoderParam;
+            wizardInfo.ProjectPreview += "\n\n封装格式: " + wizardInfo.ContainerFormat;
+            wizardInfo.ProjectPreview += "\n视频编码: " + wizardInfo.VideoFormat;
+            wizardInfo.ProjectPreview += "\n音频编码(主音轨): " + wizardInfo.AudioFormat;
+
+            return true;
+        }
+
         private void OpenProjectBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "OKEGui 项目文件 (*.okeproj)|*.okeproj";
+            ofd.Filter = "OKEGui 项目文件 (*.okeproj, *.json)|*.okeproj;*.json";
             var result = ofd.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.Cancel) {
                 return;
             }
 
             wizardInfo.ProjectFile = ofd.FileName;
+            if (new FileInfo(wizardInfo.ProjectFile).Extension.ToLower() == ".json") {
+                if (!LoadJsonProfile(wizardInfo.ProjectFile)) {
+                    // 配置文件无效
+                    System.Windows.MessageBox.Show("无效的配置文件。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                return;
+            }
 
             // 配置文件 INI格式
             // Demo1.okeproj
@@ -771,6 +885,10 @@ namespace OKEGui
                 td.ContainerFormat = wizardInfo.ContainerFormat;
                 td.VideoFormat = wizardInfo.VideoFormat;
                 td.AudioFormat = wizardInfo.AudioFormat;
+
+                foreach (var audio in wizardInfo.AudioTracks) {
+                    td.AudioTracks.Add(audio);
+                }
 
                 // 更新输出文件拓展名
                 if (!td.UpdateOutputFileName()) {
