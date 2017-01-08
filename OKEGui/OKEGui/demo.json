@@ -28,12 +28,12 @@
             "TrackId" : 1, 
             "Format" : "aac",
             "Bitrate" : 128,
-            "ExtraArg" : "-adst",
+            "ExtraArg" : "-adst"
       },
       {
             "TrackId" : 0, 
             "Format" : "flac",
-            "IsMux" : false
+            "SkipMuxing" : true
       }],
       "InputScript" : "demo1.vpy"
 }
