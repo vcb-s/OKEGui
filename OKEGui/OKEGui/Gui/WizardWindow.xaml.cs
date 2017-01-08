@@ -458,6 +458,7 @@ namespace OKEGui
         private bool LoadJsonProfile(string profile)
         {
             // TODO: 测试
+            // TODO: FLAC -> lossless(auto)
             string profileStr = File.ReadAllText(profile);
             JsonProfile okeProj = JsonConvert.DeserializeObject<JsonProfile>(profileStr);
             DirectoryInfo projDir = new DirectoryInfo(wizardInfo.ProjectFile).Parent;

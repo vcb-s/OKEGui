@@ -90,7 +90,7 @@ namespace OKEGui
                     continue;
                 }
 
-                if (track.IsMux) {
+                if (!track.SkipMuxing) {
                     audioFile.Add(audioOutpath);
                 }
             }

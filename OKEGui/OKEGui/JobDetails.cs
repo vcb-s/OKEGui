@@ -147,7 +147,7 @@ namespace OKEGui
             public string Format { get; set; }
             public int Bitrate { get; set; }
             public string ExtraArg { get; set; }
-            public bool IsMux { get; set; }
+            public bool SkipMuxing { get; set; }
         }
 
         private ObservableCollection<AudioInfo> audioTracks;
