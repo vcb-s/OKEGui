@@ -448,7 +448,7 @@ namespace OKEGui
             public string ProjectName { get; set; }
             public string EncoderType { get; set; }
             public string Encoder { get; set; }
-            public string EnocderParam { get; set; }
+            public string EncoderParam { get; set; }
             public string ContainerFormat { get; set; }
             public string VideoFormat { get; set; }
             public List<JobDetails.AudioInfo> AudioTracks { get; set; }
@@ -480,7 +480,7 @@ namespace OKEGui
                 wizardInfo.EncoderInfo = this.GetEncoderInfo(wizardInfo.EncoderPath);
             }
 
-            wizardInfo.EncoderParam = okeProj.EnocderParam;
+            wizardInfo.EncoderParam = okeProj.EncoderParam;
 
             Dictionary<string, ComboBoxItem> comboItems = new Dictionary<string, ComboBoxItem>() {
                 { "MKV",    MKVContainer},
@@ -522,8 +522,12 @@ namespace OKEGui
             }
             comboItems[wizardInfo.AudioFormat].IsSelected = true;
 
-            wizardInfo.InputScript = new FileInfo(projDir.FullName + "\\" + okeProj.InputScript).FullName;
-            wizardInfo.VSScript = File.ReadAllText(wizardInfo.InputScript);
+            var scriptFile = new FileInfo(projDir.FullName + "\\" + okeProj.InputScript);
+
+            if (scriptFile.Exists) {
+                wizardInfo.InputScript = scriptFile.FullName;
+                wizardInfo.VSScript = File.ReadAllText(wizardInfo.InputScript);
+            }
 
             // 预览
             wizardInfo.ProjectPreview += "项目名字: " + wizardInfo.TaskNamePrefix;
@@ -638,8 +642,12 @@ namespace OKEGui
             }
             comboItems[wizardInfo.AudioFormat].IsSelected = true;
 
-            wizardInfo.InputScript = new FileInfo(projDir.FullName + "\\" + okeproj.ReadString("OKEProject", "InputScript", "")).FullName;
-            wizardInfo.VSScript = File.ReadAllText(wizardInfo.InputScript);
+            var scriptFile = new FileInfo(projDir.FullName + "\\" + okeproj.ReadString("OKEProject", "InputScript", ""));
+
+            if (scriptFile.Exists) {
+                wizardInfo.InputScript = scriptFile.FullName;
+                wizardInfo.VSScript = File.ReadAllText(wizardInfo.InputScript);
+            }
 
             // 预览
             wizardInfo.ProjectPreview += "项目名字: " + wizardInfo.TaskNamePrefix;

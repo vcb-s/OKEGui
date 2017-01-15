@@ -14,26 +14,28 @@
 //InputScript = demo1.vpy
 //ExtractAudioTrack = true(暂时不使用)
 {
-      "Version" : 2,
-      "ProjectName" : "Demo2",
-      "EncoderType" : "x265",
-      "Encoder" : "x265-10b.exe",
-      "EnocderParam" : "--crf 19",
-      "ContainerFormat" : "mkv",
-      "VideoFormat" : "hevc",
-      // "AudioFormat" : "flac"
-      // 封装顺序安装json文件顺序
-      // track是第几个音轨？并不是第几个轨道
-      "AudioTracks" : [{
-            "TrackId" : 1, 
-            "Format" : "aac",
-            "Bitrate" : 128,
-            "ExtraArg" : "-adst"
-      },
-      {
-            "TrackId" : 0, 
-            "Format" : "flac",
-            "SkipMuxing" : true
-      }],
-      "InputScript" : "demo1.vpy"
+    "Version": 2,
+    "ProjectName": "Demo2",
+    "EncoderType": "x265",
+    "Encoder": "x265-10b.exe",
+    "EncoderParam": "--crf 19",
+    "ContainerFormat": "mkv",
+    "VideoFormat": "hevc",
+    // "AudioFormat" : "flac"
+    // 封装顺序安装json文件顺序
+    // track是第几个音轨？并不是第几个轨道
+    "AudioTracks": [
+        {
+            "TrackId": 1,
+            "Format": "aac",
+            "Bitrate": 128,
+            "ExtraArg": "-adst"
+        },
+        {
+            "TrackId": 0,
+            "Format": "flac",
+            "SkipMuxing": true
+        }
+    ],
+    "InputScript": "demo1.vpy"
 }
