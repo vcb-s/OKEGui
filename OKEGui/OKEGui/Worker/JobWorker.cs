@@ -59,7 +59,7 @@ namespace OKEGui
                 var audioOutput = audioTracks[track.TrackId];
                 string audioOutpath = audioOutput.OutFileName;
 
-                if (track.Format == "AAC") {
+                if (track.Format.ToUpper() == "AAC") {
                     vjob.config.Status = "音轨转码中";
                     vjob.config.ProgressValue = -1;
 
