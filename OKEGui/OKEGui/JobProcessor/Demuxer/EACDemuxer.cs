@@ -29,6 +29,7 @@ namespace OKEGui
             RAW_PCM,
             DTSMA,
             TRUEHD_AC3,
+            AC3,
             PGS,
             Chapter,
         }
@@ -89,6 +90,9 @@ namespace OKEGui
             new EacOutputTrackType(TrackType.DTSMA,      "DTS Master Audio", "flac",    true),
 
             new EacOutputTrackType(TrackType.TRUEHD_AC3, "TrueHD/AC3",       "thd",     true),
+            new EacOutputTrackType(TrackType.TRUEHD_AC3, "TrueHD",           "thd",     true),
+
+            new EacOutputTrackType(TrackType.AC3,        "AC3",              "ac3",     true),
 
             new EacOutputTrackType(TrackType.H264_AVC,   "h264/AVC",         "h264",    false),
             new EacOutputTrackType(TrackType.PGS,        "Subtitle (PGS)",   "sup",     true),
@@ -223,7 +227,7 @@ namespace OKEGui
         ///
         /// </summary>
         /// <param name="fileName"></param>
-        /// <param name="completedCallback">抽取的轨道，不包含重复轨道；重复轨道文件名带有bak</param>
+        /// <param name="completedCallback">抽取的轨道，不包含重复轨道；重复轨道文件名带有.bak</param>
         public List<TrackInfo> Extract(Action<double, EACProgressType> progressCallback)
         {
             if (!new FileInfo(sourceFile).Exists) {

@@ -550,6 +550,7 @@ namespace OKEGui
                 return;
             }
 
+            // TBD: 移除INI支持
             wizardInfo.ProjectFile = ofd.FileName;
             if (new FileInfo(wizardInfo.ProjectFile).Extension.ToLower() == ".json") {
                 if (!LoadJsonProfile(wizardInfo.ProjectFile)) {
