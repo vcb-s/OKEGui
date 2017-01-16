@@ -764,25 +764,33 @@ namespace OKEGui
 
         private void OpenInputFile_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "视频文件 (*.*)|*.*";
-            var result = ofd.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.Cancel) {
-                return;
+            //C:\Users\youlu\AppData\Local\Programs\bin
+            using (var ofd = new OpenFileDialog {
+                Multiselect = true,
+                Filter = "视频文件 (*.*)|*.*"
+            }) {
+                if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.Cancel) {
+                    return;
+                }
+
+                if (!wizardInfo.VSScript.Contains("#OKE:INPUTFILE")) {
+                    if (wizardInfo.InputFile.Count > 1 || ofd.FileNames.Length > 1) {
+                        System.Windows.MessageBox.Show("添加多个输入文件请确保VapourSynth脚本使用OKE提供的模板。点击上一步可以重新选择VapourSynth脚本。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+
+                foreach (var filename in ofd.FileNames) {
+                    // TODO: 重复文件处理
+                    if (!wizardInfo.InputFile.Contains(filename)) {
+                        wizardInfo.InputFile.Add(filename);
+                    }
+                }
+
+                if (wizardInfo.InputFile.Count > 0) {
+                    SelectInputFile.CanSelectNextPage = true;
+                }
             }
 
-            // TODO: 重复文件处理
-            if (!wizardInfo.InputFile.Contains(ofd.FileName)) {
-                wizardInfo.InputFile.Add(ofd.FileName);
-            } else {
-                System.Windows.MessageBox.Show("文件已添加！", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-
-            if (wizardInfo.InputFile.Count > 1 && !wizardInfo.VSScript.Contains("#OKE:INPUTFILE")) {
-                System.Windows.MessageBox.Show("添加多个输入文件请确保VapourSynth脚本使用OKE提供的模板。点击上一步可以重新选择VapourSynth脚本。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-
-            SelectInputFile.CanSelectNextPage = true;
         }
 
         private void OpenInputFolder_Click(object sender, RoutedEventArgs e)
