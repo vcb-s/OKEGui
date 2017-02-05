@@ -205,8 +205,16 @@ namespace OKEGui
             if (string.IsNullOrEmpty(line)) return;
 
             if (Regex.IsMatch(line, @"^\d*?: .*$")) {
+
+                //原盘没有信息的PGS字幕
+                if (line.Contains("PGS") && !line.Contains(","))
+                    line += ", Japanese";
+
                 var match = Regex.Match(line, @"^(\d*?): (.*?), (.*?)$");
-                if (match.Groups.Count < 4) return;
+                
+                if (match.Groups.Count < 4) {
+                    return;
+                }
 
                 var trackInfo = new TrackInfo {
                     Index = Convert.ToInt32(match.Groups[1].Value),

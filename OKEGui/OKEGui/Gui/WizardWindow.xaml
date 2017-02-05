@@ -224,6 +224,7 @@
                             <ComboBox Name="AudioFormat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="2">
                                 <ComboBoxItem x:Name="FLACAudio" IsSelected="True" Content="FLAC" />
                                 <ComboBoxItem x:Name="AACAudio" Content="AAC" />
+                                <ComboBoxItem x:Name="AC3Audio" Content="AC3" />
                                 <!--<ComboBoxItem Content="ALAC" />-->
                             </ComboBox>
                             <CheckBox IsChecked="{Binding Path=IsExtAudioOnly}" VerticalAlignment="Center" Visibility="Hidden">音频仅抽取</CheckBox>

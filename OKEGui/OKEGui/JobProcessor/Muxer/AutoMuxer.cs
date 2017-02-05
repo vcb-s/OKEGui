@@ -164,7 +164,7 @@ namespace OKEGui
 
             foreach (var audioFile in episode.AudioFiles) {
                 FileInfo ainfo = new FileInfo(audioFile);
-                if (ainfo.Extension.ToLower() == ".aac" || ainfo.Extension.ToLower() == ".m4a") {
+                if (ainfo.Extension.ToLower() == ".aac" || ainfo.Extension.ToLower() == ".m4a" || ainfo.Extension.ToLower() == ".ac3") {
                     parameters.Add($"-i {audioFile}?language={episode.AudioLanguage}");
                 }
             }

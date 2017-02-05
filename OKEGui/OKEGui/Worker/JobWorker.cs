@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 
 namespace OKEGui
 {
@@ -56,7 +57,12 @@ namespace OKEGui
             // 音频转码
             List<string> audioFile = new List<string>();
             foreach (var track in vjob.config.AudioTracks) {
+                if (track.TrackId >= audioTracks.Count)
+                    continue;
                 var audioOutput = audioTracks[track.TrackId];
+                if (audioOutput.Type == EACDemuxer.TrackType.PGS) {
+                    continue;
+                }
                 string audioOutpath = audioOutput.OutFileName;
 
                 if (track.Format.ToUpper() == "AAC") {
@@ -72,13 +78,17 @@ namespace OKEGui
                         AudioJob aEncode = new AudioJob("AAC");
                         aEncode.Input = "-";
                         aEncode.Output = Path.ChangeExtension(audioOutpath, ".aac");
-                        QAACEncoder qaac = new QAACEncoder(".\\tools\\qaac\\qaac.exe", aEncode, track.Bitrate);
+                        QAACEncoder qaac = new QAACEncoder(".\\tools\\qaac\\qaac.exe", aEncode, track.Bitrate > 0 ? track.Bitrate : 256);
 
                         CMDPipeJobProcessor cmdpipe = CMDPipeJobProcessor.NewCMDPipeJobProcessor(flac, qaac);
                         cmdpipe.start();
                         cmdpipe.waitForFinish();
 
                         audioOutpath = aEncode.Output;
+                    }
+
+                    if (audioOutput.FileExtension == ".ac3") {
+                        track.Format = "AC3";
                     }
                 }
 
@@ -94,6 +104,21 @@ namespace OKEGui
                     audioFile.Add(audioOutpath);
                 }
             }
+
+            //实际上，不判断是否是MKV都不影响；MP4的封装过程自动过滤了*.sup...
+            if (vjob.config.IncludeSub && vjob.config.ContainerFormat.ToUpper() == "MKV")
+                foreach (var track in audioTracks) {
+                    if (track.Type == EACDemuxer.TrackType.PGS) {
+                        var subFileInfo = new FileInfo(track.OutFileName);
+                        if (subFileInfo.Length < 1024) {
+                            // 无效字幕
+                            // TODO: 提示用户不能封装
+                            File.Move(track.OutFileName, Path.ChangeExtension(track.OutFileName, ".bak") + subFileInfo.Extension);
+                            continue;
+                        }
+                        audioFile.Add(track.OutFileName);
+                    }
+                }
 
             vjob.config.Status = "获取信息中";
             IJobProcessor processor = x265Encoder.init(vjob, vjob.config.EncoderParam);

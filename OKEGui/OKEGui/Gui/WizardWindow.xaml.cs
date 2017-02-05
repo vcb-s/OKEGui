@@ -148,7 +148,7 @@ namespace OKEGui
                 }
             }
 
-            // FLAC, AAC(m4a)
+            // FLAC, AAC(m4a), "AC3", "ALAC"
             private string audioFormat;
 
             public string AudioFormat
@@ -226,6 +226,17 @@ namespace OKEGui
                 set {
                     encoderInfo = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("EncoderInfo"));
+                }
+            }
+
+            private bool includeSub;
+
+            public bool IncludeSub 
+            {
+                get { return includeSub; }
+                set {
+                    includeSub = value;
+                    OnPropertyChanged(new PropertyChangedEventArgs("IncludeSub"));
                 }
             }
 
@@ -453,6 +464,7 @@ namespace OKEGui
             public string VideoFormat { get; set; }
             public List<JobDetails.AudioInfo> AudioTracks { get; set; }
             public string InputScript { get; set; }
+            public bool IncludeSub { get; set; }
         }
 
         private bool LoadJsonProfile(string profile)
@@ -460,7 +472,13 @@ namespace OKEGui
             // TODO: 测试
             // TODO: FLAC -> lossless(auto)
             string profileStr = File.ReadAllText(profile);
-            JsonProfile okeProj = JsonConvert.DeserializeObject<JsonProfile>(profileStr);
+            JsonProfile okeProj;
+            try {
+                okeProj = JsonConvert.DeserializeObject<JsonProfile>(profileStr);
+            } catch (Exception e) {
+                System.Windows.MessageBox.Show(e.ToString(), "json文件写错了诶");
+                return false;
+            }
             DirectoryInfo projDir = new DirectoryInfo(wizardInfo.ProjectFile).Parent;
 
             // 检查参数
@@ -481,6 +499,7 @@ namespace OKEGui
             }
 
             wizardInfo.EncoderParam = okeProj.EncoderParam;
+            wizardInfo.IncludeSub = okeProj.IncludeSub;
 
             Dictionary<string, ComboBoxItem> comboItems = new Dictionary<string, ComboBoxItem>() {
                 { "MKV",    MKVContainer},
@@ -488,7 +507,8 @@ namespace OKEGui
                 { "HEVC",   HEVCVideo},
                 { "AVC",    AVCVideo },
                 { "FLAC",   FLACAudio },
-                { "AAC",    AACAudio},
+                { "AAC",    AACAudio },
+                { "AC3",    AC3Audio },
             };
 
             // 设置封装格式
@@ -517,7 +537,7 @@ namespace OKEGui
             }
 
             if (wizardInfo.AudioFormat != "FLAC" && wizardInfo.AudioFormat != "AAC" &&
-                wizardInfo.AudioFormat != "ALAC") {
+                wizardInfo.AudioFormat != "AC3") {
                 return false;
             }
             comboItems[wizardInfo.AudioFormat].IsSelected = true;
@@ -781,9 +801,10 @@ namespace OKEGui
                 }
 
                 foreach (var filename in ofd.FileNames) {
-                    // TODO: 重复文件处理
                     if (!wizardInfo.InputFile.Contains(filename)) {
                         wizardInfo.InputFile.Add(filename);
+                    } else {
+                        System.Windows.MessageBox.Show(filename + "被重复选择，已取消添加。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
 
@@ -837,10 +858,20 @@ namespace OKEGui
                 container = "";
             }
 
-            // 简单检查
-            if (container == "MP4" && audio == "FLAC") {
-                System.Windows.MessageBox.Show("格式选择错误！\nMP4不能封装FLAC格式。音频格式将改为AAC。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
-                audio = "AAC";
+            // 确保MP4封装的音轨只可能是AAC或者AC3
+            if (container == "MP4") {
+                bool hasFLAC = false;
+                foreach (var audioTrack in wizardInfo.AudioTracks)
+                    if (audioTrack.Format.ToUpper() == "FLAC" && !audioTrack.SkipMuxing) {
+                        hasFLAC = true;
+                        audioTrack.Format = "AAC";
+                        audioTrack.Bitrate = 256;
+                    }
+                if (hasFLAC) {
+                    System.Windows.MessageBox.Show("格式选择错误！\nMP4不能封装FLAC格式。音频格式将改为AAC。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
+                    audio = "AAC";
+                }
+                
             }
 
             wizardInfo.ContainerFormat = container;
@@ -903,6 +934,8 @@ namespace OKEGui
                 td.ContainerFormat = wizardInfo.ContainerFormat;
                 td.VideoFormat = wizardInfo.VideoFormat;
                 td.AudioFormat = wizardInfo.AudioFormat;
+
+                td.IncludeSub = wizardInfo.IncludeSub;
 
                 foreach (var audio in wizardInfo.AudioTracks) {
                     td.AudioTracks.Add(audio);

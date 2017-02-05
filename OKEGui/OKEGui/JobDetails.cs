@@ -308,6 +308,16 @@ namespace OKEGui
             }
         }
 
+        private bool includeSub;
+
+        public bool IncludeSub {
+            get { return includeSub; }
+            set {
+                includeSub = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("IncludeSub"));
+            }
+        }
+
         #endregion JobConfig
 
         public JobDetails()
