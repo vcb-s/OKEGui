@@ -29,7 +29,7 @@ namespace OKEGui
             job = j as VideoJob;
             getInputProperties(job);
 
-            executable = Path.Combine(Environment.SystemDirectory, "cmd.exe"); 
+            executable = Path.Combine(Environment.SystemDirectory, "cmd.exe");
 
             if (File.Exists(job.config.EncoderPath)) {
                 this.x265Path = job.config.EncoderPath;
@@ -69,6 +69,7 @@ namespace OKEGui
                 // TODO
                 Regex rf = new Regex("encoded ([0-9]+) frames in ([0-9]+.[0-9]+)s \\(([0-9]+.[0-9]+) fps\\), ([0-9]+.[0-9]+) kb/s, Avg QP:(([0-9]+.[0-9]+))");
                 var result = rf.Split(line);
+                // 这里是平均速度
                 if (!base.setSpeed(result[3])) {
                     return;
                 }
@@ -89,9 +90,10 @@ namespace OKEGui
                 return;
             }
 
-            if (!base.setSpeed(status[2])) {
-                return;
-            }
+            // 由OKE自己进行计算速度
+            //if (!base.setSpeed(status[2])) {
+            //    return;
+            //}
 
             base.ProcessLine(line, stream);
         }
