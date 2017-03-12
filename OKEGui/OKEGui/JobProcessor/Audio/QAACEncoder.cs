@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace OKEGui
 {
-    class QAACEncoder : CommandlineJobProcessor
+    internal class QAACEncoder : CommandlineJobProcessor
     {
         public static IJobProcessor NewQAACEncoder(string QAACPath, Job j)
         {
@@ -20,7 +20,6 @@ namespace OKEGui
         }
 
         private string commandLine;
-        private VSVideoInfo videoInfo;
         private ManualResetEvent retrieved = new ManualResetEvent(false);
 
         // TODO: 变更编码参数

@@ -31,9 +31,9 @@ namespace OKEGui
             }
         }
 
-        private JobDetails info;
+        private TaskDetail info;
 
-        private JobDetails oldInfo;
+        private TaskDetail oldInfo;
 
         private bool isAsked;
 
@@ -50,12 +50,12 @@ namespace OKEGui
             return (T)retval;
         }
 
-        public SubWindow(JobDetails task)
+        public SubWindow(TaskDetail task)
         {
             InitializeComponent();
             oldInfo = task;
 
-            info = DeepCopy<JobDetails>(task);
+            info = DeepCopy<TaskDetail>(task);
             this.DataContext = info;
 
             ContainerFormat.Text = info.ContainerFormat;
@@ -107,7 +107,7 @@ namespace OKEGui
             // 直接退出
         }
 
-        public JobDetails GetNewTaskDetail()
+        public TaskDetail GetNewTaskDetail()
         {
             return oldInfo;
         }

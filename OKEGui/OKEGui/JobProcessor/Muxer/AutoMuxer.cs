@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace OKEGui
 {
-    class AutoMuxer /*: CommandlineJobProcessor<MuxJob>*/
+    public class AutoMuxer : IMediaMuxer
     {
         private enum OutputType
         {
@@ -49,6 +49,7 @@ namespace OKEGui
         private ManualResetEvent mre = new ManualResetEvent(false);
 
         public delegate void MuxingProgressChangedEventHandler(double progress);
+
         public event MuxingProgressChangedEventHandler ProgressChanged;
 
         public AutoMuxer(string mkvMergePath, string mp4MuxerPath)
@@ -219,6 +220,7 @@ namespace OKEGui
                                 mre.Set();
                             }
                             break;
+
                         case OutputType.Mp4:
                             if (line.Contains("Importing: ")) {
                                 progressMatch = Regex.Match(line, @"Importing: (\d*?) bytes", RegexOptions.Compiled);
@@ -285,6 +287,31 @@ namespace OKEGui
                     break;
             }
             StartProcess(mainProgram, args);
+        }
+
+        public IFile StartMuxing(string path, MediaFile mediaFile)
+        {
+            List<string> input = new List<string>();
+
+            foreach (var track in mediaFile.Tracks) {
+                if (track.IsDisable) {
+                    continue;
+                }
+                input.Add(track.file.GetFullPath());
+            }
+
+            this.StartMerge(input, path);
+
+            IFile outFile = new OKEFile(path);
+
+            return outFile.Exists() ? outFile : null;
+        }
+
+        public bool IsCompatible(MediaFile mediaFile)
+        {
+            // TODO:
+            // 更加彻底的检查
+            return mediaFile.VideoTrack == null;
         }
     }
 }

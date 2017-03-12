@@ -1,7 +1,9 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 
 namespace OKEGui
 {
@@ -13,7 +15,7 @@ namespace OKEGui
         Temporary,
     }
 
-    struct WorkerArgs
+    internal struct WorkerArgs
     {
         public string Name;
         public WorkerType RunningType;
@@ -181,9 +183,10 @@ namespace OKEGui
             WorkerArgs args = (WorkerArgs)e.Argument;
 
             while (isRunning) {
-                Job j = args.taskManager.GetNextJob();
+                TaskDetail task = args.taskManager.GetNextTask();
 
-                if (j == null) {
+                // 检查是否已经完成全部任务
+                if (task == null) {
                     // 全部工作完成
                     lock (o) {
                         BackgroundWorker v;
@@ -198,19 +201,156 @@ namespace OKEGui
                     return;
                 }
 
-                JobWorker worker = new JobWorker(j);
-                (j as VideoJob).config.WorkerName = args.Name;
-                (j as VideoJob).config.IsEnabled = false;
+                task.WorkerName = args.Name;
+                task.IsEnabled = false;
+                task.IsRunning = true;
 
-                // TODO: 计时
-                worker.Start();
-
-                (j as VideoJob).config.WorkerName = "";
-
-                if (args.RunningType == WorkerType.Temporary) {
-                    DeleteWorker(args.Name);
-                    return;
+                // 新建工作
+                // 抽取音轨
+                FileInfo eacInfo = new FileInfo(".\\tools\\eac3to\\eac3to.exe");
+                if (!eacInfo.Exists) {
+                    throw new Exception("Eac3to 不存在");
                 }
+                MediaFile srcTracks = new EACDemuxer(eacInfo.FullName, task.InputFile).Extract(
+                    (double progress, EACProgressType type) => {
+                        switch (type) {
+                            case EACProgressType.Analyze:
+                                task.CurrentStatus = "轨道分析中";
+                                task.ProgressValue = progress;
+                                break;
+
+                            case EACProgressType.Process:
+                                task.CurrentStatus = "抽取音轨中";
+                                task.ProgressValue = progress;
+                                break;
+
+                            case EACProgressType.Completed:
+                                task.CurrentStatus = "音轨抽取完毕";
+                                task.ProgressValue = progress;
+                                break;
+
+                            default:
+                                return;
+                        }
+                    });
+
+                // 新建音频处理工作
+                for (int id = 0; id < srcTracks.AudioTracks.Count; id++) {
+                    if (task.AudioTracks[id].SkipMuxing) {
+                        continue;
+                    }
+
+                    // 不是flac不处理
+                    if (srcTracks.AudioTracks[id].file.GetExtension() != ".flac") {
+                        continue;
+                    }
+
+                    AudioJob audioJob = new AudioJob(task.AudioTracks[id].OutputCodec);
+                    audioJob.SetUpdate(task);
+
+                    audioJob.Input = srcTracks.AudioTracks[id].file.GetFullPath();
+
+                    task.JobQueue.Enqueue(audioJob);
+                }
+
+                // 新建视频处理工作
+                if (task.VideoFormat == "HEVC") {
+                    VideoJob videoJob = new VideoJob(task.VideoFormat);
+                    videoJob.SetUpdate(task);
+
+                    videoJob.Input = task.InputScript;
+                    videoJob.Output = new FileInfo(task.InputFile).FullName + ".hevc";
+                    videoJob.EncoderPath = task.EncoderPath;
+                    videoJob.EncodeParam = task.EncoderParam;
+
+                    task.JobQueue.Enqueue(videoJob);
+                }
+
+                while (task.JobQueue.Count != 0) {
+                    Job job = task.JobQueue.Dequeue();
+
+                    if (job is AudioJob) {
+                        AudioJob audioJob = job as AudioJob;
+                        if (audioJob.CodecString == "FLAC" ||
+                            audioJob.CodecString == "AUTO") {
+                            // 跳过当前轨道
+                            audioJob.Output = audioJob.Input;
+                        } else if (audioJob.CodecString == "AAC") {
+                            task.CurrentStatus = "音频转码中";
+                            task.IsUnKnowProgress = true;
+                            AudioJob aDecode = new AudioJob("WAV");
+                            aDecode.Input = audioJob.Input;
+                            aDecode.Output = "-";
+                            FLACDecoder flac = new FLACDecoder(".\\tools\\flac\\flac.exe", aDecode);
+
+                            AudioJob aEncode = new AudioJob("AAC");
+                            aEncode.Input = "-";
+                            aEncode.Output = Path.ChangeExtension(audioJob.Input, ".aac");
+                            QAACEncoder qaac = new QAACEncoder(".\\tools\\qaac\\qaac.exe", aEncode, audioJob.Bitrate > 0 ? audioJob.Bitrate : 256);
+
+                            CMDPipeJobProcessor cmdpipe = CMDPipeJobProcessor.NewCMDPipeJobProcessor(flac, qaac);
+                            cmdpipe.start();
+                            cmdpipe.waitForFinish();
+
+                            audioJob.Output = aEncode.Output;
+                        } else {
+                            // 未支持格式
+                            audioJob.Output = audioJob.Input;
+                        }
+
+                        var audioFileInfo = new FileInfo(audioJob.Output);
+                        if (audioFileInfo.Length < 1024) {
+                            // 无效音轨
+                            File.Move(audioJob.Output, Path.ChangeExtension(audioJob.Output, ".bak") + audioFileInfo.Extension);
+                            continue;
+                        }
+
+                        task.MediaOutFile.AddTrack(AudioTrack.NewTrack(new OKEFile(job.Output)));
+                    } else if (job is VideoJob) {
+                        if (job.CodecString == "HEVC") {
+                            task.CurrentStatus = "获取信息中";
+                            task.IsUnKnowProgress = true;
+                            IJobProcessor processor = x265Encoder.init(job, task.EncoderParam);
+
+                            task.CurrentStatus = "压制中";
+                            task.ProgressValue = 0.0;
+                            processor.start();
+                            processor.waitForFinish();
+                        }
+
+                        task.MediaOutFile.AddTrack(VideoTrack.NewTrack(new OKEFile(job.Output)));
+                    } else {
+                        // 不支持的工作
+                    }
+                }
+
+                // 添加章节文件
+                FileInfo txtChapter = new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
+                if (txtChapter.Exists) {
+                    task.MediaOutFile.AddTrack(ChapterTrack.NewTrack(new OKEFile(txtChapter)));
+                }
+
+                // 封装
+                if (task.ContainerFormat != "") {
+                    task.CurrentStatus = "封装中";
+                    FileInfo mkvInfo = new FileInfo(".\\tools\\mkvtoolnix\\mkvmerge.exe");
+                    if (!mkvInfo.Exists) {
+                        throw new Exception("mkvmerge不存在");
+                    }
+
+                    FileInfo lsmash = new FileInfo(".\\tools\\l-smash\\muxer.exe");
+                    if (!lsmash.Exists) {
+                        throw new Exception("l-smash 封装工具不存在");
+                    }
+
+                    AutoMuxer muxer = new AutoMuxer(mkvInfo.FullName, lsmash.FullName);
+                    muxer.ProgressChanged += progress => task.ProgressValue = progress;
+
+                    muxer.StartMuxing(Path.GetDirectoryName(task.InputFile) + "\\" + task.OutputFile, task.MediaOutFile);
+                }
+
+                task.CurrentStatus = "完成";
+                task.ProgressValue = 100;
             }
         }
 

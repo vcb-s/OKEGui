@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace OKEGui
@@ -10,8 +11,8 @@ namespace OKEGui
         #region variables
 
         private ulong numberOfFrames;
-        private ulong? currentFrameNumber;
-        private ulong? lastFrameNumber;
+        private ulong currentFrameNumber;
+        private ulong lastFrameNumber;
         private uint lastUpdateTime;
         protected long fps_n = 0, fps_d = 0;
 
@@ -38,13 +39,13 @@ namespace OKEGui
         #region helper methods
 
         [System.Runtime.InteropServices.DllImport("winmm")]
-        static extern uint timeGetTime();
+        private static extern uint timeGetTime();
 
         [System.Runtime.InteropServices.DllImport("winmm")]
-        static extern void timeBeginPeriod(int t);
+        private static extern void timeBeginPeriod(int t);
 
         [System.Runtime.InteropServices.DllImport("winmm")]
-        static extern void timeEndPeriod(int t);
+        private static extern void timeEndPeriod(int t);
 
         /// <summary>
         /// tries to open the video source and gets the number of frames from it, or
@@ -94,21 +95,25 @@ namespace OKEGui
 
         protected bool setFrameNumber(string frameString, bool isUpdateSpeed = false)
         {
-            int currentFrameNumber;
-            if (int.TryParse(frameString, out currentFrameNumber)) {
-                if (currentFrameNumber < 0) {
-                    this.currentFrameNumber = 0;
-                    this.lastFrameNumber = 0;
+            int currentFrame;
+            if (int.TryParse(frameString, out currentFrame)) {
+                if (currentFrame < 0) {
+                    currentFrameNumber = 0;
+                    lastFrameNumber = 0;
+                    return false;
                 } else {
-                    this.lastFrameNumber = this.currentFrameNumber;
-                    this.currentFrameNumber = (ulong)currentFrameNumber;
+                    currentFrameNumber = (ulong)currentFrame;
                 }
 
-                if (isUpdateSpeed) {
-                    this.speed = (double)((this.currentFrameNumber - this.lastFrameNumber) / (timeGetTime() - lastUpdateTime)) * 1000.0;
+                double time = timeGetTime() - lastUpdateTime;
+
+                if (isUpdateSpeed && time > 1000) {
+                    speed = ((currentFrameNumber - lastFrameNumber) / time) * 1000.0;
+
+                    lastFrameNumber = currentFrameNumber;
+                    lastUpdateTime = timeGetTime();
                 }
 
-                lastUpdateTime = timeGetTime();
                 Update();
                 return true;
             }
@@ -153,23 +158,24 @@ namespace OKEGui
         protected void Update()
         {
             if (speed == 0) {
-                job.config.TimeRemain = TimeSpan.FromDays(30);
+                job.TimeRemain = TimeSpan.FromDays(30);
             } else {
-                job.config.TimeRemain = TimeSpan.FromSeconds((double)(numberOfFrames - currentFrameNumber) / speed);
+                job.TimeRemain = TimeSpan.FromSeconds((double)(numberOfFrames - currentFrameNumber) / speed);
             }
-            job.config.Speed = speed.ToString() + " fps";
-            job.config.ProgressValue = (double)currentFrameNumber / (double)numberOfFrames * 100;
+
+            job.Speed = speed.ToString("0.00") + " fps";
+            job.Progress = (double)currentFrameNumber / (double)numberOfFrames * 100;
 
             if (bitrate == 0) {
-                job.config.BitRate = "未知";
+                job.BitRate = "未知";
             } else {
-                job.config.BitRate = bitrate.ToString() + unit;
+                job.BitRate = bitrate.ToString("0.00") + unit;
             }
 
             // su.NbFramesDone = currentFrameNumber;
         }
 
-        private static String HumanReadableFilesize(double size, int digit)
+        public static String HumanReadableFilesize(double size, int digit)
         {
             String[] units = new String[] { "B", "KB", "MB", "GB", "TB", "PB" };
             double mod = 1024.0;
@@ -184,14 +190,14 @@ namespace OKEGui
 
         protected void encodeFinish()
         {
-            job.config.TimeRemain = TimeSpan.Zero;
-            job.config.ProgressValue = 100;
-            job.config.Status = "压制完成";
+            job.TimeRemain = TimeSpan.Zero;
+            job.Progress = 100;
+            job.Status = "压制完成";
 
             // TODO: 计算最终码率
             // 这里显示文件最终大小
-            FileInfo vinfo = new FileInfo(job.config.InputFile + ".hevc");
-            job.config.BitRate = HumanReadableFilesize(vinfo.Length, 2);
+            FileInfo vinfo = new FileInfo(job.Output);
+            job.BitRate = HumanReadableFilesize(vinfo.Length, 2);
 
             base.SetFinish();
         }

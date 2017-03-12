@@ -44,7 +44,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="状态" Width="80" DisplayMemberBinding="{Binding Path=Status}">
+                    <GridViewColumn Header="状态" Width="80" DisplayMemberBinding="{Binding Path=CurrentStatus}">
                     </GridViewColumn>
                     <GridViewColumn Header="进度" Width="115" x:Name="TaskProgress">
                         <GridViewColumn.CellTemplate>
@@ -58,7 +58,7 @@
                     </GridViewColumn>
                     <GridViewColumn Header="速度" Width="75" DisplayMemberBinding="{Binding Path=Speed}">
                     </GridViewColumn>
-                    <GridViewColumn Header="码率" Width="75" DisplayMemberBinding="{Binding Path=Speed}">
+                    <GridViewColumn Header="码率" Width="75" DisplayMemberBinding="{Binding Path=BitRate}">
                     </GridViewColumn>
                     <GridViewColumn Header="剩余时间" Width="75" DisplayMemberBinding="{Binding Path=TimeRemainStr}">
                     </GridViewColumn>

@@ -84,6 +84,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="TaskManager.cs" />
     <Compile Include="JobProcessor\Audio\FLACDecoder.cs" />
     <Compile Include="JobProcessor\Audio\QAACEncoder.cs" />
     <Compile Include="JobProcessor\CMDPipeJobProcessor.cs" />
@@ -91,8 +92,11 @@
     <Compile Include="JobProcessor\Demuxer\EACDemuxer.cs" />
     <Compile Include="JobProcessor\Video\VSPipeProcessor.cs" />
     <Compile Include="Job\AudioJob\AudioJob.cs" />
+    <Compile Include="Job\Interface\IFile.cs" />
+    <Compile Include="Job\Interface\IMediaMuxer.cs" />
+    <Compile Include="Job\Interface\MediaFile.cs" />
     <Compile Include="Job\VideoJob\VideoInfoJob.cs" />
-    <Compile Include="Job\MuxJob.cs" />
+    <Compile Include="Job\Muxer\MuxJob.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -109,18 +113,16 @@
     <Compile Include="JobProcessor\CommandlineVideoEncoder.cs" />
     <Compile Include="JobProcessor\IJobProcessor.cs" />
     <Compile Include="JobProcessor\Video\x265Encoder.cs" />
-    <Compile Include="Job\VideoJob\DAR.cs" />
     <Compile Include="Job\Job.cs" />
     <Compile Include="Job\StatusUpdate.cs" />
     <Compile Include="Job\VideoJob\VideoJob.cs" />
-    <Compile Include="JobDetails.cs" />
+    <Compile Include="TaskDetail.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Utils\VapourSynthHelper.cs" />
     <Compile Include="Utils\WindowsUtil.cs" />
-    <Compile Include="Worker\JobWorker.cs" />
     <Compile Include="Worker\WorkerManager.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -140,6 +142,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="demo.json" />
     <None Include="packages.config" />

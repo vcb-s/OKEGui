@@ -281,6 +281,7 @@ namespace OKEGui
                     }
                 } catch (Exception e) {
                     ProcessLine("Exception in readStream. Line cannot be processed. " + e.Message, str);
+                    throw e;
                 }
                 rEvent.Set();
             }

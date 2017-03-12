@@ -1,13 +1,9 @@
 ﻿namespace OKEGui
 {
-    public enum ZONEMODE : int { Quantizer = 0, Weight };
-
     public class Zone
     {
         public int startFrame;
         public int endFrame;
-        public ZONEMODE mode;
-        public decimal modifier;
     }
 
     /// <summary>
@@ -16,7 +12,8 @@
     public class VideoJob : Job
     {
         private string codecString;
-        public JobDetails config;
+        public string EncoderPath;
+        public string EncodeParam;
 
         public VideoJob() : base()
         {
@@ -36,14 +33,6 @@
         {
             get { return zones; }
             set { zones = value; }
-        }
-
-        private Dar? dar;
-
-        public Dar? DAR
-        {
-            get { return dar; }
-            set { dar = value; }
         }
 
         /// <summary>

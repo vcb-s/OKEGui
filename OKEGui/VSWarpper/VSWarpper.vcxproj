@@ -22,7 +22,7 @@
     <ProjectGuid>{815ED800-FAA3-4BC4-BCB0-418D04B378EE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>VSWarpper</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

@@ -172,13 +172,13 @@ namespace OKEGui
                 }
             }
 
-            private ObservableCollection<JobDetails.AudioInfo> audioTracks;
+            private ObservableCollection<AudioInfo> audioTracks;
 
-            public ObservableCollection<JobDetails.AudioInfo> AudioTracks
+            public ObservableCollection<AudioInfo> AudioTracks
             {
                 get {
                     if (audioTracks == null) {
-                        audioTracks = new ObservableCollection<JobDetails.AudioInfo>();
+                        audioTracks = new ObservableCollection<AudioInfo>();
                     }
 
                     return audioTracks;
@@ -231,7 +231,7 @@ namespace OKEGui
 
             private bool includeSub;
 
-            public bool IncludeSub 
+            public bool IncludeSub
             {
                 get { return includeSub; }
                 set {
@@ -248,6 +248,8 @@ namespace OKEGui
                     PropertyChanged(this, e);
             }
         }
+
+        #region IniProfile
 
         public class IniFiles
         {
@@ -436,6 +438,112 @@ namespace OKEGui
             }
         }
 
+        private bool LoadIniProfile(string profile)
+        {
+            // 配置文件 INI格式
+            // Demo1.okeproj
+
+            //[OKEProject]
+            //ProjectVersion = 1
+            //ProjectName = Demo1
+            //EncoderType = x265
+            //Encoder = x265 - 10b.exe
+            //EnocderParam = "--crf 19"
+            //ContainerFormat = mkv
+            //VideoFormat = hevc
+            //AudioFormat = flac
+            //AudioFormat = aac:128
+            //InputScript = demo1.vpy
+            //ExtractAudioTrack = true(暂时不使用)
+
+            IniFiles okeproj = new IniFiles(wizardInfo.ProjectFile);
+            DirectoryInfo projDir = new DirectoryInfo(wizardInfo.ProjectFile).Parent;
+
+            wizardInfo.ConfigVersion = okeproj.ReadInteger("OKEProject", "ProjectVersion", 0);
+            if (wizardInfo.ConfigVersion < 1) {
+                System.Windows.MessageBox.Show("无效的配置文件。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            wizardInfo.TaskNamePrefix = okeproj.ReadString("OKEProject", "ProjectName", "");
+
+            wizardInfo.EncoderType = okeproj.ReadString("OKEProject", "EncoderType", "").ToLower();
+            if (wizardInfo.EncoderType != "x265") {
+                System.Windows.MessageBox.Show("目前只支持x265编码器。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            // 获取编码器全路径
+            FileInfo encoder = new FileInfo(projDir.FullName + "\\" + okeproj.ReadString("OKEProject", "Encoder", ""));
+            if (encoder.Exists) {
+                wizardInfo.EncoderPath = encoder.FullName;
+                wizardInfo.EncoderInfo = this.GetEncoderInfo(wizardInfo.EncoderPath);
+            }
+
+            wizardInfo.EncoderParam = okeproj.ReadString("OKEProject", "EnocderParam", "");
+
+            Dictionary<string, ComboBoxItem> comboItems = new Dictionary<string, ComboBoxItem>() {
+                { "MKV",    MKVContainer},
+                { "MP4",    MP4Container },
+                { "HEVC",   HEVCVideo},
+                { "AVC",    AVCVideo },
+                { "FLAC",   FLACAudio },
+                { "AAC",    AACAudio},
+            };
+
+            wizardInfo.ContainerFormat = okeproj.ReadString("OKEProject", "ContainerFormat", "").ToLower();
+            if (wizardInfo.ContainerFormat != "mkv" && wizardInfo.ContainerFormat != "mp4" &&
+                wizardInfo.ContainerFormat != "null") {
+                System.Windows.MessageBox.Show("封装格式不正确。只支持mkv，mp4,或者无封装", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            comboItems[wizardInfo.ContainerFormat.ToUpper()].IsSelected = true;
+
+            wizardInfo.VideoFormat = okeproj.ReadString("OKEProject", "VideoFormat", "").ToUpper();
+            if (wizardInfo.VideoFormat != "HEVC") {
+                System.Windows.MessageBox.Show("目前只支持HEVC编码。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            comboItems[wizardInfo.VideoFormat].IsSelected = true;
+
+            wizardInfo.AudioFormat = okeproj.ReadString("OKEProject", "AudioFormat", "").ToUpper();
+            wizardInfo.AudioBitrate = 128;
+            var audioParam = wizardInfo.AudioFormat.Split(':');
+            if (audioParam.Length == 2) {
+                int bitrate = 0;
+                if (int.TryParse(audioParam[1], out bitrate)) {
+                    wizardInfo.AudioBitrate = bitrate == 0 ? 128 : bitrate;
+                }
+            }
+
+            if (wizardInfo.AudioFormat != "FLAC" && wizardInfo.AudioFormat != "AAC" &&
+                wizardInfo.AudioFormat != "ALAC") {
+                System.Windows.MessageBox.Show("音频编码格式不支持。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            comboItems[wizardInfo.AudioFormat].IsSelected = true;
+
+            var scriptFile = new FileInfo(projDir.FullName + "\\" + okeproj.ReadString("OKEProject", "InputScript", ""));
+
+            if (scriptFile.Exists) {
+                wizardInfo.InputScript = scriptFile.FullName;
+                wizardInfo.VSScript = File.ReadAllText(wizardInfo.InputScript);
+            }
+
+            // 预览
+            wizardInfo.ProjectPreview += "项目名字: " + wizardInfo.TaskNamePrefix;
+            wizardInfo.ProjectPreview += "\n\n编码器类型: " + wizardInfo.EncoderType;
+            wizardInfo.ProjectPreview += "\n编码器路径: \n" + wizardInfo.EncoderPath;
+            wizardInfo.ProjectPreview += "\n编码参数: \n" + wizardInfo.EncoderParam;
+            wizardInfo.ProjectPreview += "\n\n封装格式: " + wizardInfo.ContainerFormat;
+            wizardInfo.ProjectPreview += "\n视频编码: " + wizardInfo.VideoFormat;
+            wizardInfo.ProjectPreview += "\n音频编码: " + wizardInfo.AudioFormat;
+
+            return true;
+        }
+
+        #endregion IniProfile
+
         private NewTask wizardInfo = new NewTask();
         private TaskManager tm;
 
@@ -462,7 +570,7 @@ namespace OKEGui
             public string EncoderParam { get; set; }
             public string ContainerFormat { get; set; }
             public string VideoFormat { get; set; }
-            public List<JobDetails.AudioInfo> AudioTracks { get; set; }
+            public List<AudioInfo> AudioTracks { get; set; }
             public string InputScript { get; set; }
             public bool IncludeSub { get; set; }
         }
@@ -485,6 +593,8 @@ namespace OKEGui
             if (okeProj.Version != 2) {
                 return false;
             }
+
+            wizardInfo.TaskNamePrefix = okeProj.ProjectName;
 
             if (okeProj.EncoderType.ToLower() != "x265") {
                 return false;
@@ -527,11 +637,14 @@ namespace OKEGui
             comboItems[wizardInfo.VideoFormat].IsSelected = true;
 
             if (okeProj.AudioTracks.Count > 0) {
-                // 包含音轨
-                wizardInfo.AudioFormat = okeProj.AudioTracks[0].Format.ToUpper();
+                // 主音轨
+                wizardInfo.AudioFormat = okeProj.AudioTracks[0].OutputCodec.ToUpper();
                 wizardInfo.AudioBitrate = okeProj.AudioTracks[0].Bitrate;
 
+                // 添加音频参数到任务里面
                 foreach (var track in okeProj.AudioTracks) {
+                    AudioJob audioJob = new AudioJob(track.OutputCodec);
+
                     wizardInfo.AudioTracks.Add(track);
                 }
             }
@@ -570,7 +683,6 @@ namespace OKEGui
                 return;
             }
 
-            // TBD: 移除INI支持
             wizardInfo.ProjectFile = ofd.FileName;
             if (new FileInfo(wizardInfo.ProjectFile).Extension.ToLower() == ".json") {
                 if (!LoadJsonProfile(wizardInfo.ProjectFile)) {
@@ -580,104 +692,7 @@ namespace OKEGui
                 return;
             }
 
-            // 配置文件 INI格式
-            // Demo1.okeproj
-
-            //[OKEProject]
-            //ProjectVersion = 1
-            //ProjectName = Demo1
-            //EncoderType = x265
-            //Encoder = x265 - 10b.exe
-            //EnocderParam = "--crf 19"
-            //ContainerFormat = mkv
-            //VideoFormat = hevc
-            //AudioFormat = flac
-            //AudioFormat = aac:128
-            //InputScript = demo1.vpy
-            //ExtractAudioTrack = true(暂时不使用)
-
-            IniFiles okeproj = new IniFiles(wizardInfo.ProjectFile);
-            DirectoryInfo projDir = new DirectoryInfo(wizardInfo.ProjectFile).Parent;
-
-            wizardInfo.ConfigVersion = okeproj.ReadInteger("OKEProject", "ProjectVersion", 0);
-            if (wizardInfo.ConfigVersion < 1) {
-                System.Windows.MessageBox.Show("无效的配置文件。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            wizardInfo.TaskNamePrefix = okeproj.ReadString("OKEProject", "ProjectName", "");
-
-            wizardInfo.EncoderType = okeproj.ReadString("OKEProject", "EncoderType", "").ToLower();
-            if (wizardInfo.EncoderType != "x265") {
-                System.Windows.MessageBox.Show("目前只支持x265编码器。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            // 获取编码器全路径
-            FileInfo encoder = new FileInfo(projDir.FullName + "\\" + okeproj.ReadString("OKEProject", "Encoder", ""));
-            if (encoder.Exists) {
-                wizardInfo.EncoderPath = encoder.FullName;
-                wizardInfo.EncoderInfo = this.GetEncoderInfo(wizardInfo.EncoderPath);
-            }
-
-            wizardInfo.EncoderParam = okeproj.ReadString("OKEProject", "EnocderParam", "");
-
-            Dictionary<string, ComboBoxItem> comboItems = new Dictionary<string, ComboBoxItem>() {
-                { "MKV",    MKVContainer},
-                { "MP4",    MP4Container },
-                { "HEVC",   HEVCVideo},
-                { "AVC",    AVCVideo },
-                { "FLAC",   FLACAudio },
-                { "AAC",    AACAudio},
-            };
-
-            wizardInfo.ContainerFormat = okeproj.ReadString("OKEProject", "ContainerFormat", "").ToLower();
-            if (wizardInfo.ContainerFormat != "mkv" && wizardInfo.ContainerFormat != "mp4" &&
-                wizardInfo.ContainerFormat != "null") {
-                System.Windows.MessageBox.Show("封装格式不正确。只支持mkv，mp4,或者无封装", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            comboItems[wizardInfo.ContainerFormat.ToUpper()].IsSelected = true;
-
-            wizardInfo.VideoFormat = okeproj.ReadString("OKEProject", "VideoFormat", "").ToUpper();
-            if (wizardInfo.VideoFormat != "HEVC") {
-                System.Windows.MessageBox.Show("目前只支持HEVC编码。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            comboItems[wizardInfo.VideoFormat].IsSelected = true;
-
-            wizardInfo.AudioFormat = okeproj.ReadString("OKEProject", "AudioFormat", "").ToUpper();
-            wizardInfo.AudioBitrate = 128;
-            var audioParam = wizardInfo.AudioFormat.Split(':');
-            if (audioParam.Length == 2) {
-                int bitrate = 0;
-                if (int.TryParse(audioParam[1], out bitrate)) {
-                    wizardInfo.AudioBitrate = bitrate == 0 ? 128 : bitrate;
-                }
-            }
-
-            if (wizardInfo.AudioFormat != "FLAC" && wizardInfo.AudioFormat != "AAC" &&
-                wizardInfo.AudioFormat != "ALAC") {
-                System.Windows.MessageBox.Show("音频编码格式不支持。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            comboItems[wizardInfo.AudioFormat].IsSelected = true;
-
-            var scriptFile = new FileInfo(projDir.FullName + "\\" + okeproj.ReadString("OKEProject", "InputScript", ""));
-
-            if (scriptFile.Exists) {
-                wizardInfo.InputScript = scriptFile.FullName;
-                wizardInfo.VSScript = File.ReadAllText(wizardInfo.InputScript);
-            }
-
-            // 预览
-            wizardInfo.ProjectPreview += "项目名字: " + wizardInfo.TaskNamePrefix;
-            wizardInfo.ProjectPreview += "\n\n编码器类型: " + wizardInfo.EncoderType;
-            wizardInfo.ProjectPreview += "\n编码器路径: \n" + wizardInfo.EncoderPath;
-            wizardInfo.ProjectPreview += "\n编码参数: \n" + wizardInfo.EncoderParam;
-            wizardInfo.ProjectPreview += "\n\n封装格式: " + wizardInfo.ContainerFormat;
-            wizardInfo.ProjectPreview += "\n视频编码: " + wizardInfo.VideoFormat;
-            wizardInfo.ProjectPreview += "\n音频编码: " + wizardInfo.AudioFormat;
+            LoadIniProfile(wizardInfo.ProjectFile);
         }
 
         private void OpenScriptBtn_Click(object sender, RoutedEventArgs e)
@@ -785,7 +800,6 @@ namespace OKEGui
 
         private void OpenInputFile_Click(object sender, RoutedEventArgs e)
         {
-            //C:\Users\youlu\AppData\Local\Programs\bin
             using (var ofd = new OpenFileDialog {
                 Multiselect = true,
                 Filter = "视频文件 (*.*)|*.*"
@@ -812,7 +826,6 @@ namespace OKEGui
                     SelectInputFile.CanSelectNextPage = true;
                 }
             }
-
         }
 
         private void OpenInputFolder_Click(object sender, RoutedEventArgs e)
@@ -862,16 +875,15 @@ namespace OKEGui
             if (container == "MP4") {
                 bool hasFLAC = false;
                 foreach (var audioTrack in wizardInfo.AudioTracks)
-                    if (audioTrack.Format.ToUpper() == "FLAC" && !audioTrack.SkipMuxing) {
+                    if (audioTrack.OutputCodec.ToUpper() == "FLAC" && !audioTrack.SkipMuxing) {
                         hasFLAC = true;
-                        audioTrack.Format = "AAC";
+                        audioTrack.OutputCodec = "AAC";
                         audioTrack.Bitrate = 256;
                     }
                 if (hasFLAC) {
                     System.Windows.MessageBox.Show("格式选择错误！\nMP4不能封装FLAC格式。音频格式将改为AAC。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
                     audio = "AAC";
                 }
-                
             }
 
             wizardInfo.ContainerFormat = container;
@@ -919,7 +931,7 @@ namespace OKEGui
                 System.IO.File.WriteAllText(fileName, vpy);
 
                 var finfo = new System.IO.FileInfo(inputFile);
-                JobDetails td = new JobDetails();
+                TaskDetail td = new TaskDetail();
                 td.TaskName = finfo.Name;
                 if (wizardInfo.TaskNamePrefix != "") {
                     td.TaskName = wizardInfo.TaskNamePrefix + "-" + td.TaskName;

@@ -31,8 +31,8 @@ namespace OKEGui
 
             executable = Path.Combine(Environment.SystemDirectory, "cmd.exe");
 
-            if (File.Exists(job.config.EncoderPath)) {
-                this.x265Path = job.config.EncoderPath;
+            if (File.Exists(job.EncoderPath)) {
+                this.x265Path = job.EncoderPath;
             }
 
             // TODO: Vapoursynth 部分分离出去
@@ -51,7 +51,7 @@ namespace OKEGui
                 this.vspipePath = vspipeInfo.FullName;
             }
 
-            commandLine = BuildCommandline(job.config, extractParam);
+            commandLine = BuildCommandline(extractParam);
         }
 
         public override void ProcessLine(string line, StreamType stream)
@@ -66,7 +66,6 @@ namespace OKEGui
             //}
 
             if (line.ToLowerInvariant().Contains("encoded")) {
-                // TODO
                 Regex rf = new Regex("encoded ([0-9]+) frames in ([0-9]+.[0-9]+)s \\(([0-9]+.[0-9]+) fps\\), ([0-9]+.[0-9]+) kb/s, Avg QP:(([0-9]+.[0-9]+))");
                 var result = rf.Split(line);
                 // 这里是平均速度
@@ -86,9 +85,11 @@ namespace OKEGui
                 return;
             }
 
-            if (!base.setFrameNumber(status[1])) {
+            if (!base.setFrameNumber(status[1], true)) {
                 return;
             }
+
+            base.setBitrate(status[3], "kb/s");
 
             // 由OKE自己进行计算速度
             //if (!base.setSpeed(status[2])) {
@@ -99,7 +100,7 @@ namespace OKEGui
         }
 
         // TODO: 改为静态
-        public /*static*/ string BuildCommandline(JobDetails config, string extractParam)
+        public /*static*/ string BuildCommandline(string extractParam)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -108,13 +109,13 @@ namespace OKEGui
             // 构建vspipe参数
             sb.Append("\"" + vspipePath + "\"");
             sb.Append(" --y4m ");
-            sb.Append("\"" + config.InputScript + "\"");
+            sb.Append("\"" + job.Input + "\"");
             sb.Append(" - | ");
 
             // 构建x265参数
             sb.Append("\"" + x265Path + "\"");
             sb.Append(" --y4m " + extractParam + " -o ");
-            sb.Append("\"" + new FileInfo(config.InputFile).FullName + ".hevc" + "\" -");
+            sb.Append("\"" + job.Output + "\" -");
             sb.Append("\"");
 
             return sb.ToString();

@@ -1,18 +1,4 @@
-// 配置文件 INI格式
-// Demo1.okeproj
-
-//[OKEProject]
-//ProjectVersion = 1
-//ProjectName = Demo1
-//EncoderType = x265
-//Encoder = x265 - 10b.exe
-//EnocderParam = "--crf 19"
-//ContainerFormat = mkv
-//VideoFormat = hevc
-//AudioFormat = flac
-//AudioFormat = aac:128
-//InputScript = demo1.vpy
-//ExtractAudioTrack = true(暂时不使用)
+// Demo Project
 {
     "Version": 2,
     "ProjectName": "Demo2",
@@ -27,13 +13,13 @@
     "AudioTracks": [
         {
             "TrackId": 1,
-            "Format": "aac",
+            "OutputCodec": "aac",
             "Bitrate": 128,
             "ExtraArg": "-adst"
         },
         {
             "TrackId": 0,
-            "Format": "flac",
+            "OutputCodec": "flac",
             "SkipMuxing": true
         }
     ],

@@ -1,11 +1,12 @@
 ﻿namespace OKEGui
 {
-    class AudioJob : Job
+    internal class AudioJob : Job
     {
         public string CutFile;
         public int Delay;
         public string Language;
         public string Name;
+        public int Bitrate;
         private string codecString;
 
         public AudioJob() : base()
@@ -20,7 +21,7 @@
         public override string CodecString
         {
             get {
-                return "";
+                return codecString;
             }
         }
 

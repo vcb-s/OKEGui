@@ -58,7 +58,7 @@ namespace OKEGui
                 return;
             }
 
-            JobDetails item = o as JobDetails;
+            TaskDetail item = o as TaskDetail;
             SubWindow subWin = new SubWindow(item);
             subWin.ShowDialog();
 
@@ -156,7 +156,7 @@ namespace OKEGui
                 return;
             }
 
-            JobDetails item = o as JobDetails;
+            TaskDetail item = o as TaskDetail;
 
             if (item.IsRunning) {
                 System.Windows.MessageBox.Show("无法编辑该任务！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -190,7 +190,7 @@ namespace OKEGui
                 return;
             }
 
-            JobDetails item = o as JobDetails;
+            TaskDetail item = o as TaskDetail;
             if (item.IsRunning) {
                 System.Windows.MessageBox.Show("无法删除该任务！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;

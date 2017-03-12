@@ -117,8 +117,8 @@ namespace OKEGui
                 retrieved.Set();
             } else if (line.Contains("SubSampling")) {
                 //目前还没有要处理subsampling的
-            } else  {
-                MessageBox.Show(line, "好像出问题了，请把这些截图给技术总监");
+            } else {
+                // 未知line
             }
         }
 

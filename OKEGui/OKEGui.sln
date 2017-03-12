@@ -1,12 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OKEGui", "OKEGui\OKEGui.csproj", "{BD980C51-9FCF-483E-BB88-B903952FDDDD}"
-	ProjectSection(ProjectDependencies) = postProject
-		{815ED800-FAA3-4BC4-BCB0-418D04B378EE} = {815ED800-FAA3-4BC4-BCB0-418D04B378EE}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VSWarpper", "VSWarpper\VSWarpper.vcxproj", "{815ED800-FAA3-4BC4-BCB0-418D04B378EE}"
 EndProject

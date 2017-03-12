@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace OKEGui
 {
-    public enum ProcessPriority : int { IDLE = 0, BELOW_NORMAL, NORMAL, ABOVE_NORMAL, HIGH };
+    public enum ProcessPriority : int { IDLE = 0, BELOW_NORMAL, NORMAL, ABOVE_NORMAL, HIGH, PARALLEL };
 
     public enum JobStatus : int { WAITING = 0, PROCESSING, POSTPONED, ERROR, ABORTED, DONE, SKIP, ABORTING };
 
@@ -19,6 +19,62 @@ namespace OKEGui
         public string Input;
         public string Output;
         public List<string> FilesToDelete;
+
+        #region JobStatus
+
+        public string Status
+        {
+            set {
+                if (ts != null) {
+                    ts.CurrentStatus = value;
+                }
+            }
+        }
+
+        public double Progress
+        {
+            set {
+                if (ts != null) {
+                    ts.ProgressValue = value;
+                }
+            }
+        }
+
+        public string Speed
+        {
+            set {
+                if (ts != null) {
+                    ts.Speed = value;
+                }
+            }
+        }
+
+        public TimeSpan TimeRemain
+        {
+            set {
+                if (ts != null) {
+                    ts.TimeRemain = value;
+                }
+            }
+        }
+
+        public string BitRate
+        {
+            set {
+                if (ts != null) {
+                    ts.BitRate = value;
+                }
+            }
+        }
+
+        private TaskStatus ts;
+
+        public void SetUpdate(TaskStatus taskStatus)
+        {
+            ts = taskStatus;
+        }
+
+        #endregion JobStatus
 
         #endregion important details
 

@@ -22,7 +22,7 @@ namespace OKEGui
             ExtractStream,
         }
 
-        public enum TrackType
+        public enum TrackCodec
         {
             Unknown,
             H264_AVC,
@@ -36,11 +36,12 @@ namespace OKEGui
 
         public struct TrackInfo
         {
-            public TrackType Type { get; set; }
+            public TrackCodec Codec { get; set; }
             public int Index { get; set; }
             public string Information { get; set; }
             public string RawOutput { get; set; }
             public string SourceFile { get; set; }
+            public TrackType Type { get; set; }
 
             public string OutFileName
             {
@@ -55,25 +56,28 @@ namespace OKEGui
             public string FileExtension
             {
                 get {
-                    TrackType type = Type;
-                    return "." + s_eacOutputs.Find(val => val.Type == type).FileExtension;
+                    TrackCodec type = Codec;
+                    return "." + s_eacOutputs.Find(val => val.Codec == type).FileExtension;
                 }
             }
         }
 
         private struct EacOutputTrackType
         {
-            public TrackType Type { get; set; }
+            public TrackCodec Codec { get; set; }
             public string RawOutput { get; set; }
             public string FileExtension { get; set; }
             public bool Extract { get; set; }
 
-            public EacOutputTrackType(TrackType type, string rawOutput, string extension, bool extract)
+            public TrackType Type { get; set; }
+
+            public EacOutputTrackType(TrackCodec codec, string rawOutput, string extension, bool extract, TrackType type)
             {
-                Type = type;
+                Codec = codec;
                 RawOutput = rawOutput;
                 FileExtension = extension;
                 Extract = extract;
+                Type = type;
             }
         }
 
@@ -86,17 +90,17 @@ namespace OKEGui
         private string sourceFile;
 
         private static List<EacOutputTrackType> s_eacOutputs = new List<EacOutputTrackType> {
-            new EacOutputTrackType(TrackType.RAW_PCM,    "RAW/PCM",          "flac",    true),
-            new EacOutputTrackType(TrackType.DTSMA,      "DTS Master Audio", "flac",    true),
+            new EacOutputTrackType(TrackCodec.RAW_PCM,    "RAW/PCM",          "flac",    true, TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.DTSMA,      "DTS Master Audio", "flac",    true, TrackType.Audio),
 
-            new EacOutputTrackType(TrackType.TRUEHD_AC3, "TrueHD/AC3",       "thd",     true),
-            new EacOutputTrackType(TrackType.TRUEHD_AC3, "TrueHD",           "thd",     true),
+            new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD/AC3",       "thd",     true, TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD",           "thd",     true, TrackType.Audio),
 
-            new EacOutputTrackType(TrackType.AC3,        "AC3",              "ac3",     true),
+            new EacOutputTrackType(TrackCodec.AC3,        "AC3",              "ac3",     true, TrackType.Audio),
 
-            new EacOutputTrackType(TrackType.H264_AVC,   "h264/AVC",         "h264",    false),
-            new EacOutputTrackType(TrackType.PGS,        "Subtitle (PGS)",   "sup",     true),
-            new EacOutputTrackType(TrackType.Chapter,    "Chapters",         "txt",     true),
+            new EacOutputTrackType(TrackCodec.H264_AVC,   "h264/AVC",         "h264",    false, TrackType.Video),
+            new EacOutputTrackType(TrackCodec.PGS,        "Subtitle (PGS)",   "sup",     true, TrackType.Subtitle),
+            new EacOutputTrackType(TrackCodec.Chapter,    "Chapters",         "txt",     true, TrackType.Chapter),
         };
 
         public EACDemuxer(string eacPath, string fileName)
@@ -192,6 +196,13 @@ namespace OKEGui
             readStream(sr);
         }
 
+        private TrackCodec EacOutputToTrackCodec(string str)
+        {
+            str = str.Trim();
+            EacOutputTrackType outputType = s_eacOutputs.Find(val => val.RawOutput == str);
+            return outputType.Codec;
+        }
+
         private TrackType EacOutputToTrackType(string str)
         {
             str = str.Trim();
@@ -205,26 +216,26 @@ namespace OKEGui
             if (string.IsNullOrEmpty(line)) return;
 
             if (Regex.IsMatch(line, @"^\d*?: .*$")) {
-
                 //原盘没有信息的PGS字幕
                 if (line.Contains("PGS") && !line.Contains(","))
                     line += ", Japanese";
 
                 var match = Regex.Match(line, @"^(\d*?): (.*?), (.*?)$");
-                
+
                 if (match.Groups.Count < 4) {
                     return;
                 }
 
                 var trackInfo = new TrackInfo {
                     Index = Convert.ToInt32(match.Groups[1].Value),
-                    Type = EacOutputToTrackType(match.Groups[2].Value),
+                    Codec = EacOutputToTrackCodec(match.Groups[2].Value),
                     Information = match.Groups[3].Value.Trim(),
                     RawOutput = line,
                     SourceFile = sourceFile,
+                    Type = EacOutputToTrackType(match.Groups[2].Value),
                 };
 
-                if (TrackType.Unknown == trackInfo.Type) {
+                if (TrackCodec.Unknown == trackInfo.Codec) {
                     throw new ArgumentException($"不明类型: {trackInfo.RawOutput}");
                 }
                 tracks.Add(trackInfo);
@@ -236,7 +247,7 @@ namespace OKEGui
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="completedCallback">抽取的轨道，不包含重复轨道；重复轨道文件名带有.bak</param>
-        public List<TrackInfo> Extract(Action<double, EACProgressType> progressCallback)
+        public MediaFile Extract(Action<double, EACProgressType> progressCallback)
         {
             if (!new FileInfo(sourceFile).Exists) {
                 return null;
@@ -250,7 +261,7 @@ namespace OKEGui
             var extractResult = new List<TrackInfo>();
 
             foreach (var track in tracks) {
-                if (!s_eacOutputs.Find(val => val.Type == track.Type).Extract) {
+                if (!s_eacOutputs.Find(val => val.Codec == track.Codec).Extract) {
                     continue;
                 };
 
@@ -293,7 +304,22 @@ namespace OKEGui
                 }
             }
 
-            return extractResult;
+            MediaFile mf = new MediaFile();
+            foreach (var item in extractResult) {
+                if (item.Type == TrackType.Audio) {
+                    mf.AddTrack(AudioTrack.NewTrack(new OKEFile(item.OutFileName)));
+                } else if (item.Type == TrackType.Subtitle) {
+                    mf.AddTrack(SubtitleTrack.NewTrack(new OKEFile(item.OutFileName)));
+                } else if (item.Type == TrackType.Chapter) {
+                    mf.AddTrack(ChapterTrack.NewTrack(new OKEFile(item.OutFileName)));
+                } else if (item.Type == TrackType.Video) {
+                    mf.AddTrack(VideoTrack.NewTrack(new OKEFile(item.OutFileName)));
+                } else {
+                    mf.AddTrack(MediaTrack.NewTrack(new OKEFile(item.OutFileName)));
+                }
+            }
+
+            return mf;
         }
     }
 }
