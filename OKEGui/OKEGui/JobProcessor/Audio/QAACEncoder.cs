@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using OKEGui.Utils;
 
 namespace OKEGui
 {
@@ -23,7 +24,7 @@ namespace OKEGui
         private ManualResetEvent retrieved = new ManualResetEvent(false);
 
         // TODO: 变更编码参数
-        public QAACEncoder(string QAACPath, AudioJob j, int bitrate = 128) : base()
+        public QAACEncoder(string QAACPath, AudioJob j, int bitrate = Constants.QAACBitrate) : base()
         {
             if (j.Input == "-") {
                 // stdin
