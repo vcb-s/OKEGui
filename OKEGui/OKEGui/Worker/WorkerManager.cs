@@ -235,16 +235,22 @@ namespace OKEGui
                     });
 
                 // 新建音频处理工作
+
+                if (srcTracks.AudioTracks.Count != task.AudioTracks.Count)
+                {
+                    new System.Threading.Tasks.Task(() => 
+                        System.Windows.MessageBox.Show($"当前的视频含有轨道数{srcTracks.AudioTracks.Count}，与json中指定的数量{task.AudioTracks.Count}不符合。该文件{task.InputFile}将跳过处理")).Start();
+                    return;
+                }
                 for (int id = 0; id < srcTracks.AudioTracks.Count; id++) {
                     if (task.AudioTracks[id].SkipMuxing) {
                         continue;
                     }
 
-                    // 不是flac不处理
+                    // 只处理flac文件
                     if (srcTracks.AudioTracks[id].file.GetExtension() != ".flac") {
                         continue;
                     }
-
                     AudioJob audioJob = new AudioJob(task.AudioTracks[id].OutputCodec);
                     audioJob.SetUpdate(task);
 
@@ -265,7 +271,6 @@ namespace OKEGui
 
                     task.JobQueue.Enqueue(videoJob);
                 }
-
                 while (task.JobQueue.Count != 0) {
                     Job job = task.JobQueue.Dequeue();
 
@@ -286,7 +291,7 @@ namespace OKEGui
                             AudioJob aEncode = new AudioJob("AAC");
                             aEncode.Input = "-";
                             aEncode.Output = Path.ChangeExtension(audioJob.Input, ".aac");
-                            QAACEncoder qaac = new QAACEncoder(".\\tools\\qaac\\qaac.exe", aEncode, audioJob.Bitrate > 0 ? audioJob.Bitrate : 256);
+                            QAACEncoder qaac = new QAACEncoder(".\\tools\\qaac\\qaac.exe", aEncode, audioJob.Bitrate > 0 ? audioJob.Bitrate : Utils.Constants.QAACBitrate);
 
                             CMDPipeJobProcessor cmdpipe = CMDPipeJobProcessor.NewCMDPipeJobProcessor(flac, qaac);
                             cmdpipe.start();
@@ -307,6 +312,7 @@ namespace OKEGui
 
                         task.MediaOutFile.AddTrack(AudioTrack.NewTrack(new OKEFile(job.Output)));
                     } else if (job is VideoJob) {
+
                         if (job.CodecString == "HEVC") {
                             task.CurrentStatus = "获取信息中";
                             task.IsUnKnowProgress = true;
@@ -345,6 +351,7 @@ namespace OKEGui
 
                     AutoMuxer muxer = new AutoMuxer(mkvInfo.FullName, lsmash.FullName);
                     muxer.ProgressChanged += progress => task.ProgressValue = progress;
+
 
                     muxer.StartMuxing(Path.GetDirectoryName(task.InputFile) + "\\" + task.OutputFile, task.MediaOutFile);
                 }

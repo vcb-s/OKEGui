@@ -30,6 +30,7 @@ namespace OKEGui
             DTSMA,
             TRUEHD_AC3,
             AC3,
+            DTS,
             PGS,
             Chapter,
         }
@@ -97,6 +98,8 @@ namespace OKEGui
             new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD",           "thd",     true, TrackType.Audio),
 
             new EacOutputTrackType(TrackCodec.AC3,        "AC3",              "ac3",     true, TrackType.Audio),
+
+            new EacOutputTrackType(TrackCodec.DTS,        "DTS",              "dts",     true, TrackType.Audio),
 
             new EacOutputTrackType(TrackCodec.H264_AVC,   "h264/AVC",         "h264",    false, TrackType.Video),
             new EacOutputTrackType(TrackCodec.PGS,        "Subtitle (PGS)",   "sup",     true, TrackType.Subtitle),
@@ -167,6 +170,7 @@ namespace OKEGui
                         }
                     }
                 } catch (Exception e) {
+                    System.Windows.MessageBox.Show(e.ToString());
                     throw e;
                 }
             }
@@ -268,7 +272,6 @@ namespace OKEGui
                 args.Add($"{track.Index}:\"{track.OutFileName}\"");
                 extractResult.Add(track);
             }
-
             state = ProcessState.ExtractStream;
             StartEac($"\"{sourceFile}\" {string.Join(" ", args)}", true);
 

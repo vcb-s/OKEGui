@@ -216,7 +216,7 @@ namespace OKEGui
                                 progressMatch = Regex.Match(line, @"Progress: (\d*?)%", RegexOptions.Compiled);
                                 if (progressMatch.Groups.Count < 2) return;
                                 progress = double.Parse(progressMatch.Groups[1].Value);
-                            } else if (line.Contains("Muxing took")) {
+                            } else if (line.Contains("Muxing took") || line.Contains("Multiplexing took")) { //different versions of mkvmerge may return different wordings. Muxing took is the old way.
                                 mre.Set();
                             }
                             break;

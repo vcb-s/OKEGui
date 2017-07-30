@@ -58,7 +58,7 @@
                     </GridViewColumn>
                     <GridViewColumn Header="速度" Width="75" DisplayMemberBinding="{Binding Path=Speed}">
                     </GridViewColumn>
-                    <GridViewColumn Header="码率" Width="75" DisplayMemberBinding="{Binding Path=BitRate}">
+                    <GridViewColumn Header="码率" Width="90" DisplayMemberBinding="{Binding Path=BitRate}">
                     </GridViewColumn>
                     <GridViewColumn Header="剩余时间" Width="75" DisplayMemberBinding="{Binding Path=TimeRemainStr}">
                     </GridViewColumn>
