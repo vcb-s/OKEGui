@@ -303,6 +303,7 @@ namespace OKEGui
             this.StartMerge(input, path);
 
             IFile outFile = new OKEFile(path);
+            outFile.AddCRC32();
 
             return outFile.Exists() ? outFile : null;
         }

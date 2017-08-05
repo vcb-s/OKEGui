@@ -138,6 +138,13 @@ namespace OKEGui
         /// </summary>
         /// <returns></returns>
         bool Exists();
+
+        /// <summary>
+        /// 加上CRC32效验码
+        /// </summary>
+        /// <returns></returns>
+        bool AddCRC32();
+
     }
 
     public class OKEFile : IFile
@@ -297,6 +304,16 @@ namespace OKEGui
         public bool Exists()
         {
             return fi.Exists;
+        }
+
+        public bool AddCRC32()
+        {
+            System.Windows.MessageBox.Show(fi.FullName);
+            byte[] fileInByte = File.ReadAllBytes(fi.FullName);
+            string CRC32Code = Utils.CRC32.ComputeChecksumString(fileInByte);
+            string newName = GetDirectory() + "\\" + GetFileNameWithoutExtension() + " [" + CRC32Code + "]" + GetExtension();
+            System.Windows.MessageBox.Show(newName);
+            return Rename(newName);
         }
     }
 }

@@ -122,6 +122,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Utils\Constants.cs" />
+    <Compile Include="Utils\CRC32.cs" />
     <Compile Include="Utils\VapourSynthHelper.cs" />
     <Compile Include="Utils\WindowsUtil.cs" />
     <Compile Include="Worker\WorkerManager.cs" />
