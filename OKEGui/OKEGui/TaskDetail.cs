@@ -261,6 +261,19 @@ namespace OKEGui
         }
 
         /// <summary>
+        /// 帧率
+        /// </summary>
+        private double fps;
+        public double Fps
+        {
+            get { return fps; }
+            set {
+                fps = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("Fps"));
+            }
+        }
+
+        /// <summary>
         /// 视频编码格式
         /// </summary>
         private string videoFormat;

@@ -148,6 +148,17 @@ namespace OKEGui
                 }
             }
 
+            // 23.976, 29.970,...
+            private double fps;
+            public double Fps
+            {
+                get { return fps; }
+                set {
+                    fps = value;
+                    OnPropertyChanged(new PropertyChangedEventArgs("FPS"));
+                }
+            }
+
             // FLAC, AAC(m4a), "AC3", "ALAC"
             private string audioFormat;
 
@@ -570,6 +581,7 @@ namespace OKEGui
             public string EncoderParam { get; set; }
             public string ContainerFormat { get; set; }
             public string VideoFormat { get; set; }
+            public double Fps { get; set; }
             public List<AudioInfo> AudioTracks { get; set; }
             public string InputScript { get; set; }
             public bool IncludeSub { get; set; }
@@ -584,19 +596,21 @@ namespace OKEGui
             try {
                 okeProj = JsonConvert.DeserializeObject<JsonProfile>(profileStr);
             } catch (Exception e) {
-                System.Windows.MessageBox.Show(e.ToString(), "json文件写错了诶");
+                System.Windows.MessageBox.Show(e.ToString(), "json文件写错了诶", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             DirectoryInfo projDir = new DirectoryInfo(wizardInfo.ProjectFile).Parent;
 
             // 检查参数
             if (okeProj.Version != 2) {
+                System.Windows.MessageBox.Show("这配置文件版本号不匹配当前的OKE", "版本不对",MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
             wizardInfo.TaskNamePrefix = okeProj.ProjectName;
 
             if (okeProj.EncoderType.ToLower() != "x265") {
+                System.Windows.MessageBox.Show("啊，目前只能支持x265编码", "版本不对", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             wizardInfo.EncoderType = okeProj.EncoderType.ToLower();
@@ -606,6 +620,9 @@ namespace OKEGui
             if (encoder.Exists) {
                 wizardInfo.EncoderPath = encoder.FullName;
                 wizardInfo.EncoderInfo = this.GetEncoderInfo(wizardInfo.EncoderPath);
+            } else {
+                System.Windows.MessageBox.Show("编码器好像不在json指定的地方（文件名错误？还有记得放在json文件同目录下）", "找不到编码器啊", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
             }
 
             wizardInfo.EncoderParam = okeProj.EncoderParam;
@@ -625,16 +642,26 @@ namespace OKEGui
             wizardInfo.ContainerFormat = okeProj.ContainerFormat.ToUpper();
             if (wizardInfo.ContainerFormat != "MKV" && wizardInfo.ContainerFormat != "MP4" &&
                 wizardInfo.ContainerFormat != "NULL" && wizardInfo.ContainerFormat != "RAW") {
+                System.Windows.MessageBox.Show("MKV/MP4，只能这两种", "封装格式指定的有问题", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             comboItems[wizardInfo.ContainerFormat].IsSelected = true;
 
             // 设置视频编码
             if (okeProj.VideoFormat.ToUpper() != "HEVC") {
+                System.Windows.MessageBox.Show("现在只能支持HEVC编码", "编码格式不对", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             wizardInfo.VideoFormat = okeProj.VideoFormat.ToUpper();
             comboItems[wizardInfo.VideoFormat].IsSelected = true;
+            
+            // 设置视频帧率
+            wizardInfo.Fps = okeProj.Fps;
+            if (okeProj.Fps <= 0) {
+                System.Windows.MessageBox.Show("现在json文件中需要指定帧率，哪怕 Fps : 23.976","帧率没有指定诶", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+                
 
             if (okeProj.AudioTracks.Count > 0) {
                 // 主音轨
@@ -651,6 +678,7 @@ namespace OKEGui
 
             if (wizardInfo.AudioFormat != "FLAC" && wizardInfo.AudioFormat != "AAC" &&
                 wizardInfo.AudioFormat != "AC3") {
+                System.Windows.MessageBox.Show("音轨只能是FLAC/AAC/AC3", "音轨格式不支持", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             comboItems[wizardInfo.AudioFormat].IsSelected = true;
@@ -663,12 +691,13 @@ namespace OKEGui
             }
 
             // 预览
-            wizardInfo.ProjectPreview += "项目名字: " + wizardInfo.TaskNamePrefix;
+            wizardInfo.ProjectPreview = "项目名字: " + wizardInfo.TaskNamePrefix;
             wizardInfo.ProjectPreview += "\n\n编码器类型: " + wizardInfo.EncoderType;
             wizardInfo.ProjectPreview += "\n编码器路径: \n" + wizardInfo.EncoderPath;
-            wizardInfo.ProjectPreview += "\n编码参数: \n" + wizardInfo.EncoderParam;
+            wizardInfo.ProjectPreview += "\n编码参数: \n" + wizardInfo.EncoderParam.Substring(0,30) + "......";
             wizardInfo.ProjectPreview += "\n\n封装格式: " + wizardInfo.ContainerFormat;
             wizardInfo.ProjectPreview += "\n视频编码: " + wizardInfo.VideoFormat;
+            wizardInfo.ProjectPreview += "\n视频帧率: " + String.Format("{0:0.000} fps", wizardInfo.Fps);
             wizardInfo.ProjectPreview += "\n音频编码(主音轨): " + wizardInfo.AudioFormat;
 
             return true;
@@ -687,7 +716,10 @@ namespace OKEGui
             if (new FileInfo(wizardInfo.ProjectFile).Extension.ToLower() == ".json") {
                 if (!LoadJsonProfile(wizardInfo.ProjectFile)) {
                     // 配置文件无效
-                    System.Windows.MessageBox.Show("无效的配置文件。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
+                    taskWizard.CanSelectNextPage = false;
+                } else
+                {
+                    taskWizard.CanSelectNextPage = true;
                 }
                 return;
             }
@@ -944,6 +976,7 @@ namespace OKEGui
                 td.InputFile = inputFile;
 
                 td.ContainerFormat = wizardInfo.ContainerFormat;
+                td.Fps = wizardInfo.Fps;
                 td.VideoFormat = wizardInfo.VideoFormat;
                 td.AudioFormat = wizardInfo.AudioFormat;
 

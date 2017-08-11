@@ -14,6 +14,7 @@
         private string codecString;
         public string EncoderPath;
         public string EncodeParam;
+        public double Fps;
 
         public VideoJob() : base()
         {

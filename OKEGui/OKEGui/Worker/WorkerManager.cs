@@ -268,6 +268,7 @@ namespace OKEGui
                     videoJob.Output = new FileInfo(task.InputFile).FullName + ".hevc";
                     videoJob.EncoderPath = task.EncoderPath;
                     videoJob.EncodeParam = task.EncoderParam;
+                    videoJob.Fps = task.Fps;
 
                     task.JobQueue.Enqueue(videoJob);
                 }
@@ -324,7 +325,7 @@ namespace OKEGui
                             processor.waitForFinish();
                         }
 
-                        task.MediaOutFile.AddTrack(VideoTrack.NewTrack(new OKEFile(job.Output)));
+                        task.MediaOutFile.AddTrack(VideoTrack.NewTrack(new OKEFile(job.Output), (job as VideoJob).Fps));
                     } else {
                         // 不支持的工作
                     }

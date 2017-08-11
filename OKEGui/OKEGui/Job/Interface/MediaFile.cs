@@ -66,12 +66,13 @@ namespace OKEGui
         public VideoTrack()
         {
             TrackType = TrackType.Video;
+            StreamInfo = new VideoInfo();
         }
 
-        public static new MediaTrack NewTrack(IFile file)
+        public static new MediaTrack NewTrack(IFile file, double fps)
         {
             VideoTrack mt = new VideoTrack();
-            mt.TrackType = TrackType.Video;
+            mt.StreamInfo = new VideoInfo(fps);
             mt.file = file;
 
             return mt;
@@ -90,7 +91,6 @@ namespace OKEGui
         public static new MediaTrack NewTrack(IFile file)
         {
             AudioTrack mt = new AudioTrack();
-            mt.TrackType = TrackType.Audio;
             mt.file = file;
 
             return mt;
@@ -107,7 +107,6 @@ namespace OKEGui
         public static new MediaTrack NewTrack(IFile file)
         {
             SubtitleTrack mt = new SubtitleTrack();
-            mt.TrackType = TrackType.Subtitle;
             mt.file = file;
 
             return mt;
@@ -124,7 +123,6 @@ namespace OKEGui
         public static new MediaTrack NewTrack(IFile file)
         {
             ChapterTrack mt = new ChapterTrack();
-            mt.TrackType = TrackType.Chapter;
             mt.file = file;
 
             return mt;
@@ -133,22 +131,74 @@ namespace OKEGui
 
     public class VideoInfo
     {
-        public ulong Width;
-        public ulong Height;
-        public ulong FrameCount;
-        public double FPS;
+        public uint Width;
+        public uint Height;
+        public uint FrameCount;
+        public uint FpsNum;
+        public uint FpsDen;
 
         public VideoInfo()
         {
         }
 
-        public VideoInfo(ulong width, ulong height,
-            ulong framecount, double fps)
+        public VideoInfo(double fps)
+        {
+            uint fps1000 = (uint)(fps * 1000 + 0.5);
+            switch (fps1000)
+            {
+                case 23976:
+                    FpsNum = 24000;
+                    FpsDen = 1001;
+                    break;
+                case 29970:
+                    FpsNum = 30000;
+                    FpsDen = 1001;
+                    break;
+                case 47952:
+                    FpsNum = 48000;
+                    FpsDen = 1001;
+                    break;
+                case 59940:
+                    FpsNum = 60000;
+                    FpsDen = 1001;
+                    break;
+                default:
+                    FpsNum = fps1000;
+                    FpsDen = 1000;
+                    break;
+            }
+        }
+
+        public VideoInfo(uint width, uint height,
+            uint framecount, double fps)
         {
             Width = width;
             Height = height;
             FrameCount = framecount;
-            FPS = fps;
+            uint fps1000 = (uint) (fps * 1000 + 0.5);
+            switch (fps1000)
+            {
+                case 23976:
+                    FpsNum = 24000;
+                    FpsDen = 1001;
+                    break;
+                case 29970:
+                    FpsNum = 30000;
+                    FpsDen = 1001;
+                    break;
+                case 47952:
+                    FpsNum = 48000;
+                    FpsDen = 1001;
+                    break;
+                case 59940:
+                    FpsNum = 60000;
+                    FpsDen = 1001;
+                    break;
+                default:
+                    FpsNum = fps1000;
+                    FpsDen = 1000;
+                    break;
+            }
         }
     }
 

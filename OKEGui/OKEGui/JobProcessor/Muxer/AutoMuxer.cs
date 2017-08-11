@@ -267,7 +267,7 @@ namespace OKEGui
         public void StartMerge(
             List<string> inputFileNames,
             string outputFileName,
-            string videoFps = "24000/1001",
+            string videoFps,
             string audioLanguage = "jpn",
             string subtitleLanguage = "jpn"
         )
@@ -292,15 +292,22 @@ namespace OKEGui
         public IFile StartMuxing(string path, MediaFile mediaFile)
         {
             List<string> input = new List<string>();
+            string videoFps = "";
 
             foreach (var track in mediaFile.Tracks) {
                 if (track.IsDisable) {
                     continue;
                 }
+                if (track is VideoTrack)
+                {
+                    VideoTrack _track = track as VideoTrack;
+                    videoFps = $"{_track.StreamInfo.FpsNum}/{_track.StreamInfo.FpsDen}";
+                }
+                    
                 input.Add(track.file.GetFullPath());
             }
 
-            this.StartMerge(input, path);
+            this.StartMerge(input, path, videoFps);
 
             IFile outFile = new OKEFile(path);
             outFile.AddCRC32();
