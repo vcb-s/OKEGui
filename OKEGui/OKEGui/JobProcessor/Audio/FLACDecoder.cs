@@ -32,7 +32,7 @@ namespace OKEGui
             }
 
             if (Path.GetExtension(j.Input) == ".flac") {
-                commandLine += j.Input;
+                commandLine += $"\"{j.Input}\"";
             }
 
             executable = FlacPath;

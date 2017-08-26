@@ -161,16 +161,16 @@ namespace OKEGui
 
             if (episode.ChapterFile != null) parameters.Add($"--chapter \"{episode.ChapterFile}\"");
 
-            parameters.Add($"-i {episode.VideoFile}?fps={episode.VideoFps}");
+            parameters.Add($"-i \"{episode.VideoFile}\"?fps={episode.VideoFps}");
 
             foreach (var audioFile in episode.AudioFiles) {
                 FileInfo ainfo = new FileInfo(audioFile);
                 if (ainfo.Extension.ToLower() == ".aac" || ainfo.Extension.ToLower() == ".m4a" || ainfo.Extension.ToLower() == ".ac3") {
-                    parameters.Add($"-i {audioFile}?language={episode.AudioLanguage}");
+                    parameters.Add($"-i \"{audioFile}\"?language={episode.AudioLanguage}");
                 }
             }
 
-            parameters.Add($"-o {episode.OutputFile}");
+            parameters.Add($"-o \"{episode.OutputFile}\"");
 
             return string.Join(" ", parameters);
         }

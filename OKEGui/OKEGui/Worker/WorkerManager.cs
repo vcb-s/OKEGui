@@ -100,7 +100,6 @@ namespace OKEGui
             args.bgWorker = worker;
 
             worker.RunWorkerAsync(args);
-
             return true;
         }
 
@@ -119,7 +118,7 @@ namespace OKEGui
 
             lock (o) {
                 workerList.Add(name);
-                Debug.Assert(workerType.TryAdd(name, WorkerType.Temporary));
+                workerType.TryAdd(name, WorkerType.Temporary);
             }
 
             if (isRunning) {
@@ -138,7 +137,7 @@ namespace OKEGui
                 }
 
                 workerList.Add(name);
-                Debug.Assert(workerType.TryAdd(name, WorkerType.Normal));
+                workerType.TryAdd(name, WorkerType.Normal);
             }
 
             if (isRunning) {

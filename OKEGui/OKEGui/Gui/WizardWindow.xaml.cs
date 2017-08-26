@@ -694,7 +694,7 @@ namespace OKEGui
             wizardInfo.ProjectPreview = "项目名字: " + wizardInfo.TaskNamePrefix;
             wizardInfo.ProjectPreview += "\n\n编码器类型: " + wizardInfo.EncoderType;
             wizardInfo.ProjectPreview += "\n编码器路径: \n" + wizardInfo.EncoderPath;
-            wizardInfo.ProjectPreview += "\n编码参数: \n" + wizardInfo.EncoderParam.Substring(0,30) + "......";
+            wizardInfo.ProjectPreview += "\n编码参数: \n" + wizardInfo.EncoderParam.Substring(0, Math.Min(30, wizardInfo.EncoderParam.Length-1)) + "......";
             wizardInfo.ProjectPreview += "\n\n封装格式: " + wizardInfo.ContainerFormat;
             wizardInfo.ProjectPreview += "\n视频编码: " + wizardInfo.VideoFormat;
             wizardInfo.ProjectPreview += "\n视频帧率: " + String.Format("{0:0.000} fps", wizardInfo.Fps);

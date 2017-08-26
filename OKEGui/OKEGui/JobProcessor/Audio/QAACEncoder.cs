@@ -26,12 +26,12 @@ namespace OKEGui
         // TODO: 变更编码参数
         public QAACEncoder(string QAACPath, AudioJob j, int bitrate = Constants.QAACBitrate) : base()
         {
-            if (j.Input == "-") {
-                // stdin
+            if (j.Input != "-") { //not from stdin, but an actual file
+                j.Input = $"\"{j.Input}\"";
             }
 
             executable = QAACPath;
-            commandLine = "-i -v " + bitrate + " -q 2 --no-delay -o " + j.Output + " " + j.Input;
+            commandLine = $"-i -v {bitrate} -q 2 --no-delay -o \"{j.Output}\" {j.Input}";
         }
 
         public override void ProcessLine(string line, StreamType stream)
