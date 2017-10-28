@@ -15,6 +15,8 @@
         public string EncoderPath;
         public string EncodeParam;
         public double Fps;
+        public uint FpsNum;
+        public uint FpsDen;
 
         public VideoJob() : base()
         {

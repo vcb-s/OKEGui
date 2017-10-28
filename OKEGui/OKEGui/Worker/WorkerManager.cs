@@ -52,15 +52,19 @@ namespace OKEGui
 
         public bool Start()
         {
-            lock (o) {
-                if (workerList.Count == 0) {
+            lock (o)
+            {
+                if (workerList.Count == 0)
+                {
                     return false;
                 }
 
                 isRunning = true;
 
-                foreach (string worker in workerList) {
-                    if (bgworkerlist.ContainsKey(worker)) {
+                foreach (string worker in workerList)
+                {
+                    if (bgworkerlist.ContainsKey(worker))
+                    {
                         BackgroundWorker bg;
                         bgworkerlist.TryRemove(worker, out bg);
                     }
@@ -87,7 +91,8 @@ namespace OKEGui
 
         public bool StartWorker(string name)
         {
-            if (!bgworkerlist.ContainsKey(name)) {
+            if (!bgworkerlist.ContainsKey(name))
+            {
                 return false;
             }
 
@@ -105,7 +110,8 @@ namespace OKEGui
 
         public int GetWorkerCount()
         {
-            lock (o) {
+            lock (o)
+            {
                 return workerList.Count;
             }
         }
@@ -116,12 +122,14 @@ namespace OKEGui
             tempCounter++;
             string name = "Temp-" + tempCounter.ToString();
 
-            lock (o) {
+            lock (o)
+            {
                 workerList.Add(name);
                 workerType.TryAdd(name, WorkerType.Temporary);
             }
 
-            if (isRunning) {
+            if (isRunning)
+            {
                 CreateWorker(name);
                 StartWorker(name);
             }
@@ -131,8 +139,10 @@ namespace OKEGui
 
         public bool AddWorker(string name)
         {
-            lock (o) {
-                if (workerList.Contains(name)) {
+            lock (o)
+            {
+                if (workerList.Contains(name))
+                {
                     return false;
                 }
 
@@ -140,7 +150,8 @@ namespace OKEGui
                 workerType.TryAdd(name, WorkerType.Normal);
             }
 
-            if (isRunning) {
+            if (isRunning)
+            {
                 CreateWorker(name);
                 StartWorker(name);
             }
@@ -150,11 +161,13 @@ namespace OKEGui
 
         public bool DeleteWorker(string name)
         {
-            if (isRunning) {
+            if (isRunning)
+            {
                 return false;
             }
 
-            lock (o) {
+            lock (o)
+            {
                 BackgroundWorker v;
                 bgworkerlist.TryRemove(name, out v);
 
@@ -170,8 +183,10 @@ namespace OKEGui
             // TODO
             isRunning = false;
 
-            if (bgworkerlist.ContainsKey(name)) {
-                if (bgworkerlist[name].IsBusy) {
+            if (bgworkerlist.ContainsKey(name))
+            {
+                if (bgworkerlist[name].IsBusy)
+                {
                     bgworkerlist[name].CancelAsync();
                 }
             }
@@ -181,18 +196,23 @@ namespace OKEGui
         {
             WorkerArgs args = (WorkerArgs)e.Argument;
 
-            while (isRunning) {
+            while (isRunning)
+            {
                 TaskDetail task = args.taskManager.GetNextTask();
 
                 // 检查是否已经完成全部任务
-                if (task == null) {
+                if (task == null)
+                {
                     // 全部工作完成
-                    lock (o) {
+                    lock (o)
+                    {
                         BackgroundWorker v;
                         bgworkerlist.TryRemove(args.Name, out v);
 
-                        if (bgworkerlist.Count == 0 && workerType.Count == 0) {
-                            if (AfterFinish != null) {
+                        if (bgworkerlist.Count == 0 && workerType.Count == 0)
+                        {
+                            if (AfterFinish != null)
+                            {
                                 AfterFinish();
                             }
                         }
@@ -207,12 +227,15 @@ namespace OKEGui
                 // 新建工作
                 // 抽取音轨
                 FileInfo eacInfo = new FileInfo(".\\tools\\eac3to\\eac3to.exe");
-                if (!eacInfo.Exists) {
+                if (!eacInfo.Exists)
+                {
                     throw new Exception("Eac3to 不存在");
                 }
                 MediaFile srcTracks = new EACDemuxer(eacInfo.FullName, task.InputFile).Extract(
-                    (double progress, EACProgressType type) => {
-                        switch (type) {
+                    (double progress, EACProgressType type) =>
+                    {
+                        switch (type)
+                        {
                             case EACProgressType.Analyze:
                                 task.CurrentStatus = "轨道分析中";
                                 task.ProgressValue = progress;
@@ -234,20 +257,23 @@ namespace OKEGui
                     });
 
                 // 新建音频处理工作
-
                 if (srcTracks.AudioTracks.Count != task.AudioTracks.Count)
                 {
-                    new System.Threading.Tasks.Task(() => 
+                    new System.Threading.Tasks.Task(() =>
                         System.Windows.MessageBox.Show($"当前的视频含有轨道数{srcTracks.AudioTracks.Count}，与json中指定的数量{task.AudioTracks.Count}不符合。该文件{task.InputFile}将跳过处理")).Start();
                     return;
                 }
-                for (int id = 0; id < srcTracks.AudioTracks.Count; id++) {
-                    if (task.AudioTracks[id].SkipMuxing) {
+
+                for (int id = 0; id < srcTracks.AudioTracks.Count; id++)
+                {
+                    if (task.AudioTracks[id].SkipMuxing)
+                    {
                         continue;
                     }
 
                     // 只处理flac文件
-                    if (srcTracks.AudioTracks[id].file.GetExtension() != ".flac") {
+                    if (srcTracks.AudioTracks[id].file.GetExtension() != ".flac")
+                    {
                         continue;
                     }
                     AudioJob audioJob = new AudioJob(task.AudioTracks[id].OutputCodec);
@@ -259,7 +285,8 @@ namespace OKEGui
                 }
 
                 // 新建视频处理工作
-                if (task.VideoFormat == "HEVC") {
+                if (task.VideoFormat == "HEVC")
+                {
                     VideoJob videoJob = new VideoJob(task.VideoFormat);
                     videoJob.SetUpdate(task);
 
@@ -271,16 +298,21 @@ namespace OKEGui
 
                     task.JobQueue.Enqueue(videoJob);
                 }
-                while (task.JobQueue.Count != 0) {
+                while (task.JobQueue.Count != 0)
+                {
                     Job job = task.JobQueue.Dequeue();
 
-                    if (job is AudioJob) {
+                    if (job is AudioJob)
+                    {
                         AudioJob audioJob = job as AudioJob;
                         if (audioJob.CodecString == "FLAC" ||
-                            audioJob.CodecString == "AUTO") {
+                            audioJob.CodecString == "AUTO")
+                        {
                             // 跳过当前轨道
                             audioJob.Output = audioJob.Input;
-                        } else if (audioJob.CodecString == "AAC") {
+                        }
+                        else if (audioJob.CodecString == "AAC")
+                        {
                             task.CurrentStatus = "音频转码中";
                             task.IsUnKnowProgress = true;
                             AudioJob aDecode = new AudioJob("WAV");
@@ -298,60 +330,77 @@ namespace OKEGui
                             cmdpipe.waitForFinish();
 
                             audioJob.Output = aEncode.Output;
-                        } else {
+                        }
+                        else
+                        {
                             // 未支持格式
                             audioJob.Output = audioJob.Input;
                         }
 
                         var audioFileInfo = new FileInfo(audioJob.Output);
-                        if (audioFileInfo.Length < 1024) {
+                        if (audioFileInfo.Length < 1024)
+                        {
                             // 无效音轨
                             File.Move(audioJob.Output, Path.ChangeExtension(audioJob.Output, ".bak") + audioFileInfo.Extension);
                             continue;
                         }
 
                         task.MediaOutFile.AddTrack(AudioTrack.NewTrack(new OKEFile(job.Output)));
-                    } else if (job is VideoJob) {
+                    }
+                    else if (job is VideoJob)
+                    {
+                        if (job.CodecString == "HEVC")
+                        {
+                            try
+                            {
+                                task.CurrentStatus = "获取信息中";
+                                task.IsUnKnowProgress = true;
+                                IJobProcessor processor = x265Encoder.init(job, task.EncoderParam);
 
-                        if (job.CodecString == "HEVC") {
-                            task.CurrentStatus = "获取信息中";
-                            task.IsUnKnowProgress = true;
-                            IJobProcessor processor = x265Encoder.init(job, task.EncoderParam);
-
-                            task.CurrentStatus = "压制中";
-                            task.ProgressValue = 0.0;
-                            processor.start();
-                            processor.waitForFinish();
+                                task.CurrentStatus = "压制中";
+                                task.ProgressValue = 0.0;
+                                processor.start();
+                                processor.waitForFinish();
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Windows.MessageBox.Show(ex.Message, "x265编码任务错误");
+                            }
                         }
 
                         task.MediaOutFile.AddTrack(VideoTrack.NewTrack(new OKEFile(job.Output), (job as VideoJob).Fps));
-                    } else {
+                    }
+                    else
+                    {
                         // 不支持的工作
                     }
                 }
 
                 // 添加章节文件
                 FileInfo txtChapter = new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
-                if (txtChapter.Exists) {
+                if (txtChapter.Exists)
+                {
                     task.MediaOutFile.AddTrack(ChapterTrack.NewTrack(new OKEFile(txtChapter)));
                 }
 
                 // 封装
-                if (task.ContainerFormat != "") {
+                if (task.ContainerFormat != "")
+                {
                     task.CurrentStatus = "封装中";
                     FileInfo mkvInfo = new FileInfo(".\\tools\\mkvtoolnix\\mkvmerge.exe");
-                    if (!mkvInfo.Exists) {
+                    if (!mkvInfo.Exists)
+                    {
                         throw new Exception("mkvmerge不存在");
                     }
 
                     FileInfo lsmash = new FileInfo(".\\tools\\l-smash\\muxer.exe");
-                    if (!lsmash.Exists) {
+                    if (!lsmash.Exists)
+                    {
                         throw new Exception("l-smash 封装工具不存在");
                     }
 
                     AutoMuxer muxer = new AutoMuxer(mkvInfo.FullName, lsmash.FullName);
                     muxer.ProgressChanged += progress => task.ProgressValue = progress;
-
 
                     muxer.StartMuxing(Path.GetDirectoryName(task.InputFile) + "\\" + task.OutputFile, task.MediaOutFile);
                 }

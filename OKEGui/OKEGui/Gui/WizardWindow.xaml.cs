@@ -104,7 +104,8 @@ namespace OKEGui
             public ObservableCollection<string> InputFile
             {
                 get {
-                    if (inputFile == null) {
+                    if (inputFile == null)
+                    {
                         inputFile = new ObservableCollection<string>();
                     }
 
@@ -148,8 +149,12 @@ namespace OKEGui
                 }
             }
 
+            public uint fpsNum;
+            public uint fpsDen;
+
             // 23.976, 29.970,...
             private double fps;
+
             public double Fps
             {
                 get { return fps; }
@@ -188,7 +193,8 @@ namespace OKEGui
             public ObservableCollection<AudioInfo> AudioTracks
             {
                 get {
-                    if (audioTracks == null) {
+                    if (audioTracks == null)
+                    {
                         audioTracks = new ObservableCollection<AudioInfo>();
                     }
 
@@ -278,13 +284,17 @@ namespace OKEGui
                 // 判断文件是否存在
                 FileInfo fileInfo = new FileInfo(AFileName);
                 //Todo:搞清枚举的用法
-                if ((!fileInfo.Exists)) { //|| (FileAttributes.Directory in fileInfo.Attributes))
-                                          //文件不存在，建立文件
+                if ((!fileInfo.Exists))
+                { //|| (FileAttributes.Directory in fileInfo.Attributes))
+                  //文件不存在，建立文件
                     System.IO.StreamWriter sw = new System.IO.StreamWriter(AFileName, false, System.Text.Encoding.Default);
-                    try {
+                    try
+                    {
                         sw.Write("#表格配置档案");
                         sw.Close();
-                    } catch {
+                    }
+                    catch
+                    {
                         throw (new ApplicationException("Ini文件不存在"));
                     }
                 }
@@ -295,7 +305,8 @@ namespace OKEGui
             //写INI文件
             public void WriteString(string Section, string Key, string Value)
             {
-                if (!WritePrivateProfileString(Section, Key, Value, FileName)) {
+                if (!WritePrivateProfileString(Section, Key, Value, FileName))
+                {
                     throw (new ApplicationException("写Ini文件出错"));
                 }
             }
@@ -315,9 +326,12 @@ namespace OKEGui
             public int ReadInteger(string Section, string Key, int Default)
             {
                 string intStr = ReadString(Section, Key, Convert.ToString(Default));
-                try {
+                try
+                {
                     return Convert.ToInt32(intStr);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     Console.WriteLine(ex.Message);
                     return Default;
                 }
@@ -332,9 +346,12 @@ namespace OKEGui
             //读布尔
             public bool ReadBool(string Section, string Key, bool Default)
             {
-                try {
+                try
+                {
                     return Convert.ToBoolean(ReadString(Section, Key, Convert.ToString(Default)));
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     Console.WriteLine(ex.Message);
                     return Default;
                 }
@@ -361,10 +378,13 @@ namespace OKEGui
             private void GetStringsFromBuffer(Byte[] Buffer, int bufLen, StringCollection Strings)
             {
                 Strings.Clear();
-                if (bufLen != 0) {
+                if (bufLen != 0)
+                {
                     int start = 0;
-                    for (int i = 0; i < bufLen; i++) {
-                        if ((Buffer[i] == 0) && ((i - start) > 0)) {
+                    for (int i = 0; i < bufLen; i++)
+                    {
+                        if ((Buffer[i] == 0) && ((i - start) > 0))
+                        {
                             String s = Encoding.GetEncoding(0).GetString(Buffer, start, i - start);
                             Strings.Add(s);
                             start = i + 1;
@@ -390,7 +410,8 @@ namespace OKEGui
                 StringCollection KeyList = new StringCollection();
                 ReadSection(Section, KeyList);
                 Values.Clear();
-                foreach (string key in KeyList) {
+                foreach (string key in KeyList)
+                {
                     Values.Add(key, ReadString(Section, key, ""));
                 }
             }
@@ -414,7 +435,8 @@ namespace OKEGui
             public void EraseSection(string Section)
             {
                 //
-                if (!WritePrivateProfileString(Section, null, null, FileName)) {
+                if (!WritePrivateProfileString(Section, null, null, FileName))
+                {
                     throw (new ApplicationException("无法清除Ini文件中的Section"));
                 }
             }
@@ -471,7 +493,8 @@ namespace OKEGui
             DirectoryInfo projDir = new DirectoryInfo(wizardInfo.ProjectFile).Parent;
 
             wizardInfo.ConfigVersion = okeproj.ReadInteger("OKEProject", "ProjectVersion", 0);
-            if (wizardInfo.ConfigVersion < 1) {
+            if (wizardInfo.ConfigVersion < 1)
+            {
                 System.Windows.MessageBox.Show("无效的配置文件。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
@@ -479,14 +502,16 @@ namespace OKEGui
             wizardInfo.TaskNamePrefix = okeproj.ReadString("OKEProject", "ProjectName", "");
 
             wizardInfo.EncoderType = okeproj.ReadString("OKEProject", "EncoderType", "").ToLower();
-            if (wizardInfo.EncoderType != "x265") {
+            if (wizardInfo.EncoderType != "x265")
+            {
                 System.Windows.MessageBox.Show("目前只支持x265编码器。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
             // 获取编码器全路径
             FileInfo encoder = new FileInfo(projDir.FullName + "\\" + okeproj.ReadString("OKEProject", "Encoder", ""));
-            if (encoder.Exists) {
+            if (encoder.Exists)
+            {
                 wizardInfo.EncoderPath = encoder.FullName;
                 wizardInfo.EncoderInfo = this.GetEncoderInfo(wizardInfo.EncoderPath);
             }
@@ -504,14 +529,16 @@ namespace OKEGui
 
             wizardInfo.ContainerFormat = okeproj.ReadString("OKEProject", "ContainerFormat", "").ToLower();
             if (wizardInfo.ContainerFormat != "mkv" && wizardInfo.ContainerFormat != "mp4" &&
-                wizardInfo.ContainerFormat != "null") {
+                wizardInfo.ContainerFormat != "null")
+            {
                 System.Windows.MessageBox.Show("封装格式不正确。只支持mkv，mp4,或者无封装", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             comboItems[wizardInfo.ContainerFormat.ToUpper()].IsSelected = true;
 
             wizardInfo.VideoFormat = okeproj.ReadString("OKEProject", "VideoFormat", "").ToUpper();
-            if (wizardInfo.VideoFormat != "HEVC") {
+            if (wizardInfo.VideoFormat != "HEVC")
+            {
                 System.Windows.MessageBox.Show("目前只支持HEVC编码。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
@@ -520,15 +547,18 @@ namespace OKEGui
             wizardInfo.AudioFormat = okeproj.ReadString("OKEProject", "AudioFormat", "").ToUpper();
             wizardInfo.AudioBitrate = 128;
             var audioParam = wizardInfo.AudioFormat.Split(':');
-            if (audioParam.Length == 2) {
+            if (audioParam.Length == 2)
+            {
                 int bitrate = 0;
-                if (int.TryParse(audioParam[1], out bitrate)) {
+                if (int.TryParse(audioParam[1], out bitrate))
+                {
                     wizardInfo.AudioBitrate = bitrate == 0 ? 128 : bitrate;
                 }
             }
 
             if (wizardInfo.AudioFormat != "FLAC" && wizardInfo.AudioFormat != "AAC" &&
-                wizardInfo.AudioFormat != "ALAC") {
+                wizardInfo.AudioFormat != "ALAC")
+            {
                 System.Windows.MessageBox.Show("音频编码格式不支持。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
@@ -536,7 +566,8 @@ namespace OKEGui
 
             var scriptFile = new FileInfo(projDir.FullName + "\\" + okeproj.ReadString("OKEProject", "InputScript", ""));
 
-            if (scriptFile.Exists) {
+            if (scriptFile.Exists)
+            {
                 wizardInfo.InputScript = scriptFile.FullName;
                 wizardInfo.VSScript = File.ReadAllText(wizardInfo.InputScript);
             }
@@ -582,6 +613,8 @@ namespace OKEGui
             public string ContainerFormat { get; set; }
             public string VideoFormat { get; set; }
             public double Fps { get; set; }
+            public uint FpsNum { get; set; }
+            public uint FpsDen { get; set; }
             public List<AudioInfo> AudioTracks { get; set; }
             public string InputScript { get; set; }
             public bool IncludeSub { get; set; }
@@ -593,23 +626,28 @@ namespace OKEGui
             // TODO: FLAC -> lossless(auto)
             string profileStr = File.ReadAllText(profile);
             JsonProfile okeProj;
-            try {
+            try
+            {
                 okeProj = JsonConvert.DeserializeObject<JsonProfile>(profileStr);
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 System.Windows.MessageBox.Show(e.ToString(), "json文件写错了诶", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             DirectoryInfo projDir = new DirectoryInfo(wizardInfo.ProjectFile).Parent;
 
             // 检查参数
-            if (okeProj.Version != 2) {
-                System.Windows.MessageBox.Show("这配置文件版本号不匹配当前的OKE", "版本不对",MessageBoxButton.OK, MessageBoxImage.Error);
+            if (okeProj.Version != 2)
+            {
+                System.Windows.MessageBox.Show("这配置文件版本号不匹配当前的OKE", "版本不对", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
             wizardInfo.TaskNamePrefix = okeProj.ProjectName;
 
-            if (okeProj.EncoderType.ToLower() != "x265") {
+            if (okeProj.EncoderType.ToLower() != "x265")
+            {
                 System.Windows.MessageBox.Show("啊，目前只能支持x265编码", "版本不对", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
@@ -617,10 +655,13 @@ namespace OKEGui
 
             // 获取编码器全路径
             FileInfo encoder = new FileInfo(projDir.FullName + "\\" + okeProj.Encoder);
-            if (encoder.Exists) {
+            if (encoder.Exists)
+            {
                 wizardInfo.EncoderPath = encoder.FullName;
                 wizardInfo.EncoderInfo = this.GetEncoderInfo(wizardInfo.EncoderPath);
-            } else {
+            }
+            else
+            {
                 System.Windows.MessageBox.Show("编码器好像不在json指定的地方（文件名错误？还有记得放在json文件同目录下）", "找不到编码器啊", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
@@ -641,35 +682,51 @@ namespace OKEGui
             // 设置封装格式
             wizardInfo.ContainerFormat = okeProj.ContainerFormat.ToUpper();
             if (wizardInfo.ContainerFormat != "MKV" && wizardInfo.ContainerFormat != "MP4" &&
-                wizardInfo.ContainerFormat != "NULL" && wizardInfo.ContainerFormat != "RAW") {
+                wizardInfo.ContainerFormat != "NULL" && wizardInfo.ContainerFormat != "RAW")
+            {
                 System.Windows.MessageBox.Show("MKV/MP4，只能这两种", "封装格式指定的有问题", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             comboItems[wizardInfo.ContainerFormat].IsSelected = true;
 
             // 设置视频编码
-            if (okeProj.VideoFormat.ToUpper() != "HEVC") {
+            if (okeProj.VideoFormat.ToUpper() != "HEVC")
+            {
                 System.Windows.MessageBox.Show("现在只能支持HEVC编码", "编码格式不对", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             wizardInfo.VideoFormat = okeProj.VideoFormat.ToUpper();
             comboItems[wizardInfo.VideoFormat].IsSelected = true;
-            
+
             // 设置视频帧率
             wizardInfo.Fps = okeProj.Fps;
-            if (okeProj.Fps <= 0) {
-                System.Windows.MessageBox.Show("现在json文件中需要指定帧率，哪怕 Fps : 23.976","帧率没有指定诶", MessageBoxButton.OK, MessageBoxImage.Error);
+            if (okeProj.Fps <= 0)
+            {
+                if (okeProj.Fps <= 0)
+                {
+                    if (okeProj.FpsNum <= 0 || okeProj.FpsDen <= 0)
+                    {
+                        System.Windows.MessageBox.Show("现在json文件中需要指定帧率，哪怕 Fps : 23.976", "帧率没有指定诶", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return false;
+                    }
+
+                    wizardInfo.fpsNum = okeProj.FpsNum;
+                    wizardInfo.fpsDen = okeProj.FpsDen;
+                    wizardInfo.Fps = okeProj.FpsNum / okeProj.FpsDen;
+                }
+
                 return false;
             }
-                
 
-            if (okeProj.AudioTracks.Count > 0) {
+            if (okeProj.AudioTracks.Count > 0)
+            {
                 // 主音轨
                 wizardInfo.AudioFormat = okeProj.AudioTracks[0].OutputCodec.ToUpper();
                 wizardInfo.AudioBitrate = okeProj.AudioTracks[0].Bitrate;
 
                 // 添加音频参数到任务里面
-                foreach (var track in okeProj.AudioTracks) {
+                foreach (var track in okeProj.AudioTracks)
+                {
                     AudioJob audioJob = new AudioJob(track.OutputCodec);
 
                     wizardInfo.AudioTracks.Add(track);
@@ -677,7 +734,8 @@ namespace OKEGui
             }
 
             if (wizardInfo.AudioFormat != "FLAC" && wizardInfo.AudioFormat != "AAC" &&
-                wizardInfo.AudioFormat != "AC3") {
+                wizardInfo.AudioFormat != "AC3")
+            {
                 System.Windows.MessageBox.Show("音轨只能是FLAC/AAC/AC3", "音轨格式不支持", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
@@ -685,7 +743,8 @@ namespace OKEGui
 
             var scriptFile = new FileInfo(projDir.FullName + "\\" + okeProj.InputScript);
 
-            if (scriptFile.Exists) {
+            if (scriptFile.Exists)
+            {
                 wizardInfo.InputScript = scriptFile.FullName;
                 wizardInfo.VSScript = File.ReadAllText(wizardInfo.InputScript);
             }
@@ -694,7 +753,7 @@ namespace OKEGui
             wizardInfo.ProjectPreview = "项目名字: " + wizardInfo.TaskNamePrefix;
             wizardInfo.ProjectPreview += "\n\n编码器类型: " + wizardInfo.EncoderType;
             wizardInfo.ProjectPreview += "\n编码器路径: \n" + wizardInfo.EncoderPath;
-            wizardInfo.ProjectPreview += "\n编码参数: \n" + wizardInfo.EncoderParam.Substring(0, Math.Min(30, wizardInfo.EncoderParam.Length-1)) + "......";
+            wizardInfo.ProjectPreview += "\n编码参数: \n" + wizardInfo.EncoderParam.Substring(0, Math.Min(30, wizardInfo.EncoderParam.Length - 1)) + "......";
             wizardInfo.ProjectPreview += "\n\n封装格式: " + wizardInfo.ContainerFormat;
             wizardInfo.ProjectPreview += "\n视频编码: " + wizardInfo.VideoFormat;
             wizardInfo.ProjectPreview += "\n视频帧率: " + String.Format("{0:0.000} fps", wizardInfo.Fps);
@@ -708,16 +767,20 @@ namespace OKEGui
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "OKEGui 项目文件 (*.okeproj, *.json)|*.okeproj;*.json";
             var result = ofd.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.Cancel) {
+            if (result == System.Windows.Forms.DialogResult.Cancel)
+            {
                 return;
             }
 
             wizardInfo.ProjectFile = ofd.FileName;
-            if (new FileInfo(wizardInfo.ProjectFile).Extension.ToLower() == ".json") {
-                if (!LoadJsonProfile(wizardInfo.ProjectFile)) {
+            if (new FileInfo(wizardInfo.ProjectFile).Extension.ToLower() == ".json")
+            {
+                if (!LoadJsonProfile(wizardInfo.ProjectFile))
+                {
                     // 配置文件无效
                     taskWizard.CanSelectNextPage = false;
-                } else
+                }
+                else
                 {
                     taskWizard.CanSelectNextPage = true;
                 }
@@ -732,7 +795,8 @@ namespace OKEGui
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "VapourSynth脚本 (*.vpy)|*.vpy";
             var result = ofd.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.Cancel) {
+            if (result == System.Windows.Forms.DialogResult.Cancel)
+            {
                 return;
             }
 
@@ -756,9 +820,12 @@ namespace OKEGui
             pstart.UseShellExecute = false;
             proc.StartInfo = pstart;
             proc.EnableRaisingEvents = true;
-            try {
+            try
+            {
                 bool started = proc.Start();
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 throw e;
             }
 
@@ -766,10 +833,13 @@ namespace OKEGui
 
             StreamReader sr = null;
             string line = "";
-            try {
+            try
+            {
                 sr = proc.StandardError;
                 line = sr.ReadToEnd();
-            } catch (Exception) {
+            }
+            catch (Exception)
+            {
                 throw;
             }
 
@@ -778,7 +848,8 @@ namespace OKEGui
 
         private void SelectEncoder_Loaded(object sender, RoutedEventArgs e)
         {
-            if (wizardInfo.EncoderPath != "") {
+            if (wizardInfo.EncoderPath != "")
+            {
                 SelectEncoder.CanSelectNextPage = true;
             }
         }
@@ -788,7 +859,8 @@ namespace OKEGui
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "视频编码器 (*.exe)|*.exe";
             var result = ofd.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.Cancel) {
+            if (result == System.Windows.Forms.DialogResult.Cancel)
+            {
                 return;
             }
 
@@ -804,26 +876,34 @@ namespace OKEGui
             System.IO.DirectoryInfo[] subDirs = null;
 
             // First, process all the files directly under this folder
-            try {
+            try
+            {
                 files = root.GetFiles("*.*");
             }
             // This is thrown if even one of the files requires permissions greater
             // than the application provides.
-            catch (UnauthorizedAccessException e) {
+            catch (UnauthorizedAccessException e)
+            {
                 // log.Add(e.Message);
-            } catch (System.IO.DirectoryNotFoundException e) {
+            }
+            catch (System.IO.DirectoryNotFoundException e)
+            {
                 // Console.WriteLine(e.Message);
             }
 
-            if (files != null) {
-                foreach (System.IO.FileInfo fi in files) {
+            if (files != null)
+            {
+                foreach (System.IO.FileInfo fi in files)
+                {
                     func(fi);
                 }
 
-                if (IsSearchSubDir) {
+                if (IsSearchSubDir)
+                {
                     // 搜索子目录
                     subDirs = root.GetDirectories();
-                    foreach (System.IO.DirectoryInfo dirInfo in subDirs) {
+                    foreach (System.IO.DirectoryInfo dirInfo in subDirs)
+                    {
                         WalkDirectoryTree(dirInfo, func, IsSearchSubDir);
                     }
                 }
@@ -832,29 +912,39 @@ namespace OKEGui
 
         private void OpenInputFile_Click(object sender, RoutedEventArgs e)
         {
-            using (var ofd = new OpenFileDialog {
+            using (var ofd = new OpenFileDialog
+            {
                 Multiselect = true,
                 Filter = "视频文件 (*.*)|*.*"
-            }) {
-                if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.Cancel) {
+            })
+            {
+                if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+                {
                     return;
                 }
 
-                if (!wizardInfo.VSScript.Contains("#OKE:INPUTFILE")) {
-                    if (wizardInfo.InputFile.Count > 1 || ofd.FileNames.Length > 1) {
+                if (!wizardInfo.VSScript.Contains("#OKE:INPUTFILE"))
+                {
+                    if (wizardInfo.InputFile.Count > 1 || ofd.FileNames.Length > 1)
+                    {
                         System.Windows.MessageBox.Show("添加多个输入文件请确保VapourSynth脚本使用OKE提供的模板。点击上一步可以重新选择VapourSynth脚本。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
 
-                foreach (var filename in ofd.FileNames) {
-                    if (!wizardInfo.InputFile.Contains(filename)) {
+                foreach (var filename in ofd.FileNames)
+                {
+                    if (!wizardInfo.InputFile.Contains(filename))
+                    {
                         wizardInfo.InputFile.Add(filename);
-                    } else {
+                    }
+                    else
+                    {
                         System.Windows.MessageBox.Show(filename + "被重复选择，已取消添加。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
 
-                if (wizardInfo.InputFile.Count > 0) {
+                if (wizardInfo.InputFile.Count > 0)
+                {
                     SelectInputFile.CanSelectNextPage = true;
                 }
             }
@@ -867,7 +957,8 @@ namespace OKEGui
             // fbd.SelectedPath = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}";
             fbd.SelectedPath = "C:\\";
             DialogResult result = fbd.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.Cancel) {
+            if (result == System.Windows.Forms.DialogResult.Cancel)
+            {
                 return;
             }
 
@@ -876,17 +967,21 @@ namespace OKEGui
             // 历遍改目录，添加全部支持的文件类型
             // 默认为m2ts, mp4, mkv
             MessageBoxResult isSearchSub = System.Windows.MessageBox.Show("是否搜索子目录？", "新建任务向导", MessageBoxButton.YesNo);
-            WalkDirectoryTree(new DirectoryInfo(dir), (FileInfo fi) => {
+            WalkDirectoryTree(new DirectoryInfo(dir), (FileInfo fi) =>
+            {
                 if (fi.Extension.ToUpper() == ".M2TS" || fi.Extension.ToUpper() == ".MP4" ||
-                    fi.Extension.ToUpper() == ".MKV") {
+                    fi.Extension.ToUpper() == ".MKV")
+                {
                     // TODO: 重复文件处理
-                    if (!wizardInfo.InputFile.Contains(fi.FullName)) {
+                    if (!wizardInfo.InputFile.Contains(fi.FullName))
+                    {
                         wizardInfo.InputFile.Add(fi.FullName);
                     }
                 }
             }, isSearchSub == MessageBoxResult.Yes);
 
-            if (wizardInfo.InputFile.Count > 1 && !wizardInfo.VSScript.Contains("#OKE:INPUTFILE")) {
+            if (wizardInfo.InputFile.Count > 1 && !wizardInfo.VSScript.Contains("#OKE:INPUTFILE"))
+            {
                 System.Windows.MessageBox.Show("添加多个输入文件请确保VapourSynth脚本使用OKE提供的模板。点击上一步可以重新选择VapourSynth脚本。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
@@ -899,20 +994,24 @@ namespace OKEGui
             string video = VideoFormat.Text;
             string audio = AudioFormat.Text;
 
-            if (container == "不封装") {
+            if (container == "不封装")
+            {
                 container = "";
             }
 
             // 确保MP4封装的音轨只可能是AAC或者AC3
-            if (container == "MP4") {
+            if (container == "MP4")
+            {
                 bool hasFLAC = false;
                 foreach (var audioTrack in wizardInfo.AudioTracks)
-                    if (audioTrack.OutputCodec.ToUpper() == "FLAC" && !audioTrack.SkipMuxing) {
+                    if (audioTrack.OutputCodec.ToUpper() == "FLAC" && !audioTrack.SkipMuxing)
+                    {
                         hasFLAC = true;
                         audioTrack.OutputCodec = "AAC";
                         audioTrack.Bitrate = 256;
                     }
-                if (hasFLAC) {
+                if (hasFLAC)
+                {
                     System.Windows.MessageBox.Show("格式选择错误！\nMP4不能封装FLAC格式。音频格式将改为AAC。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
                     audio = "AAC";
                 }
@@ -931,17 +1030,20 @@ namespace OKEGui
             // 使用正则解析模板, 多行忽略大小写
             Regex r = new Regex("#OKE:INPUTFILE([\\n\\r ]+\\w+[ ]*=[ ]*)([r]*[\"'].+[\"'])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             var inputTemplate = r.Split(wizardInfo.VSScript);
-            if (inputTemplate.Length < 4 && wizardInfo.InputFile.Count() > 1) {
+            if (inputTemplate.Length < 4 && wizardInfo.InputFile.Count() > 1)
+            {
                 System.Windows.MessageBox.Show("任务创建失败！添加多个输入文件请确保VapourSynth脚本使用OKE提供的模板。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
             // 处理DEBUG标签
             // TODO: 是否进行调试输出
-            if (wizardInfo.VSScript.Contains("#OKE:DEBUG") && true) {
+            if (wizardInfo.VSScript.Contains("#OKE:DEBUG") && true)
+            {
                 Regex dr = new Regex("#OKE:DEBUG([\\n\\r ]+\\w+[ ]*=[ ]*)(\\w+)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
                 var debugTag = dr.Split(inputTemplate[3]);
-                if (debugTag.Length < 4) {
+                if (debugTag.Length < 4)
+                {
                     // error
                     System.Windows.MessageBox.Show("Debug标签语法错误！", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
@@ -952,7 +1054,8 @@ namespace OKEGui
             // 新建任务
             // 1、新建脚本文件
             // 2、新建任务参数
-            foreach (var inputFile in wizardInfo.InputFile) {
+            foreach (var inputFile in wizardInfo.InputFile)
+            {
                 // 新建文件（inputname.m2ts-mm-dd-HH-MM.vpy）
                 string vpy = inputTemplate[0] + inputTemplate[1] + "r'" +
                     inputFile + "'" + inputTemplate[3];
@@ -965,7 +1068,8 @@ namespace OKEGui
                 var finfo = new System.IO.FileInfo(inputFile);
                 TaskDetail td = new TaskDetail();
                 td.TaskName = finfo.Name;
-                if (wizardInfo.TaskNamePrefix != "") {
+                if (wizardInfo.TaskNamePrefix != "")
+                {
                     td.TaskName = wizardInfo.TaskNamePrefix + "-" + td.TaskName;
                 }
 
@@ -982,12 +1086,14 @@ namespace OKEGui
 
                 td.IncludeSub = wizardInfo.IncludeSub;
 
-                foreach (var audio in wizardInfo.AudioTracks) {
+                foreach (var audio in wizardInfo.AudioTracks)
+                {
                     td.AudioTracks.Add(audio);
                 }
 
                 // 更新输出文件拓展名
-                if (!td.UpdateOutputFileName()) {
+                if (!td.UpdateOutputFileName())
+                {
                     System.Windows.MessageBox.Show("格式错误！", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
@@ -1001,13 +1107,15 @@ namespace OKEGui
         private void InputFile_MouseDoubleClick(object sender, RoutedEventArgs e)
         {
             object o = InputList.SelectedItem;
-            if (o == null) {
+            if (o == null)
+            {
                 return;
             }
 
             String input = o as string;
             int id = wizardInfo.InputFile.IndexOf(input);
-            if (id == -1) {
+            if (id == -1)
+            {
                 // 没有找到
                 return;
             }
@@ -1019,27 +1127,34 @@ namespace OKEGui
         {
             var list = InputList.SelectedItems;
 
-            if (list.Count == 0) {
+            if (list.Count == 0)
+            {
                 return;
             }
 
-            if (list.Count > 1) {
+            if (list.Count > 1)
+            {
                 MessageBoxResult result = System.Windows.MessageBox.Show("是否删除" + (list.Count.ToString()) + "个文件？", "新建任务向导", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.No) {
+                if (result == MessageBoxResult.No)
+                {
                     return;
                 }
             }
 
             List<object> selectList = new List<object>();
-            foreach (object item in list) {
+            foreach (object item in list)
+            {
                 selectList.Add(item);
             }
 
-            for (int i = 0; i < selectList.Count; i++) {
-                foreach (object item in selectList) {
+            for (int i = 0; i < selectList.Count; i++)
+            {
+                foreach (object item in selectList)
+                {
                     String selected = item as string;
                     int index = wizardInfo.InputFile.IndexOf(selected);
-                    if (index != -1) {
+                    if (index != -1)
+                    {
                         wizardInfo.InputFile.RemoveAt(index);
                     }
                 }

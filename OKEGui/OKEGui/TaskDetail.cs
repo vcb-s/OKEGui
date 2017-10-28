@@ -89,10 +89,13 @@ namespace OKEGui
             set {
                 progress = value;
                 // Indetermate
-                if (progress < 0) {
+                if (progress < 0)
+                {
                     ProgressStr = "";
                     IsUnKnowProgress = true;
-                } else {
+                }
+                else
+                {
                     ProgressStr = progress.ToString("0.00") + "%";
                     IsUnKnowProgress = false;
                 }
@@ -165,7 +168,8 @@ namespace OKEGui
             set {
                 timeRemain = value;
                 TimeRemainStr = value.ToString(@"hh\:mm\:ss");
-                if (value.TotalHours > 24.0) {
+                if (value.TotalHours > 24.0)
+                {
                     TimeRemainStr = "大于一天";
                 }
             }
@@ -264,6 +268,7 @@ namespace OKEGui
         /// 帧率
         /// </summary>
         private double fps;
+
         public double Fps
         {
             get { return fps; }
@@ -272,6 +277,9 @@ namespace OKEGui
                 OnPropertyChanged(new PropertyChangedEventArgs("Fps"));
             }
         }
+
+        public uint FpsNum { get; set; }
+        public uint FpsDen { get; set; }
 
         /// <summary>
         /// 视频编码格式
@@ -298,11 +306,13 @@ namespace OKEGui
         {
             get {
                 // 无损不显示码率
-                if (audioFormat.ToLower() == "flac" || audioFormat.ToLower() == "alac") {
+                if (audioFormat.ToLower() == "flac" || audioFormat.ToLower() == "alac")
+                {
                     return audioFormat;
                 }
 
-                if (AudioTracks.Count == 0) {
+                if (AudioTracks.Count == 0)
+                {
                     return audioFormat;
                 }
                 return audioFormat + " " + AudioTracks[0].Bitrate.ToString();
@@ -321,7 +331,8 @@ namespace OKEGui
         public ObservableCollection<AudioInfo> AudioTracks
         {
             get {
-                if (audioTracks == null) {
+                if (audioTracks == null)
+                {
                     audioTracks = new ObservableCollection<AudioInfo>();
                 }
 
@@ -423,13 +434,15 @@ namespace OKEGui
         // 自动生成输出文件名
         public bool UpdateOutputFileName()
         {
-            if (this.VideoFormat == "" || this.InputFile == "") {
+            if (this.VideoFormat == "" || this.InputFile == "")
+            {
                 return false;
             }
 
             var finfo = new System.IO.FileInfo(this.InputFile);
             this.OutputFile = finfo.Name + "." + this.VideoFormat.ToLower();
-            if (this.ContainerFormat != "") {
+            if (this.ContainerFormat != "")
+            {
                 this.OutputFile = finfo.Name + "." + this.ContainerFormat.ToLower();
             }
 

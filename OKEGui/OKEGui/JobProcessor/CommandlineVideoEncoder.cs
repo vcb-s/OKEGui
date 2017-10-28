@@ -62,6 +62,11 @@ namespace OKEGui
             fps_n = vsHelper.FpsNum;
             fps_d = vsHelper.FpsDen;
             numberOfFrames = (ulong)vsHelper.TotalFreams;
+            if (fps_n != job.FpsNum || fps_d != job.FpsDen)
+            {
+                throw new Exception("输出FPS和指定FPS不一致");
+            }
+
             // su.ClipLength = TimeSpan.FromSeconds((double)numberOfFrames / fps);
         }
 
@@ -70,8 +75,10 @@ namespace OKEGui
         /// </summary>
         protected void compileFinalStats()
         {
-            try {
-                if (!string.IsNullOrEmpty(job.Output) && File.Exists(job.Output)) {
+            try
+            {
+                if (!string.IsNullOrEmpty(job.Output) && File.Exists(job.Output))
+                {
                     FileInfo fi = new FileInfo(job.Output);
                     long size = fi.Length; // size in bytes
 
@@ -82,7 +89,9 @@ namespace OKEGui
                     double numberOfSeconds = (double)framecount / framerate;
                     long bitrate = (long)((double)(size * 8.0) / (numberOfSeconds * 1000.0));
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 // log.LogValue("Exception in compileFinalStats", e, ImageType.Warning);
             }
         }
@@ -96,18 +105,23 @@ namespace OKEGui
         protected bool setFrameNumber(string frameString, bool isUpdateSpeed = false)
         {
             int currentFrame;
-            if (int.TryParse(frameString, out currentFrame)) {
-                if (currentFrame < 0) {
+            if (int.TryParse(frameString, out currentFrame))
+            {
+                if (currentFrame < 0)
+                {
                     currentFrameNumber = 0;
                     lastFrameNumber = 0;
                     return false;
-                } else {
+                }
+                else
+                {
                     currentFrameNumber = (ulong)currentFrame;
                 }
 
                 double time = timeGetTime() - lastUpdateTime;
 
-                if (isUpdateSpeed && time > 1000) {
+                if (isUpdateSpeed && time > 1000)
+                {
                     speed = ((currentFrameNumber - lastFrameNumber) / time) * 1000.0;
 
                     lastFrameNumber = currentFrameNumber;
@@ -123,10 +137,14 @@ namespace OKEGui
         protected bool setSpeed(string speed)
         {
             double fps;
-            if (double.TryParse(speed, out fps)) {
-                if (fps > 0) {
+            if (double.TryParse(speed, out fps))
+            {
+                if (fps > 0)
+                {
                     this.speed = fps;
-                } else {
+                }
+                else
+                {
                     this.speed = 0;
                 }
 
@@ -141,10 +159,14 @@ namespace OKEGui
         {
             double rate;
             this.unit = unit;
-            if (double.TryParse(bitrate, out rate)) {
-                if (rate > 0) {
+            if (double.TryParse(bitrate, out rate))
+            {
+                if (rate > 0)
+                {
                     this.bitrate = rate;
-                } else {
+                }
+                else
+                {
                     this.bitrate = 0;
                 }
 
@@ -157,18 +179,24 @@ namespace OKEGui
 
         protected void Update()
         {
-            if (speed == 0) {
+            if (speed == 0)
+            {
                 job.TimeRemain = TimeSpan.FromDays(30);
-            } else {
+            }
+            else
+            {
                 job.TimeRemain = TimeSpan.FromSeconds((double)(numberOfFrames - currentFrameNumber) / speed);
             }
 
             job.Speed = speed.ToString("0.00") + " fps";
             job.Progress = (double)currentFrameNumber / (double)numberOfFrames * 100;
 
-            if (bitrate == 0) {
+            if (bitrate == 0)
+            {
                 job.BitRate = "未知";
-            } else {
+            }
+            else
+            {
                 job.BitRate = bitrate.ToString("0.00") + unit;
             }
 
@@ -180,7 +208,8 @@ namespace OKEGui
             String[] units = new String[] { "B", "KB", "MB", "GB", "TB", "PB" };
             double mod = 1024.0;
             int i = 0;
-            while (size >= mod) {
+            while (size >= mod)
+            {
                 size /= mod;
                 i++;
             }

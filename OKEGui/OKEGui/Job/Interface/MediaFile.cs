@@ -136,37 +136,22 @@ namespace OKEGui
         public uint FrameCount;
         public uint FpsNum;
         public uint FpsDen;
+        public double Fps;
 
         public VideoInfo()
         {
         }
 
-        public VideoInfo(double fps)
+        public VideoInfo(uint fpsNum, uint fpsDen)
         {
-            uint fps1000 = (uint)(fps * 1000 + 0.5);
-            switch (fps1000)
-            {
-                case 23976:
-                    FpsNum = 24000;
-                    FpsDen = 1001;
-                    break;
-                case 29970:
-                    FpsNum = 30000;
-                    FpsDen = 1001;
-                    break;
-                case 47952:
-                    FpsNum = 48000;
-                    FpsDen = 1001;
-                    break;
-                case 59940:
-                    FpsNum = 60000;
-                    FpsDen = 1001;
-                    break;
-                default:
-                    FpsNum = fps1000;
-                    FpsDen = 1000;
-                    break;
-            }
+            this.FpsNum = fpsNum;
+            this.FpsDen = fpsDen;
+
+            this.Fps = fpsNum / fpsDen;
+        }
+
+        public VideoInfo(double fps) : this(0, 0, 0, fps)
+        {
         }
 
         public VideoInfo(uint width, uint height,
@@ -175,25 +160,29 @@ namespace OKEGui
             Width = width;
             Height = height;
             FrameCount = framecount;
-            uint fps1000 = (uint) (fps * 1000 + 0.5);
+            uint fps1000 = (uint)(fps * 1000 + 0.5);
             switch (fps1000)
             {
                 case 23976:
                     FpsNum = 24000;
                     FpsDen = 1001;
                     break;
+
                 case 29970:
                     FpsNum = 30000;
                     FpsDen = 1001;
                     break;
+
                 case 47952:
                     FpsNum = 48000;
                     FpsDen = 1001;
                     break;
+
                 case 59940:
                     FpsNum = 60000;
                     FpsDen = 1001;
                     break;
+
                 default:
                     FpsNum = fps1000;
                     FpsDen = 1000;
@@ -229,14 +218,16 @@ namespace OKEGui
         {
             get {
                 List<MediaTrack> tracks = new List<MediaTrack>();
-                if (VideoTrack != null) {
+                if (VideoTrack != null)
+                {
                     tracks.Add(VideoTrack);
                 }
 
                 tracks.AddRange(AudioTracks);
                 tracks.AddRange(SubtitleTracks);
 
-                if (Chapter != null) {
+                if (Chapter != null)
+                {
                     tracks.Add(Chapter);
                 }
 
@@ -263,35 +254,43 @@ namespace OKEGui
         public bool AddTrack(MediaTrack track)
         {
             if (track.TrackType == TrackType.Video &&
-                VideoTrack != null) {
+                VideoTrack != null)
+            {
                 return false;
             }
 
             if (track.TrackType == TrackType.Chapter &&
-                Chapter != null) {
+                Chapter != null)
+            {
                 return false;
             }
 
-            if (track is VideoTrack) {
+            if (track is VideoTrack)
+            {
                 VideoTrack = track as VideoTrack;
             }
 
-            if (track is AudioTrack) {
-                if (track.TrackId != 0) {
+            if (track is AudioTrack)
+            {
+                if (track.TrackId != 0)
+                {
                     AudioTracks.Insert(track.TrackId - 1, track as AudioTrack);
                 }
 
                 AudioTracks.Add(track as AudioTrack);
             }
 
-            if (track is SubtitleTrack) {
-                if (track.TrackId != 0) {
+            if (track is SubtitleTrack)
+            {
+                if (track.TrackId != 0)
+                {
                     SubtitleTracks.Insert(track.TrackId - 1, track as SubtitleTrack);
                 }
                 SubtitleTracks.Add((SubtitleTrack)track);
             }
 
-            if (track is ChapterTrack) {
+            if (track is ChapterTrack)
+            {
                 Chapter = track as ChapterTrack;
             }
 
@@ -305,20 +304,31 @@ namespace OKEGui
         /// <returns>返回已经移除的轨道。</returns>
         public MediaTrack RemoveTrack(Func<MediaTrack, bool> op)
         {
-            foreach (var track in Tracks) {
-                if (op(track)) {
-                    if (track == VideoTrack) {
+            foreach (var track in Tracks)
+            {
+                if (op(track))
+                {
+                    if (track == VideoTrack)
+                    {
                         VideoTrack = null;
                         return track;
-                    } else if (track == Chapter) {
+                    }
+                    else if (track == Chapter)
+                    {
                         Chapter = null;
                         return track;
-                    } else if (track is AudioTrack) {
-                        if (AudioTracks.Remove((AudioTrack)track)) {
+                    }
+                    else if (track is AudioTrack)
+                    {
+                        if (AudioTracks.Remove((AudioTrack)track))
+                        {
                             return track;
                         }
-                    } else if (track is SubtitleTrack) {
-                        if (SubtitleTracks.Remove((SubtitleTrack)track)) {
+                    }
+                    else if (track is SubtitleTrack)
+                    {
+                        if (SubtitleTracks.Remove((SubtitleTrack)track))
+                        {
                             return track;
                         }
                     }
