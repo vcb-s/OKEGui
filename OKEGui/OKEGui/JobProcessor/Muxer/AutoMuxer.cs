@@ -83,12 +83,12 @@ namespace OKEGui
 
                 var extension = Path.GetExtension(file).ToLower();
 
-                if (!string.IsNullOrEmpty(s_AudioFileExtensions.Find(val => val == extension))) {
+                if (s_AudioFileExtensions.Contains(extension)) {
                     episode.AudioFiles.Add(file);
                     episode.TotalFileSize += fileInfo.Length;
                     continue;
                 }
-                if (!string.IsNullOrEmpty(s_VideoFileExtensions.Find(val => val == extension))) {
+                if (s_VideoFileExtensions.Contains(extension)) {
                     episode.VideoFile = file;
                     episode.TotalFileSize += fileInfo.Length;
                     continue;
@@ -136,6 +136,7 @@ namespace OKEGui
             trackOrder.Add($"{fileID++}:0");
 
             foreach (var audioFile in episode.AudioFiles) {
+                System.Windows.MessageBox.Show(audioFile);
                 parameters.Add(string.Format(trackTemplate, episode.AudioLanguage, audioFile));
                 trackOrder.Add($"{fileID++}:0");
             }

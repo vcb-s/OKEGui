@@ -272,7 +272,8 @@ namespace OKEGui
                     }
 
                     // 只处理flac文件
-                    if (srcTracks.AudioTracks[id].file.GetExtension() != ".flac")
+                    String audioExtension = srcTracks.AudioTracks[id].file.GetExtension();
+                    if (audioExtension != ".flac" && audioExtension != ".ac3")
                     {
                         continue;
                     }
@@ -280,6 +281,7 @@ namespace OKEGui
                     audioJob.SetUpdate(task);
 
                     audioJob.Input = srcTracks.AudioTracks[id].file.GetFullPath();
+                    System.Windows.MessageBox.Show(audioJob.Input);
 
                     task.JobQueue.Enqueue(audioJob);
                 }
@@ -295,9 +297,12 @@ namespace OKEGui
                     videoJob.EncoderPath = task.EncoderPath;
                     videoJob.EncodeParam = task.EncoderParam;
                     videoJob.Fps = task.Fps;
+                    videoJob.FpsNum = task.FpsNum;
+                    videoJob.FpsDen = task.FpsDen;
 
                     task.JobQueue.Enqueue(videoJob);
                 }
+
                 while (task.JobQueue.Count != 0)
                 {
                     Job job = task.JobQueue.Dequeue();
@@ -306,6 +311,7 @@ namespace OKEGui
                     {
                         AudioJob audioJob = job as AudioJob;
                         if (audioJob.CodecString == "FLAC" ||
+                            audioJob.CodecString == "AC3" ||
                             audioJob.CodecString == "AUTO")
                         {
                             // 跳过当前轨道

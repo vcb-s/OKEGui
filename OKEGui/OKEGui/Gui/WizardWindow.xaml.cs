@@ -29,7 +29,8 @@ namespace OKEGui
             {
                 get { return projectFile; }
 
-                set {
+                set
+                {
                     projectFile = value;
 
                     OnPropertyChanged(new PropertyChangedEventArgs("ProjectFile"));
@@ -41,7 +42,8 @@ namespace OKEGui
             public int ConfigVersion
             {
                 get { return configVersion; }
-                set {
+                set
+                {
                     configVersion = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("ConfigVersion"));
                 }
@@ -53,7 +55,8 @@ namespace OKEGui
             {
                 get { return projectPreview; }
 
-                set {
+                set
+                {
                     projectPreview = value;
 
                     OnPropertyChanged(new PropertyChangedEventArgs("ProjectPreview"));
@@ -66,7 +69,8 @@ namespace OKEGui
             {
                 get { return taskNamePrefix; }
 
-                set {
+                set
+                {
                     taskNamePrefix = value;
 
                     OnPropertyChanged(new PropertyChangedEventArgs("TaskNamePrefix"));
@@ -79,7 +83,8 @@ namespace OKEGui
             {
                 get { return inputScript; }
 
-                set {
+                set
+                {
                     inputScript = value;
 
                     OnPropertyChanged(new PropertyChangedEventArgs("InputScript"));
@@ -92,7 +97,8 @@ namespace OKEGui
             {
                 get { return vsscript; }
 
-                set {
+                set
+                {
                     vsscript = value;
 
                     OnPropertyChanged(new PropertyChangedEventArgs("VSScript"));
@@ -103,7 +109,8 @@ namespace OKEGui
 
             public ObservableCollection<string> InputFile
             {
-                get {
+                get
+                {
                     if (inputFile == null)
                     {
                         inputFile = new ObservableCollection<string>();
@@ -119,7 +126,8 @@ namespace OKEGui
             public string OutputFile
             {
                 get { return outputFile; }
-                set {
+                set
+                {
                     outputFile = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("OutputFile"));
                 }
@@ -131,7 +139,8 @@ namespace OKEGui
             public string ContainerFormat
             {
                 get { return containerFormat; }
-                set {
+                set
+                {
                     containerFormat = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("ContainerFormat"));
                 }
@@ -143,14 +152,15 @@ namespace OKEGui
             public string VideoFormat
             {
                 get { return videoFormat; }
-                set {
+                set
+                {
                     videoFormat = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("VideoFormat"));
                 }
             }
 
-            public uint fpsNum;
-            public uint fpsDen;
+            public uint FpsNum;
+            public uint FpsDen;
 
             // 23.976, 29.970,...
             private double fps;
@@ -158,7 +168,8 @@ namespace OKEGui
             public double Fps
             {
                 get { return fps; }
-                set {
+                set
+                {
                     fps = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("FPS"));
                 }
@@ -170,7 +181,8 @@ namespace OKEGui
             public string AudioFormat
             {
                 get { return audioFormat; }
-                set {
+                set
+                {
                     audioFormat = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("AudioFormat"));
                 }
@@ -182,7 +194,8 @@ namespace OKEGui
             public int AudioBitrate
             {
                 get { return audioBitrate; }
-                set {
+                set
+                {
                     audioBitrate = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("audioBitrate"));
                 }
@@ -192,7 +205,8 @@ namespace OKEGui
 
             public ObservableCollection<AudioInfo> AudioTracks
             {
-                get {
+                get
+                {
                     if (audioTracks == null)
                     {
                         audioTracks = new ObservableCollection<AudioInfo>();
@@ -207,7 +221,8 @@ namespace OKEGui
             public string EncoderPath
             {
                 get { return encoderPath; }
-                set {
+                set
+                {
                     encoderPath = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("EncoderPath"));
                 }
@@ -218,7 +233,8 @@ namespace OKEGui
             public string EncoderParam
             {
                 get { return encoderParam; }
-                set {
+                set
+                {
                     encoderParam = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("EncoderParam"));
                 }
@@ -229,7 +245,8 @@ namespace OKEGui
             public string EncoderType
             {
                 get { return encoderType; }
-                set {
+                set
+                {
                     encoderType = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("EncoderType"));
                 }
@@ -240,7 +257,8 @@ namespace OKEGui
             public string EncoderInfo
             {
                 get { return encoderInfo; }
-                set {
+                set
+                {
                     encoderInfo = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("EncoderInfo"));
                 }
@@ -251,7 +269,8 @@ namespace OKEGui
             public bool IncludeSub
             {
                 get { return includeSub; }
-                set {
+                set
+                {
                     includeSub = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("IncludeSub"));
                 }
@@ -699,24 +718,41 @@ namespace OKEGui
             comboItems[wizardInfo.VideoFormat].IsSelected = true;
 
             // 设置视频帧率
-            wizardInfo.Fps = okeProj.Fps;
-            if (okeProj.Fps <= 0)
+            if (okeProj.Fps <= 0 && (okeProj.FpsNum <= 0 || okeProj.FpsDen <= 0))
             {
-                if (okeProj.Fps <= 0)
-                {
-                    if (okeProj.FpsNum <= 0 || okeProj.FpsDen <= 0)
-                    {
-                        System.Windows.MessageBox.Show("现在json文件中需要指定帧率，哪怕 Fps : 23.976", "帧率没有指定诶", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return false;
-                    }
-
-                    wizardInfo.fpsNum = okeProj.FpsNum;
-                    wizardInfo.fpsDen = okeProj.FpsDen;
-                    wizardInfo.Fps = okeProj.FpsNum / okeProj.FpsDen;
-                }
-
+                System.Windows.MessageBox.Show("现在json文件中需要指定帧率，哪怕 Fps : 23.976", "帧率没有指定诶", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
+
+            if (okeProj.FpsNum > 0 && okeProj.FpsDen > 0)
+            {
+                okeProj.Fps = ((double)okeProj.FpsNum) / okeProj.FpsDen;
+            }
+            else
+            {
+                switch (okeProj.Fps)
+                {
+                    case 23.976:
+                        okeProj.FpsNum = 24000;
+                        okeProj.FpsDen = 1001;
+                        break;
+                    case 29.97:
+                        okeProj.FpsNum = 30000;
+                        okeProj.FpsDen = 1001;
+                        break;
+                    case 59.94:
+                        okeProj.FpsNum = 60000;
+                        okeProj.FpsDen = 1001;
+                        break;
+                    default:
+                        System.Windows.MessageBox.Show("请通过FpsNum和FpsDen来指定", "不知道的帧率诶", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return false;
+                }
+            }
+
+            wizardInfo.Fps = okeProj.Fps;
+            wizardInfo.FpsNum = okeProj.FpsNum;
+            wizardInfo.FpsDen = okeProj.FpsDen;
 
             if (okeProj.AudioTracks.Count > 0)
             {
@@ -1081,6 +1117,8 @@ namespace OKEGui
 
                 td.ContainerFormat = wizardInfo.ContainerFormat;
                 td.Fps = wizardInfo.Fps;
+                td.FpsNum = wizardInfo.FpsNum;
+                td.FpsDen = wizardInfo.FpsDen;
                 td.VideoFormat = wizardInfo.VideoFormat;
                 td.AudioFormat = wizardInfo.AudioFormat;
 
