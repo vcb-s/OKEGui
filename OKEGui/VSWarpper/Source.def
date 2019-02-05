@@ -1,8 +1,0 @@
-LIBRARY
-InitVSLibrary
-IsVSLibraryInit
-LoadScript
-LoadScriptFile
-GetVideoInfo
-UnloadScript
-CloseVSLibrary
