@@ -42,90 +42,52 @@ namespace OKEGui
         /// <summary>
         /// 当前轨道所在文件。如果在已封装文件里，可以转换为IMediaContainer接口。
         /// </summary>
-        public IFile file;
+        public IFile File;
 
-        /// <summary>
-        /// 新建一条轨道
-        /// </summary>
-        /// <param name="file">轨道所在文件</param>
-        /// <returns></returns>
-        public static MediaTrack NewTrack(IFile file)
-        {
-            MediaTrack mt = new MediaTrack();
-            mt.TrackType = TrackType.Unknown;
-            mt.file = file;
-
-            return mt;
-        }
     }
 
     public class VideoTrack : MediaTrack
     {
-        public VideoInfo StreamInfo;
+        public VideoInfo VideoInfo;
 
-        public VideoTrack()
+        public VideoTrack(IFile file, VideoInfo videoInfo)
         {
             TrackType = TrackType.Video;
-            StreamInfo = new VideoInfo();
-        }
-
-        public static new MediaTrack NewTrack(IFile file, double fps)
-        {
-            VideoTrack mt = new VideoTrack();
-            mt.StreamInfo = new VideoInfo(fps);
-            mt.file = file;
-
-            return mt;
+            File = file;
+            VideoInfo = videoInfo;
         }
     }
 
     public class AudioTrack : MediaTrack
     {
-        public AudioInfo StreamInfo;
+        public AudioInfo AudioInfo;
 
-        public AudioTrack()
+        public AudioTrack(IFile file, AudioInfo audioInfo)
         {
             TrackType = TrackType.Audio;
-        }
-
-        public static new MediaTrack NewTrack(IFile file)
-        {
-            AudioTrack mt = new AudioTrack();
-            mt.file = file;
-
-            return mt;
+            File = file;
+            AudioInfo = audioInfo;
         }
     }
 
     public class SubtitleTrack : MediaTrack
     {
-        public SubtitleTrack()
+        public string Language;
+
+        public SubtitleTrack(IFile file, string language)
         {
             TrackType = TrackType.Subtitle;
-        }
-
-        public static new MediaTrack NewTrack(IFile file)
-        {
-            SubtitleTrack mt = new SubtitleTrack();
-            mt.file = file;
-
-            return mt;
+            File = file;
+            Language = language;
         }
     }
 
     public class ChapterTrack : MediaTrack
     {
-        public ChapterTrack()
+        public ChapterTrack(IFile file)
         {
             TrackType = TrackType.Chapter;
-        }
-
-        public static new MediaTrack NewTrack(IFile file)
-        {
-            ChapterTrack mt = new ChapterTrack();
-            mt.file = file;
-
-            return mt;
+            File = file;
         }
     }
 
@@ -198,6 +160,7 @@ namespace OKEGui
         public string SourceCodec { get; set; }
         public string OutputCodec { get; set; }
         public int Bitrate { get; set; }
+        public string Language { get; set; }
         public string ExtraArg { get; set; }
         public bool SkipMuxing { get; set; }
     }

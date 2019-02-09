@@ -410,6 +410,8 @@ namespace OKEGui
             }
         }
 
+        public string SubtitleLanguage;
+
         #endregion JobConfig
 
         public TaskDetail()

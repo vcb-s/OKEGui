@@ -8,7 +8,10 @@ namespace OKEGui.Utils
 {
     public static class Constants
     {
-        //bitrate for QAAC encoder.
+        //Bitrate for QAAC encoder.
         public const int QAACBitrate = 192;
+
+        //Audio & sub language.
+        public const string language = "jpn";
     }
 }

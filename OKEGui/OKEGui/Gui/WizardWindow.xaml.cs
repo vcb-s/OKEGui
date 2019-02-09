@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using Newtonsoft.Json;
+using OKEGui.Utils;
 
 namespace OKEGui
 {
@@ -189,18 +190,6 @@ namespace OKEGui
             }
 
             // 音频码率
-            private int audioBitrate;
-
-            public int AudioBitrate
-            {
-                get { return audioBitrate; }
-                set
-                {
-                    audioBitrate = value;
-                    OnPropertyChanged(new PropertyChangedEventArgs("audioBitrate"));
-                }
-            }
-
             private ObservableCollection<AudioInfo> audioTracks;
 
             public ObservableCollection<AudioInfo> AudioTracks
@@ -273,6 +262,20 @@ namespace OKEGui
                 {
                     includeSub = value;
                     OnPropertyChanged(new PropertyChangedEventArgs("IncludeSub"));
+                }
+            }
+
+            public string SubtitleLanguage;
+
+            private int audioBitrate;
+
+            public int AudioBitrate
+            {
+                get { return audioBitrate; }
+                set
+                {
+                    audioBitrate = value;
+                    OnPropertyChanged(new PropertyChangedEventArgs("audioBitrate"));
                 }
             }
 
@@ -504,7 +507,7 @@ namespace OKEGui
             //ContainerFormat = mkv
             //VideoFormat = hevc
             //AudioFormat = flac
-            //AudioFormat = aac:128
+            //AudioFormat = aac
             //InputScript = demo1.vpy
             //ExtractAudioTrack = true(暂时不使用)
 
@@ -564,16 +567,6 @@ namespace OKEGui
             comboItems[wizardInfo.VideoFormat].IsSelected = true;
 
             wizardInfo.AudioFormat = okeproj.ReadString("OKEProject", "AudioFormat", "").ToUpper();
-            wizardInfo.AudioBitrate = 128;
-            var audioParam = wizardInfo.AudioFormat.Split(':');
-            if (audioParam.Length == 2)
-            {
-                int bitrate = 0;
-                if (int.TryParse(audioParam[1], out bitrate))
-                {
-                    wizardInfo.AudioBitrate = bitrate == 0 ? 128 : bitrate;
-                }
-            }
 
             if (wizardInfo.AudioFormat != "FLAC" && wizardInfo.AudioFormat != "AAC" &&
                 wizardInfo.AudioFormat != "ALAC")
@@ -624,19 +617,20 @@ namespace OKEGui
 
         public class JsonProfile
         {
-            public int Version { get; set; }
-            public string ProjectName { get; set; }
-            public string EncoderType { get; set; }
-            public string Encoder { get; set; }
-            public string EncoderParam { get; set; }
-            public string ContainerFormat { get; set; }
-            public string VideoFormat { get; set; }
-            public double Fps { get; set; }
-            public uint FpsNum { get; set; }
-            public uint FpsDen { get; set; }
-            public List<AudioInfo> AudioTracks { get; set; }
-            public string InputScript { get; set; }
-            public bool IncludeSub { get; set; }
+            public int Version;
+            public string ProjectName;
+            public string EncoderType;
+            public string Encoder;
+            public string EncoderParam;
+            public string ContainerFormat;
+            public string VideoFormat;
+            public double Fps;
+            public uint FpsNum;
+            public uint FpsDen;
+            public List<AudioInfo> AudioTracks;
+            public string InputScript;
+            public bool IncludeSub;
+            public string SubtitleLanguage;
         }
 
         private bool LoadJsonProfile(string profile)
@@ -687,6 +681,7 @@ namespace OKEGui
 
             wizardInfo.EncoderParam = okeProj.EncoderParam;
             wizardInfo.IncludeSub = okeProj.IncludeSub;
+            wizardInfo.SubtitleLanguage = okeProj.SubtitleLanguage;
 
             Dictionary<string, ComboBoxItem> comboItems = new Dictionary<string, ComboBoxItem>() {
                 { "MKV",    MKVContainer},
@@ -753,6 +748,7 @@ namespace OKEGui
             wizardInfo.Fps = okeProj.Fps;
             wizardInfo.FpsNum = okeProj.FpsNum;
             wizardInfo.FpsDen = okeProj.FpsDen;
+            wizardInfo.SubtitleLanguage = string.IsNullOrEmpty(okeProj.SubtitleLanguage) ? Constants.language : okeProj.SubtitleLanguage;
 
             if (okeProj.AudioTracks.Count > 0)
             {
@@ -763,8 +759,14 @@ namespace OKEGui
                 // 添加音频参数到任务里面
                 foreach (var track in okeProj.AudioTracks)
                 {
-                    AudioJob audioJob = new AudioJob(track.OutputCodec);
-
+                    if (track.Bitrate == 0)
+                    {
+                        track.Bitrate = Constants.QAACBitrate;
+                    }
+                    if (string.IsNullOrEmpty(track.Language))
+                    {
+                        track.Language = Constants.language;
+                    }
                     wizardInfo.AudioTracks.Add(track);
                 }
             }
@@ -1044,7 +1046,6 @@ namespace OKEGui
                     {
                         hasFLAC = true;
                         audioTrack.OutputCodec = "AAC";
-                        audioTrack.Bitrate = 256;
                     }
                 if (hasFLAC)
                 {
@@ -1123,6 +1124,7 @@ namespace OKEGui
                 td.AudioFormat = wizardInfo.AudioFormat;
 
                 td.IncludeSub = wizardInfo.IncludeSub;
+                td.SubtitleLanguage = wizardInfo.SubtitleLanguage;
 
                 foreach (var audio in wizardInfo.AudioTracks)
                 {

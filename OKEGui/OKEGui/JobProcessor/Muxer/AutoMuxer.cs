@@ -21,12 +21,12 @@ namespace OKEGui
             public string VideoFps { get; set; }
 
             public List<string> AudioFiles { get; set; }
-            public string AudioLanguage { get; set; }
+            public List<string> AudioLanguages { get; set; }
 
             public string ChapterFile { get; set; }
 
             public List<string> SubtitleFiles { get; set; }
-            public string SubtitleLanguage { get; set; }
+            public List<string> SubtitleLanguages { get; set; }
 
             public OutputType OutputFileType { get; set; }
             public string OutputFile { get; set; }
@@ -62,16 +62,16 @@ namespace OKEGui
             List<string> inputFileNames,
             string outputFileName,
             string videoFps/* = "24000/1001"*/,
-            string audioLanguage/* = "jpn"*/,
-            string subtitleLanguage/* = "jpn"*/
+            List<string> audioLanguages/* = "jpn"*/,
+            List<string> subtitleLanguages/* = "jpn"*/
         )
         {
             var episode = new Episode {
                 AudioFiles = new List<string>(),
                 SubtitleFiles = new List<string>(),
                 VideoFps = videoFps,
-                AudioLanguage = audioLanguage,
-                SubtitleLanguage = subtitleLanguage,
+                AudioLanguages = audioLanguages,
+                SubtitleLanguages = subtitleLanguages,
                 TotalFileSize = 0
             };
 
@@ -135,15 +135,16 @@ namespace OKEGui
             parameters.Add(string.Format(trackTemplate, "und", episode.VideoFile));
             trackOrder.Add($"{fileID++}:0");
 
-            foreach (var audioFile in episode.AudioFiles) {
-                System.Windows.MessageBox.Show(audioFile);
-                parameters.Add(string.Format(trackTemplate, episode.AudioLanguage, audioFile));
+            for (int i = 0; i < episode.AudioFiles.Count; i++) {
+                string audioFile = episode.AudioFiles[i];
+                parameters.Add(string.Format(trackTemplate, episode.AudioLanguages[i], audioFile));
                 trackOrder.Add($"{fileID++}:0");
             }
 
             if (episode.SubtitleFiles != null) {
-                foreach (var subtitleFile in episode.SubtitleFiles) {
-                    parameters.Add(string.Format(trackTemplate, episode.SubtitleLanguage, subtitleFile));
+                for (int i = 0; i < episode.SubtitleFiles.Count; i++) {
+                    string subtitleFile = episode.SubtitleFiles[i];
+                    parameters.Add(string.Format(trackTemplate, episode.SubtitleLanguages[i], subtitleFile));
                     trackOrder.Add($"{fileID++}:0");
                 }
             }
@@ -164,10 +165,11 @@ namespace OKEGui
 
             parameters.Add($"-i \"{episode.VideoFile}\"?fps={episode.VideoFps}");
 
-            foreach (var audioFile in episode.AudioFiles) {
+            for (int i = 0; i < episode.AudioFiles.Count; i++) {
+                string audioFile = episode.AudioFiles[i];
                 FileInfo ainfo = new FileInfo(audioFile);
                 if (ainfo.Extension.ToLower() == ".aac" || ainfo.Extension.ToLower() == ".m4a" || ainfo.Extension.ToLower() == ".ac3") {
-                    parameters.Add($"-i \"{audioFile}\"?language={episode.AudioLanguage}");
+                    parameters.Add($"-i \"{audioFile}\"?language={episode.AudioLanguages[i]}");
                 }
             }
 
@@ -269,11 +271,11 @@ namespace OKEGui
             List<string> inputFileNames,
             string outputFileName,
             string videoFps,
-            string audioLanguage = "jpn",
-            string subtitleLanguage = "jpn"
+            List<string> audioLanguages,
+            List<string> subtitleLanguages
         )
         {
-            _episode = GenerateEpisode(inputFileNames, outputFileName, videoFps, audioLanguage, subtitleLanguage);
+            _episode = GenerateEpisode(inputFileNames, outputFileName, videoFps, audioLanguages, subtitleLanguages);
             string mainProgram = string.Empty;
             string args = string.Empty;
             switch (_episode.OutputFileType) {
@@ -294,21 +296,33 @@ namespace OKEGui
         {
             List<string> input = new List<string>();
             string videoFps = "";
+            List<string> audioLanguages = new List<string>();
+            List<string> subtitleLanguages = new List<string>();
 
             foreach (var track in mediaFile.Tracks) {
                 if (track.IsDisable) {
                     continue;
                 }
-                if (track is VideoTrack)
+                switch (track.TrackType)
                 {
-                    VideoTrack _track = track as VideoTrack;
-                    videoFps = $"{_track.StreamInfo.FpsNum}/{_track.StreamInfo.FpsDen}";
+                    case TrackType.Audio:
+                        AudioTrack audioTrack = track as AudioTrack;
+                        audioLanguages.Add(audioTrack.AudioInfo.Language);
+                        break;
+                    case TrackType.Video:
+                        VideoTrack videoTrack = track as VideoTrack;
+                        videoFps = $"{videoTrack.VideoInfo.FpsNum}/{videoTrack.VideoInfo.FpsDen}";
+                        break;
+                    case TrackType.Subtitle:
+                        SubtitleTrack subtitleTrack = track as SubtitleTrack;
+                        subtitleLanguages.Add(subtitleTrack.Language);
+                        break;
                 }
                     
-                input.Add(track.file.GetFullPath());
+                input.Add(track.File.GetFullPath());
             }
 
-            this.StartMerge(input, path, videoFps);
+            this.StartMerge(input, path, videoFps, audioLanguages, subtitleLanguages);
 
             IFile outFile = new OKEFile(path);
             outFile.AddCRC32();

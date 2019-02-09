@@ -309,16 +309,17 @@ namespace OKEGui
 
             MediaFile mf = new MediaFile();
             foreach (var item in extractResult) {
+                OKEFile file = new OKEFile(item.OutFileName);
                 if (item.Type == TrackType.Audio) {
-                    mf.AddTrack(AudioTrack.NewTrack(new OKEFile(item.OutFileName)));
+                    mf.AddTrack(new AudioTrack(file, null));
                 } else if (item.Type == TrackType.Subtitle) {
-                    mf.AddTrack(SubtitleTrack.NewTrack(new OKEFile(item.OutFileName)));
+                    mf.AddTrack(new SubtitleTrack(file, null));
                 } else if (item.Type == TrackType.Chapter) {
-                    mf.AddTrack(ChapterTrack.NewTrack(new OKEFile(item.OutFileName)));
+                    mf.AddTrack(new ChapterTrack(file));
                 } else if (item.Type == TrackType.Video) {
-                    mf.AddTrack(VideoTrack.NewTrack(new OKEFile(item.OutFileName)));
+                    mf.AddTrack(new VideoTrack(file, null));
                 } else {
-                    mf.AddTrack(MediaTrack.NewTrack(new OKEFile(item.OutFileName)));
+                    System.Windows.MessageBox.Show(item.OutFileName, "不认识的轨道呢");
                 }
             }
 

@@ -266,13 +266,14 @@ namespace OKEGui
 
                 for (int id = 0; id < srcTracks.AudioTracks.Count; id++)
                 {
+                    AudioTrack track = srcTracks.AudioTracks[id];
                     if (task.AudioTracks[id].SkipMuxing)
                     {
                         continue;
                     }
 
-                    // 只处理flac文件
-                    String audioExtension = srcTracks.AudioTracks[id].file.GetExtension();
+                    // 只处理flac文件和AC3文件
+                    string audioExtension = track.File.GetExtension();
                     if (audioExtension != ".flac" && audioExtension != ".ac3")
                     {
                         continue;
@@ -280,8 +281,8 @@ namespace OKEGui
                     AudioJob audioJob = new AudioJob(task.AudioTracks[id].OutputCodec);
                     audioJob.SetUpdate(task);
 
-                    audioJob.Input = srcTracks.AudioTracks[id].file.GetFullPath();
-                    System.Windows.MessageBox.Show(audioJob.Input);
+                    audioJob.Input = track.File.GetFullPath();
+                    audioJob.Language = task.AudioTracks[id].Language;
 
                     task.JobQueue.Enqueue(audioJob);
                 }
@@ -301,6 +302,19 @@ namespace OKEGui
                     videoJob.FpsDen = task.FpsDen;
 
                     task.JobQueue.Enqueue(videoJob);
+                }
+
+                // 添加字幕文件
+                for (int id = 0; id < srcTracks.SubtitleTracks.Count; id++)
+                {
+                    if (!task.IncludeSub)
+                    {
+                        continue;
+                    }
+                    SubtitleTrack track = srcTracks.SubtitleTracks[id];
+                    track.Language = task.SubtitleLanguage;
+
+                    task.MediaOutFile.AddTrack(track);
                 }
 
                 while (task.JobQueue.Count != 0)
@@ -351,7 +365,10 @@ namespace OKEGui
                             continue;
                         }
 
-                        task.MediaOutFile.AddTrack(AudioTrack.NewTrack(new OKEFile(job.Output)));
+                        AudioInfo info = new AudioInfo();
+                        info.Language = audioJob.Language;
+
+                        task.MediaOutFile.AddTrack(new AudioTrack(new OKEFile(job.Output), info));
                     }
                     else if (job is VideoJob)
                     {
@@ -374,7 +391,10 @@ namespace OKEGui
                             }
                         }
 
-                        task.MediaOutFile.AddTrack(VideoTrack.NewTrack(new OKEFile(job.Output), (job as VideoJob).Fps));
+                        VideoInfo info = new VideoInfo();
+                        info.Fps = (job as VideoJob).Fps;
+
+                        task.MediaOutFile.AddTrack(new VideoTrack(new OKEFile(job.Output), info));
                     }
                     else
                     {
@@ -386,8 +406,9 @@ namespace OKEGui
                 FileInfo txtChapter = new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
                 if (txtChapter.Exists)
                 {
-                    task.MediaOutFile.AddTrack(ChapterTrack.NewTrack(new OKEFile(txtChapter)));
+                    task.MediaOutFile.AddTrack(new ChapterTrack(new OKEFile(txtChapter)));
                 }
+
 
                 // 封装
                 if (task.ContainerFormat != "")
