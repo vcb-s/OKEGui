@@ -37,12 +37,13 @@ namespace OKEGui
 
         public struct TrackInfo
         {
-            public TrackCodec Codec { get; set; }
-            public int Index { get; set; }
-            public string Information { get; set; }
-            public string RawOutput { get; set; }
-            public string SourceFile { get; set; }
-            public TrackType Type { get; set; }
+            public TrackCodec Codec;
+            public int Index;
+            public string Information;
+            public string RawOutput;
+            public string SourceFile;
+            public TrackType Type;
+            public bool SkipMuxing;
 
             public string OutFileName
             {
@@ -237,6 +238,7 @@ namespace OKEGui
                     RawOutput = line,
                     SourceFile = sourceFile,
                     Type = EacOutputToTrackType(match.Groups[2].Value),
+                    SkipMuxing = false
                 };
 
                 if (TrackCodec.Unknown == trackInfo.Codec) {
@@ -298,11 +300,13 @@ namespace OKEGui
                         continue;
                     }
 
-                    var ctrack = extractResult.Find(t => { return t.Index == citem.Key; });
+                    int idx = extractResult.FindIndex(t => { return t.Index == citem.Key; });
+                    TrackInfo ctrack = extractResult[idx];
                     if (ctrack.Index == citem.Key) {
                         removeList.Add(ctrack.Index);
                         File.Move(ctrack.OutFileName, Path.ChangeExtension(ctrack.OutFileName, ".bak") + ctrack.FileExtension);
-                        extractResult.Remove(ctrack);
+                        ctrack.SkipMuxing = true;
+                        extractResult[idx] = ctrack;
                     }
                 }
             }
@@ -311,7 +315,7 @@ namespace OKEGui
             foreach (var item in extractResult) {
                 OKEFile file = new OKEFile(item.OutFileName);
                 if (item.Type == TrackType.Audio) {
-                    mf.AddTrack(new AudioTrack(file, null));
+                    mf.AddTrack(new AudioTrack(file, new AudioInfo { SkipMuxing = item.SkipMuxing }));
                 } else if (item.Type == TrackType.Subtitle) {
                     mf.AddTrack(new SubtitleTrack(file, null));
                 } else if (item.Type == TrackType.Chapter) {

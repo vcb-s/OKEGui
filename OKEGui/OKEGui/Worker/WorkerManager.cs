@@ -263,6 +263,13 @@ namespace OKEGui
                         System.Windows.MessageBox.Show($"当前的视频含有轨道数{srcTracks.AudioTracks.Count}，与json中指定的数量{task.AudioTracks.Count}不符合。该文件{task.InputFile}将跳过处理")).Start();
                     return;
                 }
+                else
+                {
+                    for (int i = 0; i < srcTracks.AudioTracks.Count; i++)
+                    {
+                        task.AudioTracks[i].SkipMuxing |= srcTracks.AudioTracks[i].AudioInfo.SkipMuxing;
+                    }
+                }
 
                 for (int id = 0; id < srcTracks.AudioTracks.Count; id++)
                 {
