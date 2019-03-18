@@ -399,7 +399,10 @@ namespace OKEGui
                         }
 
                         VideoInfo info = new VideoInfo();
-                        info.Fps = (job as VideoJob).Fps;
+                        VideoJob videoJob = job as VideoJob;
+                        info.Fps = videoJob.Fps;
+                        info.FpsNum = videoJob.FpsNum;
+                        info.FpsDen = videoJob.FpsDen;
 
                         task.MediaOutFile.AddTrack(new VideoTrack(new OKEFile(job.Output), info));
                     }
