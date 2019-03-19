@@ -1,0 +1,20 @@
+{
+    "Version" : 2,
+    "ProjectName" : "Demo - 720p",
+    "EncoderType" : "x265",
+    "Encoder" : "x265-10b.exe",
+    "EncoderParam" : "-D 10 --preset slower --limit-tu 4 --ctu 32 --crf 18 --pbratio 1.2 --cbqpoffs -2 --crqpoffs -2 --no-sao --qg-size 8 --me 3 --subme 4 --merange 25 --b-intra --no-amp --ref 4 --weightb --keyint 360 --min-keyint 1 --bframes 6 --aq-mode 3 --aq-strength 0.7 --rd 5 --psy-rd 1.6 --psy-rdoq 0.8 --rdoq-level 2 --no-open-gop --vbv-bufsize 30000 --vbv-maxrate 28000 --rc-lookahead 80 --scenecut 40 --qcomp 0.65 --no-strong-intra-smoothing --colormatrix bt709 --range limited",
+    "ContainerFormat" : "mp4",
+    "VideoFormat" : "hevc",
+    "AudioTracks" : [{
+        "TrackId" : 0,
+        "OutputCodec" : "aac",
+        "Bitrate" : 128
+    },{
+        "TrackId" : 1,
+        "OutputCodec" : "flac",
+        "SkipMuxing" : true
+    }],
+    "InputScript" : "demo_720p.vpy",
+    "Fps" : 23.976
+}
