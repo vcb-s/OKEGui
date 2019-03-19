@@ -290,6 +290,7 @@ namespace OKEGui
 
                     audioJob.Input = track.File.GetFullPath();
                     audioJob.Language = task.AudioTracks[id].Language;
+                    audioJob.Bitrate = task.AudioTracks[id].Bitrate;
 
                     task.JobQueue.Enqueue(audioJob);
                 }
