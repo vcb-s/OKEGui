@@ -786,6 +786,11 @@ namespace OKEGui
                 wizardInfo.InputScript = scriptFile.FullName;
                 wizardInfo.VSScript = File.ReadAllText(wizardInfo.InputScript);
             }
+            else
+            {
+                System.Windows.MessageBox.Show("指定的vpy文件没有找到，检查下json文件和vpy文件是不是放一起了？", "vpy文件找不到", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
 
             // 预览
             wizardInfo.ProjectPreview = "项目名字: " + wizardInfo.TaskNamePrefix;
