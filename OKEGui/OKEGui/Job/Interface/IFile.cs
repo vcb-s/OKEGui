@@ -308,8 +308,7 @@ namespace OKEGui
 
         public bool AddCRC32()
         {
-            byte[] fileInByte = File.ReadAllBytes(fi.FullName);
-            string CRC32Code = Utils.CRC32.ComputeChecksumString(fileInByte);
+            string CRC32Code = Utils.CRC32.ComputeChecksumString(fi.FullName);
             string newName = GetDirectory() + "\\" + GetFileNameWithoutExtension() + " [" + CRC32Code + "]" + GetExtension();
             return Rename(newName);
         }
