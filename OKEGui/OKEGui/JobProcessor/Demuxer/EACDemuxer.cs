@@ -302,7 +302,7 @@ namespace OKEGui
 
                     int idx = extractResult.FindIndex(t => { return t.Index == citem.Key; });
                     TrackInfo ctrack = extractResult[idx];
-                    if (ctrack.Index == citem.Key && ctrack.FileExtension == "flac") {
+                    if (ctrack.Index == citem.Key && ctrack.FileExtension == ".flac") {
                         removeList.Add(ctrack.Index);
                         File.Move(ctrack.OutFileName, Path.ChangeExtension(ctrack.OutFileName, ".bak") + ctrack.FileExtension);
                         ctrack.SkipMuxing = true;
