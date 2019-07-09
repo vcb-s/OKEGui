@@ -121,6 +121,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Utils\Cleaner.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Utils\CRC32.cs" />
     <Compile Include="Utils\SafeProxy.cs" />

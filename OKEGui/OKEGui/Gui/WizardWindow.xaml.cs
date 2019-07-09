@@ -1094,10 +1094,15 @@ namespace OKEGui
             }
 
             // 新建任务
-            // 1、新建脚本文件
-            // 2、新建任务参数
+            // 1、清理残留文件
+            // 2、新建脚本文件
+            // 3、新建任务参数
+            Cleaner cleaner = new Cleaner();
             foreach (var inputFile in wizardInfo.InputFile)
             {
+                // 清理文件
+                cleaner.Clean(inputFile);
+
                 // 新建文件（inputname.m2ts-mm-dd-HH-MM.vpy）
                 string vpy = inputTemplate[0] + inputTemplate[1] + "r'" +
                     inputFile + "'" + inputTemplate[3];
