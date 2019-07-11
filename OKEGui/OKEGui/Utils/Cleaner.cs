@@ -35,7 +35,7 @@ namespace OKEGui.Utils
             string directory = Path.GetDirectoryName(inputFile);
             string rawName = Path.GetFileNameWithoutExtension(inputFile);
             List<string> files = new List<string>(Directory.GetFiles(directory, rawName + "*.*", SearchOption.TopDirectoryOnly)
-            .Where(s => sfxRemove.Any(x => s.EndsWith(x))));
+            .Where(s => s != inputFile && sfxRemove.Any(x => s.EndsWith(x))));
             foreach (string file in files) {
                 File.Delete(file);
             }
@@ -47,7 +47,7 @@ namespace OKEGui.Utils
             string directory = Path.GetDirectoryName(inputFile);
             string rawName = Path.GetFileNameWithoutExtension(inputFile);
             List<string> files = new List<string>(Directory.GetFiles(directory, rawName + "*.*", SearchOption.TopDirectoryOnly)
-            .Where(s => sfxRename.Any(x => s.EndsWith(x))));
+            .Where(s => s != inputFile && sfxRename.Any(x => s.EndsWith(x))));
             DateTime time = DateTime.Now;
             for (int i = 0; i < files.Count; i++)
             {
