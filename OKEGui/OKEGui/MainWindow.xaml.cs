@@ -141,7 +141,7 @@ namespace OKEGui
 
             BtnDeleteWorker.IsEnabled = false;
             BtnEmpty.IsEnabled = false;
-            BtnNew.IsEnabled = false;
+            BtnRun.IsEnabled = false;
 
             //VideoJob vj = new VideoJob();
             //tm.AddTask();
