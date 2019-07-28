@@ -69,7 +69,7 @@ namespace OKEGui
             Debugger.Log(0, "", "In Process: " + line + "\n");
             if (line.Contains("x265 [error]:"))
             {
-                OKETaskException ex = new OKETaskException();
+                OKETaskException ex = new OKETaskException(Constants.x265ErrorSmr);
                 ex.summary = Constants.x265ErrorSmr;
                 ex.progress = 0.0;
                 ex.Data["X265_ERROR"] = line.Substring(14);

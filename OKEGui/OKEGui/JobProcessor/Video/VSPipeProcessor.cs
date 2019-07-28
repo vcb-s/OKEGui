@@ -144,7 +144,7 @@ namespace OKEGui
             }
             else if (line.Contains("Python exception: "))
             {
-                OKETaskException ex = new OKETaskException();
+                OKETaskException ex = new OKETaskException(Constants.vpyErrorSmr);
                 ex.summary = Constants.vpyErrorSmr;
                 ex.progress = 0.0;
                 ex.Data["VPY_ERROR"] = line.Substring(18);

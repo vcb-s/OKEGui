@@ -232,7 +232,7 @@ namespace OKEGui
                     FileInfo eacInfo = new FileInfo(".\\tools\\eac3to\\eac3to.exe");
                     if (!eacInfo.Exists)
                     {
-                        OKETaskException ex = new OKETaskException();
+                        OKETaskException ex = new OKETaskException(Constants.eac3toMissingSmr);
                         ex.summary = Constants.eac3toMissingSmr;
                         ex.progress = 0.0;
                         throw ex;
@@ -265,7 +265,7 @@ namespace OKEGui
                     // 新建音频处理工作
                     if (srcTracks.AudioTracks.Count != task.AudioTracks.Count)
                     {
-                        OKETaskException ex = new OKETaskException();
+                        OKETaskException ex = new OKETaskException(Constants.audioNumMismatchSmr);
                         ex.summary = Constants.audioNumMismatchSmr;
                         ex.progress = 0.0;
                         ex.Data["SRC_TRACK"] = srcTracks.AudioTracks.Count;

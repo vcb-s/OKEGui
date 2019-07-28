@@ -65,7 +65,7 @@ namespace OKEGui
             numberOfFrames = (ulong)vsHelper.TotalFreams;
             if (fps_n != job.FpsNum || fps_d != job.FpsDen)
             {
-                OKETaskException ex = new OKETaskException();
+                OKETaskException ex = new OKETaskException(Constants.fpsMismatchSmr);
                 ex.summary = Constants.fpsMismatchSmr;
                 ex.progress = 0.0;
                 ex.Data["SRC_FPS"] = ((double)job.FpsNum / job.FpsDen).ToString("F3");
