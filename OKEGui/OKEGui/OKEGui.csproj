@@ -84,6 +84,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="JobProcessor\ExceptionParser.cs" />
     <Compile Include="TaskManager.cs" />
     <Compile Include="JobProcessor\Audio\FLACDecoder.cs" />
     <Compile Include="JobProcessor\Audio\QAACEncoder.cs" />

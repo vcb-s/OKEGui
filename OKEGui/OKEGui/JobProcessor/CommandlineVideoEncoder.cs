@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using OKEGui.Utils;
+using OKEGui.JobProcessor;
 
 namespace OKEGui
 {
@@ -64,10 +65,11 @@ namespace OKEGui
             numberOfFrames = (ulong)vsHelper.TotalFreams;
             if (fps_n != job.FpsNum || fps_d != job.FpsDen)
             {
-                string msg = string.Format(Constants.fpsMismatchMsg, ((double)job.FpsNum / job.FpsDen).ToString("F3"), ((double)fps_n / fps_d).ToString("F3"), job.Input);
-                OperationCanceledException ex = new OperationCanceledException(msg);
-                ex.Data["SUMMARY"] = Constants.fpsMismatchSmr;
-                ex.Data["PROGRESS"] = 0;
+                OKETaskException ex = new OKETaskException();
+                ex.summary = Constants.fpsMismatchSmr;
+                ex.progress = 0.0;
+                ex.Data["SRC_FPS"] = ((double)job.FpsNum / job.FpsDen).ToString("F3");
+                ex.Data["DST_FPS"] = ((double)fps_n / fps_d).ToString("F3");
                 throw ex;
             }
 

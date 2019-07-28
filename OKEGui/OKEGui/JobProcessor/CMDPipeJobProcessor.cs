@@ -64,7 +64,8 @@ namespace OKEGui
 
         public void start()
         {
-            var startInfo = new ProcessStartInfo {
+            var startInfo = new ProcessStartInfo
+            {
                 FileName = outProcessor.Executable,
                 Arguments = outProcessor.Commandline,
                 UseShellExecute = false,
@@ -76,7 +77,8 @@ namespace OKEGui
             };
             outProc.StartInfo = startInfo;
 
-            startInfo = new ProcessStartInfo {
+            startInfo = new ProcessStartInfo
+            {
                 FileName = inProcessor.Executable,
                 Arguments = inProcessor.Commandline,
                 UseShellExecute = false,
@@ -88,42 +90,38 @@ namespace OKEGui
             };
             inProc.StartInfo = startInfo;
 
-            try {
-                outProc.Start();
-                inProc.Start();
+            outProc.Start();
+            inProc.Start();
 
-                // 转发线程
-                new Thread(new ThreadStart(() => {
-                    try {
-                        while (!mre.WaitOne(0)) {
-                            var sr = outProc.StandardOutput.BaseStream;
-                            var sw = inProc.StandardInput.BaseStream;
+            // 转发线程
+            new Thread(new ThreadStart(() =>
+            {
+                while (!mre.WaitOne(0))
+                {
+                    var sr = outProc.StandardOutput.BaseStream;
+                    var sw = inProc.StandardInput.BaseStream;
 
-                            Thread.Sleep(2000);
+                    Thread.Sleep(2000);
 
-                            while (sr.CanRead && !outProc.HasExited) {
-                                sr.CopyTo(sw);
-                                sw.Flush();
-                            }
-                            sw.Close();
-                            return;
-                        }
-                    } catch (Exception e) {
-                        throw e;
+                    while (sr.CanRead && !outProc.HasExited)
+                    {
+                        sr.CopyTo(sw);
+                        sw.Flush();
                     }
-                })).Start();
+                    sw.Close();
+                    return;
+                }
+            })).Start();
 
-                // 等待stdin端完成
-                new Thread(new ThreadStart(() => {
-                    inProcessor.waitForFinish();
-                    SetFinish();
-                })).Start();
+            // 等待stdin端完成
+            new Thread(new ThreadStart(() =>
+            {
+                inProcessor.waitForFinish();
+                SetFinish();
+            })).Start();
 
-                new Thread(new ThreadStart(readStdErr)).Start();
-                new Thread(new ThreadStart(readStdOut)).Start();
-            } catch (Exception e) {
-                throw e;
-            }
+            new Thread(new ThreadStart(readStdErr)).Start();
+            new Thread(new ThreadStart(readStdOut)).Start();
         }
 
         public void stop()
@@ -153,13 +151,11 @@ namespace OKEGui
         private void readStream(StreamReader sr, StreamType str)
         {
             string line;
-            if (inProc != null) {
-                try {
-                    while ((line = sr.ReadLine()) != null) {
-                        inProcessor.ProcessLine(line, str);
-                    }
-                } catch (Exception e) {
-                    throw e;
+            if (inProc != null)
+            {
+                while ((line = sr.ReadLine()) != null)
+                {
+                    inProcessor.ProcessLine(line, str);
                 }
             }
         }

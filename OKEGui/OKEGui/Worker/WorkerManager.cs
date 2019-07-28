@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using OKEGui.Utils;
+using OKEGui.JobProcessor;
 
 namespace OKEGui
 {
@@ -231,9 +232,9 @@ namespace OKEGui
                     FileInfo eacInfo = new FileInfo(".\\tools\\eac3to\\eac3to.exe");
                     if (!eacInfo.Exists)
                     {
-                        OperationCanceledException ex = new OperationCanceledException(Constants.eac3toMissingMsg);
-                        ex.Data["SUMMARY"] = Constants.eac3toMissingSmr;
-                        ex.Data["PROGRESS"] = 0;
+                        OKETaskException ex = new OKETaskException();
+                        ex.summary = Constants.eac3toMissingSmr;
+                        ex.progress = 0.0;
                         throw ex;
                     }
                     MediaFile srcTracks = new EACDemuxer(eacInfo.FullName, task.InputFile).Extract(
@@ -264,10 +265,11 @@ namespace OKEGui
                     // 新建音频处理工作
                     if (srcTracks.AudioTracks.Count != task.AudioTracks.Count)
                     {
-                        string msg = string.Format(Constants.audioNumMismatchMsg, srcTracks.AudioTracks.Count, task.AudioTracks.Count, task.InputFile);
-                        OperationCanceledException ex = new OperationCanceledException(msg);
-                        ex.Data["SUMMARY"] = Constants.audioNumMismatchSmr;
-                        ex.Data["PROGRESS"] = 0;
+                        OKETaskException ex = new OKETaskException();
+                        ex.summary = Constants.audioNumMismatchSmr;
+                        ex.progress = 0.0;
+                        ex.Data["SRC_TRACK"] = srcTracks.AudioTracks.Count;
+                        ex.Data["DST_TRACK"] = task.AudioTracks.Count;
                         throw ex;
                     }
                     else
@@ -446,18 +448,14 @@ namespace OKEGui
                     task.CurrentStatus = "完成";
                     task.ProgressValue = 100;
                 }
-                catch (OperationCanceledException ex)
+                catch (OKETaskException ex)
                 {
-                    FileInfo fileinfo = new FileInfo(task.InputFile);
+                    ExceptionMsg msg = ExceptionParser.parse(ex, task);
                     new System.Threading.Tasks.Task(() =>
-                            System.Windows.MessageBox.Show(ex.Message, fileinfo.Name)).Start();
+                    System.Windows.MessageBox.Show(msg.errorMsg, msg.fileName)).Start();
                     task.IsRunning = false;
-                    task.CurrentStatus = ex.Data["SUMMARY"] as string;
-                    int? progress = ex.Data["PROGRESS"] as int?;
-                    if (progress != null)
-                    {
-                        task.ProgressValue = progress.Value;
-                    }
+                    task.CurrentStatus = ex.summary;
+                    task.ProgressValue = ex.progress.GetValueOrDefault(task.ProgressValue);
                     continue;
                 }
                 catch (Exception ex)

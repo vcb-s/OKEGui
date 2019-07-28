@@ -24,5 +24,13 @@ namespace OKEGui.Utils
         public const string fpsMismatchMsg = "输出FPS和指定FPS不一致。json里指定帧率为{0}，vs输出帧率为{1}。该文件{2}将跳过处理。请转告技术总监复查。";
         public const string fpsMismatchSmr = "FPS不一致";
 
+        public const string x265ErrorMsg = "x265出错:{0}。该文件{1}将跳过处理。请转告技术总监复查。";
+        public const string x265ErrorSmr = "x265出错";
+
+        public const string vpyErrorMsg = "vpy出错:{0}。该文件{1}将跳过处理。请转告技术总监复查。";
+        public const string vpyErrorSmr = "vpy出错";
+
+        public const string unknownErrorMsg = "未知错误。该文件{0}将跳过处理。请转告技术总监复查。";
+        public const string unknownErrorSmr = "未知错误";
     }
 }

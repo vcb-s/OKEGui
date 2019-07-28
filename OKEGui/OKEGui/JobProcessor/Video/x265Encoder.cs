@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using OKEGui.Utils;
+using OKEGui.JobProcessor;
 
 namespace OKEGui
 {
@@ -64,6 +66,15 @@ namespace OKEGui
             //        if (base.setFrameNumber(line.Substring(frameNumberStart, frameNumberEnd - frameNumberStart).Trim()))
             //            return;
             //}
+            Debugger.Log(0, "", "In Process: " + line + "\n");
+            if (line.Contains("x265 [error]:"))
+            {
+                OKETaskException ex = new OKETaskException();
+                ex.summary = Constants.x265ErrorSmr;
+                ex.progress = 0.0;
+                ex.Data["X265_ERROR"] = line.Substring(14);
+                throw ex;
+            }
 
             if (line.ToLowerInvariant().Contains("encoded")) {
                 Regex rf = new Regex("encoded ([0-9]+) frames in ([0-9]+.[0-9]+)s \\(([0-9]+.[0-9]+) fps\\), ([0-9]+.[0-9]+) kb/s, Avg QP:(([0-9]+.[0-9]+))");

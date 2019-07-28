@@ -141,17 +141,16 @@ namespace OKEGui
                 bool started = proc.Start();
                 // startTime = DateTime.Now;
                 isProcessing = true;
-                // log.LogEvent("Process started");
-                // stdoutLog = log.Info(string.Format("[{0:G}] {1}", DateTime.Now, "Standard output stream"));
-                // stderrLog = log.Info(string.Format("[{0:G}] {1}", DateTime.Now, "Standard error stream"));
-                readFromStdErrThread = new Thread(new ThreadStart(readStdErr));
-                readFromStdOutThread = new Thread(new ThreadStart(readStdOut));
-                readFromStdOutThread.Start();
-                readFromStdErrThread.Start();
+                Debugger.Log(0, "prestart","Process started\n");
+                Debugger.Log(0, "prestart", string.Format("[{0:G}] {1}", DateTime.Now, "Standard output stream\n"));
+                Debugger.Log(0, "prestart", string.Format("[{0:G}] {1}", DateTime.Now, "Standard error stream\n"));
+                readStdErr();
+                readStdOut();
                 // new System.Windows.Forms.MethodInvoker(this.RunStatusCycle).BeginInvoke(null, null);
                 // this.changePriority(MainForm.Instance.Settings.ProcessingPriority);
                 // this.changePriority(ProcessPriority.NORMAL);
             } catch (Exception e) {
+                Debugger.Log(0, "exception", e.Message);
                 throw e;
             }
         }
@@ -271,17 +270,14 @@ namespace OKEGui
         protected virtual void readStream(StreamReader sr, ManualResetEvent rEvent, StreamType str)
         {
             string line;
-            if (proc != null) {
-                try {
-                    while ((line = sr.ReadLine()) != null) {
-                        mre.WaitOne();
+            if (proc != null)
+            {
+                while ((line = sr.ReadLine()) != null)
+                {
+                    mre.WaitOne();
 
-                        Debugger.Log(0, "readStream", line + "\n");
-                        ProcessLine(line, str);
-                    }
-                } catch (Exception e) {
-                    ProcessLine("Exception in readStream. Line cannot be processed. " + e.Message, str);
-                    throw e;
+                    Debugger.Log(0, "readStream", "readstream: " + line + "\n");
+                    ProcessLine(line, str);
                 }
                 rEvent.Set();
             }
