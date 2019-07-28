@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
+using OKEGui.Utils;
 
 namespace OKEGui
 {
@@ -64,7 +64,11 @@ namespace OKEGui
             numberOfFrames = (ulong)vsHelper.TotalFreams;
             if (fps_n != job.FpsNum || fps_d != job.FpsDen)
             {
-                throw new Exception("输出FPS和指定FPS不一致");
+                string msg = string.Format(Constants.fpsMismatchMsg, ((double)job.FpsNum / job.FpsDen).ToString("F3"), ((double)fps_n / fps_d).ToString("F3"), job.Input);
+                OperationCanceledException ex = new OperationCanceledException(msg);
+                ex.Data["SUMMARY"] = Constants.fpsMismatchSmr;
+                ex.Data["PROGRESS"] = 0;
+                throw ex;
             }
 
             // su.ClipLength = TimeSpan.FromSeconds((double)numberOfFrames / fps);
