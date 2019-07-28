@@ -101,7 +101,7 @@
             <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Width="70" Margin="0,4,0,0"><Run Text="任务结束后:" /></TextBlock>
             <ComboBox x:Name="comboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="70,0,0,0" SelectionChanged="comboBox_SelectionChanged">
                 <ComboBoxItem IsSelected="True" Content="什么也不干" />
-                <ComboBoxItem Content="关机" />
+                <!--<ComboBoxItem Content="关机" />-->
                 <!--<ComboBoxItem Content="运行程序" />-->
             </ComboBox>
 

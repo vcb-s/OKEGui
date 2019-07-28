@@ -24,6 +24,8 @@ namespace OKEGui
 
             BtnMoveDown.IsEnabled = false;
             BtnMoveup.IsEnabled = false;
+            BtnStop.IsEnabled = false;
+            BtnEdit.IsEnabled = false;
 
             WorkerCount++;
             wm.AddWorker("工作单元-" + WorkerCount.ToString());
