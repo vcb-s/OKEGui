@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using OKEGui.Utils;
 
 namespace OKEGui
 {
@@ -17,6 +19,15 @@ namespace OKEGui
         public MainWindow()
         {
             InitializeComponent();
+
+            if (EnvironmentChecker.CheckEnviornment())
+            {
+                ConfigManager.WriteConfig();
+            }
+            else
+            {
+                Environment.Exit(0);
+            }
 
             listView1.ItemsSource = tm.taskStatus;
 

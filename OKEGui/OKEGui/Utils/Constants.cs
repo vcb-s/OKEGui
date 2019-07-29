@@ -32,5 +32,8 @@ namespace OKEGui.Utils
 
         public const string unknownErrorMsg = "未知错误。该文件{0}将跳过处理。请转告技术总监复查。";
         public const string unknownErrorSmr = "未知错误";
+
+        //Application configuration file
+        public const string configFile = "OKEGuiConfig.json";
     }
 }

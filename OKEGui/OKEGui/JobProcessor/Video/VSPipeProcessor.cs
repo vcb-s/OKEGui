@@ -27,19 +27,7 @@ namespace OKEGui
         public VSPipeProcessor(VideoInfoJob j) : base()
         {
             // 获取VSPipe路径
-            RegistryKey key = Registry.LocalMachine;
-            RegistryKey vskey = key.OpenSubKey("software\\vapoursynth");
-            string vscore = vskey.GetValue("Path") as string;
-            if (vscore == null) {
-                throw new Exception("can't get vs install path");
-            }
-
-            FileInfo vspipeInfo = new FileInfo(new DirectoryInfo(vscore).FullName + "\\core64\\vspipe.exe");
-
-            if (vspipeInfo.Exists) {
-                this.executable = vspipeInfo.FullName;
-            }
-
+            this.executable = ConfigManager.Config.vspipePath;
             videoInfo = new VSVideoInfo();
 
             StringBuilder sb = new StringBuilder();

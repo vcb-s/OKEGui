@@ -125,8 +125,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Utils\Cleaner.cs" />
+    <Compile Include="Utils\ConfigManager.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Utils\CRC32.cs" />
+    <Compile Include="Utils\EnvironmentChecker.cs" />
     <Compile Include="Utils\SafeProxy.cs" />
     <Compile Include="Utils\VapourSynthHelper.cs" />
     <Compile Include="Utils\WindowsUtil.cs" />
