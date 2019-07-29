@@ -233,7 +233,6 @@ namespace OKEGui
                     if (!eacInfo.Exists)
                     {
                         OKETaskException ex = new OKETaskException(Constants.eac3toMissingSmr);
-                        ex.summary = Constants.eac3toMissingSmr;
                         ex.progress = 0.0;
                         throw ex;
                     }
@@ -266,7 +265,6 @@ namespace OKEGui
                     if (srcTracks.AudioTracks.Count != task.AudioTracks.Count)
                     {
                         OKETaskException ex = new OKETaskException(Constants.audioNumMismatchSmr);
-                        ex.summary = Constants.audioNumMismatchSmr;
                         ex.progress = 0.0;
                         ex.Data["SRC_TRACK"] = srcTracks.AudioTracks.Count;
                         ex.Data["DST_TRACK"] = task.AudioTracks.Count;

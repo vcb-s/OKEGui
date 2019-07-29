@@ -37,21 +37,8 @@ namespace OKEGui
                 this.x265Path = job.EncoderPath;
             }
 
-            // TODO: Vapoursynth 部分分离出去
-
             // 获取VSPipe路径
-            RegistryKey key = Registry.LocalMachine;
-            RegistryKey vskey = key.OpenSubKey("software\\vapoursynth");
-            string vscore = vskey.GetValue("Path") as string;
-            if (vscore == null) {
-                throw new Exception("can't get vs install path");
-            }
-
-            FileInfo vspipeInfo = new FileInfo(new DirectoryInfo(vscore).FullName + "\\core64\\vspipe.exe");
-
-            if (vspipeInfo.Exists) {
-                this.vspipePath = vspipeInfo.FullName;
-            }
+            this.vspipePath = ConfigManager.Config.vspipePath;
 
             commandLine = BuildCommandline(extractParam);
         }
@@ -66,13 +53,17 @@ namespace OKEGui
             //        if (base.setFrameNumber(line.Substring(frameNumberStart, frameNumberEnd - frameNumberStart).Trim()))
             //            return;
             //}
-            Debugger.Log(0, "", "In Process: " + line + "\n");
             if (line.Contains("x265 [error]:"))
             {
                 OKETaskException ex = new OKETaskException(Constants.x265ErrorSmr);
-                ex.summary = Constants.x265ErrorSmr;
                 ex.progress = 0.0;
                 ex.Data["X265_ERROR"] = line.Substring(14);
+                throw ex;
+            }
+
+            if (line.Contains("Error: fwrite() call failed when writing frame: "))
+            {
+                OKETaskException ex = new OKETaskException(Constants.x265CrashSmr);
                 throw ex;
             }
 
@@ -102,10 +93,9 @@ namespace OKEGui
 
             base.setBitrate(status[3], "kb/s");
 
-            // 由OKE自己进行计算速度
-            //if (!base.setSpeed(status[2])) {
-            //    return;
-            //}
+            if (!base.setSpeed(status[2])) {
+                return;
+            }
 
             base.ProcessLine(line, stream);
         }

@@ -13,8 +13,6 @@ namespace OKEGui
 
         private ulong numberOfFrames;
         private ulong currentFrameNumber;
-        private ulong lastFrameNumber;
-        private uint lastUpdateTime;
         protected long fps_n = 0, fps_d = 0;
 
         protected bool usesSAR = false;
@@ -26,27 +24,7 @@ namespace OKEGui
 
         #endregion variables
 
-        public CommandlineVideoEncoder() : base()
-        {
-            // 设置计时器精度 1ms
-            timeBeginPeriod(1);
-        }
-
-        ~CommandlineVideoEncoder()
-        {
-            timeEndPeriod(1);
-        }
-
         #region helper methods
-
-        [System.Runtime.InteropServices.DllImport("winmm")]
-        private static extern uint timeGetTime();
-
-        [System.Runtime.InteropServices.DllImport("winmm")]
-        private static extern void timeBeginPeriod(int t);
-
-        [System.Runtime.InteropServices.DllImport("winmm")]
-        private static extern void timeEndPeriod(int t);
 
         /// <summary>
         /// tries to open the video source and gets the number of frames from it, or
@@ -66,7 +44,6 @@ namespace OKEGui
             if (fps_n != job.FpsNum || fps_d != job.FpsDen)
             {
                 OKETaskException ex = new OKETaskException(Constants.fpsMismatchSmr);
-                ex.summary = Constants.fpsMismatchSmr;
                 ex.progress = 0.0;
                 ex.Data["SRC_FPS"] = ((double)job.FpsNum / job.FpsDen).ToString("F3");
                 ex.Data["DST_FPS"] = ((double)fps_n / fps_d).ToString("F3");
@@ -116,22 +93,11 @@ namespace OKEGui
                 if (currentFrame < 0)
                 {
                     currentFrameNumber = 0;
-                    lastFrameNumber = 0;
                     return false;
                 }
                 else
                 {
                     currentFrameNumber = (ulong)currentFrame;
-                }
-
-                double time = timeGetTime() - lastUpdateTime;
-
-                if (isUpdateSpeed && time > 1000)
-                {
-                    speed = ((currentFrameNumber - lastFrameNumber) / time) * 1000.0;
-
-                    lastFrameNumber = currentFrameNumber;
-                    lastUpdateTime = timeGetTime();
                 }
 
                 Update();
@@ -225,6 +191,11 @@ namespace OKEGui
 
         protected void encodeFinish()
         {
+            if (currentFrameNumber < numberOfFrames)
+            {
+                OKETaskException ex = new OKETaskException(Constants.vsCrashSmr);
+                throw ex;
+            }
             job.TimeRemain = TimeSpan.Zero;
             job.Progress = 100;
             job.Status = "压制完成";

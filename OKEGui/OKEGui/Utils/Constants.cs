@@ -33,6 +33,12 @@ namespace OKEGui.Utils
         public const string unknownErrorMsg = "未知错误。该文件{0}将跳过处理。请转告技术总监复查。";
         public const string unknownErrorSmr = "未知错误";
 
+        public const string vsCrashMsg = "压制未能完成，预计是vs崩溃。该文件{0}将跳过处理，半成品以HEVC形式保留在目录中。请转告技术总监复查。";
+        public const string vsCrashSmr = "vs崩溃";
+
+        public const string x265CrashMsg = "压制未能完成，预计是x265崩溃。该文件{0}将跳过处理，半成品以HEVC形式保留在目录中。请转告技术总监复查。";
+        public const string x265CrashSmr = "x265崩溃";
+
         //Application configuration file
         public const string configFile = "OKEGuiConfig.json";
     }

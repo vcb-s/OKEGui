@@ -27,11 +27,13 @@ namespace OKEGui.JobProcessor
         public OKETaskException(string message)
             : base(message)
         {
+            summary = message;
         }
 
         public OKETaskException(string message, Exception inner)
             : base(message, inner)
         {
+            summary = message;
         }
     }
 
@@ -62,6 +64,14 @@ namespace OKEGui.JobProcessor
 
                 case Constants.vpyErrorSmr:
                     msg.errorMsg = string.Format(Constants.vpyErrorMsg, ex.Data["VPY_ERROR"], task.InputFile);
+                    break;
+
+                case Constants.vsCrashSmr:
+                    msg.errorMsg = string.Format(Constants.vsCrashMsg, task.InputFile);
+                    break;
+
+                case Constants.x265CrashSmr:
+                    msg.errorMsg = string.Format(Constants.x265CrashMsg, task.InputFile);
                     break;
 
                 case Constants.unknownErrorSmr:
