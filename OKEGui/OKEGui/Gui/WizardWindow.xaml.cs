@@ -567,6 +567,7 @@ namespace OKEGui
             comboItems[wizardInfo.VideoFormat].IsSelected = true;
 
             wizardInfo.AudioFormat = okeproj.ReadString("OKEProject", "AudioFormat", "").ToUpper();
+            Debugger.Log(0, "", "audioformat: " + wizardInfo.AudioFormat);
 
             if (wizardInfo.AudioFormat != "FLAC" && wizardInfo.AudioFormat != "AAC" &&
                 wizardInfo.AudioFormat != "ALAC")
@@ -772,9 +773,9 @@ namespace OKEGui
             }
 
             if (wizardInfo.AudioFormat != "FLAC" && wizardInfo.AudioFormat != "AAC" &&
-                wizardInfo.AudioFormat != "AC3")
+                wizardInfo.AudioFormat != "AC3" && wizardInfo.AudioFormat != "DTS")
             {
-                System.Windows.MessageBox.Show("音轨只能是FLAC/AAC/AC3", "音轨格式不支持", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show("音轨只能是FLAC/AAC/AC3/DTS", "音轨格式不支持", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             comboItems[wizardInfo.AudioFormat].IsSelected = true;
