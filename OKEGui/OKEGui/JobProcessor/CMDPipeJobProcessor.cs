@@ -90,6 +90,9 @@ namespace OKEGui
             };
             inProc.StartInfo = startInfo;
 
+            Debugger.Log(0, "", inProc.StartInfo.FileName + " " + inProc.StartInfo.Arguments);
+            Debugger.Log(0, "", outProc.StartInfo.FileName + " " + outProc.StartInfo.Arguments);
+
             outProc.Start();
             inProc.Start();
 
