@@ -123,6 +123,8 @@ namespace OKEGui
         {
             var wizard = new WizardWindow(ref tm);
             wizard.ShowDialog();
+            BtnRun.IsEnabled = true;
+            tm.isCanStart = true;
         }
 
         private void BtnStop_Click(object sender, RoutedEventArgs e)
@@ -133,10 +135,6 @@ namespace OKEGui
 
         private void BtnRun_Click(object sender, RoutedEventArgs e)
         {
-            if (tm.isCanStart) {
-                return;
-            }
-
             if (wm.GetWorkerCount() == 0) {
                 WorkerCount++;
                 wm.AddWorker("工作单元-" + WorkerCount.ToString());

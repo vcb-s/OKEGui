@@ -69,7 +69,11 @@ namespace OKEGui
 
             if (line.ToLowerInvariant().Contains("encoded")) {
                 Regex rf = new Regex("encoded ([0-9]+) frames in ([0-9]+.[0-9]+)s \\(([0-9]+.[0-9]+) fps\\), ([0-9]+.[0-9]+) kb/s, Avg QP:(([0-9]+.[0-9]+))");
+
                 var result = rf.Split(line);
+
+                ulong reportedFrames = ulong.Parse(result[1]);
+
                 // 这里是平均速度
                 if (!base.setSpeed(result[3])) {
                     return;
@@ -77,7 +81,7 @@ namespace OKEGui
 
                 Debugger.Log(0, "EncodeFinish", result[3] + "fps\n");
 
-                base.encodeFinish();
+                base.encodeFinish(reportedFrames);
             }
 
             Regex r = new Regex("([0-9]+) frames: ([0-9]+.[0-9]+) fps, ([0-9]+.[0-9]+) kb/s", RegexOptions.IgnoreCase);

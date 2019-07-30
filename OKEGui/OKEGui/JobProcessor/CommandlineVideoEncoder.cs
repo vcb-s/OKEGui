@@ -2,6 +2,7 @@
 using System.IO;
 using OKEGui.Utils;
 using OKEGui.JobProcessor;
+using System.Diagnostics;
 
 namespace OKEGui
 {
@@ -189,9 +190,9 @@ namespace OKEGui
             return Math.Round(size * Math.Pow(10, digit)) / Math.Pow(10, digit) + units[i];
         }
 
-        protected void encodeFinish()
+        protected void encodeFinish(ulong reportedFrames)
         {
-            if (currentFrameNumber < numberOfFrames)
+            if (reportedFrames < numberOfFrames)
             {
                 OKETaskException ex = new OKETaskException(Constants.vsCrashSmr);
                 throw ex;
