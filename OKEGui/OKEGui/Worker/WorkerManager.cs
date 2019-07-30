@@ -350,19 +350,14 @@ namespace OKEGui
                             {
                                 task.CurrentStatus = "音频转码中";
                                 task.IsUnKnowProgress = true;
-                                AudioJob aDecode = new AudioJob("WAV");
-                                aDecode.Input = audioJob.Input;
-                                aDecode.Output = "-";
-                                FLACDecoder flac = new FLACDecoder(".\\tools\\flac\\flac.exe", aDecode);
 
                                 AudioJob aEncode = new AudioJob("AAC");
-                                aEncode.Input = "-";
+                                aEncode.Input = audioJob.Input;
                                 aEncode.Output = Path.ChangeExtension(audioJob.Input, ".aac");
-                                QAACEncoder qaac = new QAACEncoder(".\\tools\\qaac\\qaac.exe", aEncode, audioJob.Bitrate > 0 ? audioJob.Bitrate : Utils.Constants.QAACBitrate);
+                                QAACEncoder qaac = new QAACEncoder(".\\tools\\qaac\\qaac64.exe", aEncode, audioJob.Bitrate > 0 ? audioJob.Bitrate : Utils.Constants.QAACBitrate);
 
-                                CMDPipeJobProcessor cmdpipe = CMDPipeJobProcessor.NewCMDPipeJobProcessor(flac, qaac);
-                                cmdpipe.start();
-                                cmdpipe.waitForFinish();
+                                qaac.start();
+                                qaac.waitForFinish();
 
                                 audioJob.Output = aEncode.Output;
                             }
