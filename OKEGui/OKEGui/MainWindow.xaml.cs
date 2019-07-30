@@ -66,7 +66,7 @@ namespace OKEGui
 
         private void listView1_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            object o = listView1.SelectedItem;
+            /*object o = listView1.SelectedItem;
             if (o == null) {
                 return;
             }
@@ -77,7 +77,7 @@ namespace OKEGui
 
             if (!tm.UpdateTask(subWin.GetNewTaskDetail())) {
                 System.Windows.MessageBox.Show("任务更新失败！", "任务详细", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            }*/
 
             return;
         }
