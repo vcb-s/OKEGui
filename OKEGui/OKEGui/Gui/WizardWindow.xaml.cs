@@ -786,6 +786,11 @@ namespace OKEGui
             {
                 wizardInfo.InputScript = scriptFile.FullName;
                 wizardInfo.VSScript = File.ReadAllText(wizardInfo.InputScript);
+                if (!wizardInfo.VSScript.Contains("#OKE:INPUTFILE"))
+                {
+                    System.Windows.MessageBox.Show("vpy里没有#OKE:INPUTFILE的标签。", "vpy没有为OKEGui设计", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
             }
             else
             {
@@ -809,7 +814,7 @@ namespace OKEGui
         private void OpenProjectBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "OKEGui 项目文件 (*.okeproj, *.json)|*.okeproj;*.json";
+            ofd.Filter = "OKEGui 项目文件 (*.json)|*.json";
             var result = ofd.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.Cancel)
             {
@@ -959,7 +964,7 @@ namespace OKEGui
             using (var ofd = new OpenFileDialog
             {
                 Multiselect = true,
-                Filter = "视频文件 (*.*)|*.*"
+                Filter = "视频文件 (*.m2ts, *.mkv, *.mp4)|*.m2ts;*.mkv;*.mp4"
             })
             {
                 if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
