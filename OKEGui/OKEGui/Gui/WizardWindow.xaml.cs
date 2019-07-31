@@ -1076,7 +1076,7 @@ namespace OKEGui
             var isTemplate = wizardInfo.VSScript.Contains("#OKE:INPUTFILE");
 
             // 使用正则解析模板, 多行忽略大小写
-            Regex r = new Regex("#OKE:INPUTFILE([\\n\\r ]+\\w+[ ]*=[ ]*)([r]*[\"'].+[\"'])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            Regex r = new Regex("#OKE:INPUTFILE([\\s]+\\w+[ ]*=[ ]*)([r]*[\"'].*[\"'])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             var inputTemplate = r.Split(wizardInfo.VSScript);
             if (inputTemplate.Length < 4 && wizardInfo.InputFile.Count() > 1)
             {
@@ -1088,7 +1088,7 @@ namespace OKEGui
             // TODO: 是否进行调试输出
             if (wizardInfo.VSScript.Contains("#OKE:DEBUG") && true)
             {
-                Regex dr = new Regex("#OKE:DEBUG([\\n\\r ]+\\w+[ ]*=[ ]*)(\\w+)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+                Regex dr = new Regex("#OKE:DEBUG([\\s]+\\w+[ ]*=[ ]*)(\\w+)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
                 var debugTag = dr.Split(inputTemplate[3]);
                 if (debugTag.Length < 4)
                 {
