@@ -22,32 +22,36 @@ namespace OKEGui.Utils
             this.sfxRename = sfxRename;
         }
 
-        public List<string> Clean(string inputFile)
+        public List<string> Clean(string inputFile, List<string> whiteList)
         {
-            List<string> removed = Remove(inputFile);
-            List<string> renamed = Rename(inputFile);
+            if (!whiteList.Contains(inputFile))
+            {
+                whiteList.Add(inputFile);
+            }
+            List<string> removed = Remove(inputFile, whiteList);
+            List<string> renamed = Rename(inputFile, whiteList);
             removed.AddRange(renamed);
             return removed;
         }
 
-        public List<string> Remove(string inputFile)
+        public List<string> Remove(string inputFile, List<string> whiteList)
         {
             string directory = Path.GetDirectoryName(inputFile);
             string rawName = Path.GetFileNameWithoutExtension(inputFile);
             List<string> files = new List<string>(Directory.GetFiles(directory, rawName + "*.*", SearchOption.TopDirectoryOnly)
-            .Where(s => s != inputFile && sfxRemove.Any(x => s.EndsWith(x))));
+            .Where(s => !whiteList.Contains(s) && sfxRemove.Any(x => s.EndsWith(x))));
             foreach (string file in files) {
                 File.Delete(file);
             }
             return files;
         }
 
-        public List<string> Rename(string inputFile)
+        public List<string> Rename(string inputFile, List<string> whiteList)
         {
             string directory = Path.GetDirectoryName(inputFile);
             string rawName = Path.GetFileNameWithoutExtension(inputFile);
             List<string> files = new List<string>(Directory.GetFiles(directory, rawName + "*.*", SearchOption.TopDirectoryOnly)
-            .Where(s => s != inputFile && sfxRename.Any(x => s.EndsWith(x))));
+            .Where(s => !whiteList.Contains(s) && sfxRename.Any(x => s.EndsWith(x))));
             DateTime time = DateTime.Now;
             for (int i = 0; i < files.Count; i++)
             {

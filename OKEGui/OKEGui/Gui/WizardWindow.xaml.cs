@@ -1107,7 +1107,7 @@ namespace OKEGui
             foreach (var inputFile in wizardInfo.InputFile)
             {
                 // 清理文件
-                cleaner.Clean(inputFile);
+                cleaner.Clean(inputFile, new List<string> { wizardInfo.InputScript });
 
                 // 新建文件（inputname.m2ts-mm-dd-HH-MM.vpy）
                 string vpy = inputTemplate[0] + inputTemplate[1] + "r'" +
