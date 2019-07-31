@@ -18,7 +18,6 @@ namespace OKEGui
             return null;
         }
 
-        private string commandLine;
         private ManualResetEvent retrieved = new ManualResetEvent(false);
 
         // TODO: 变更编码参数
@@ -49,11 +48,5 @@ namespace OKEGui
         {
         }
 
-        public override string Commandline
-        {
-            get {
-                return commandLine;
-            }
-        }
     }
 }

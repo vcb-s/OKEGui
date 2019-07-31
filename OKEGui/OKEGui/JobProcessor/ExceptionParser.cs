@@ -17,11 +17,12 @@ namespace OKEGui.JobProcessor
 
     public class OKETaskException : OperationCanceledException
     {
-        public string summary = Constants.unknownErrorMsg;
+        public readonly string summary;
         public double? progress = null;
 
         public OKETaskException()
         {
+            summary = Constants.unknownErrorSmr;
         }
 
         public OKETaskException(string message)
@@ -42,8 +43,15 @@ namespace OKEGui.JobProcessor
         public static ExceptionMsg parse(OKETaskException ex, TaskDetail task)
         {
             ExceptionMsg msg;
-            FileInfo fileinfo = new FileInfo(task.InputFile);
-            msg.fileName = fileinfo.Name;
+            if (task != null)
+            {
+                FileInfo fileinfo = new FileInfo(task.InputFile);
+                msg.fileName = fileinfo.Name;
+            }
+            else
+            {
+                msg.fileName = "";
+            }
             switch (ex.summary)
             {
                 case Constants.eac3toMissingSmr:
@@ -72,6 +80,10 @@ namespace OKEGui.JobProcessor
 
                 case Constants.x265CrashSmr:
                     msg.errorMsg = string.Format(Constants.x265CrashMsg, task.InputFile);
+                    break;
+
+                case Constants.qaacErrorSmr:
+                    msg.errorMsg = string.Format(Constants.qaacErrorMsg);
                     break;
 
                 case Constants.unknownErrorSmr:

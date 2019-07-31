@@ -8,7 +8,8 @@ namespace OKEGui.Utils
 {
     public static class Constants
     {
-        //Bitrate for QAAC encoder.
+        //QAAC encoder.
+        public const string QAACPath = ".\\tools\\qaac\\qaac64.exe";
         public const int QAACBitrate = 192;
 
         //Audio & sub language.
@@ -38,6 +39,9 @@ namespace OKEGui.Utils
 
         public const string x265CrashMsg = "压制未能完成，预计是x265崩溃。该文件{0}将跳过处理，半成品以HEVC形式保留在目录中。请转告技术总监复查。";
         public const string x265CrashSmr = "x265崩溃";
+
+        public const string qaacErrorMsg = "QAAC无法正常运行。请确保你安装了Apple Application Support 64bit";
+        public const string qaacErrorSmr = "QAAC无法运行";
 
         //Application configuration file
         public const string configFile = "OKEGuiConfig.json";

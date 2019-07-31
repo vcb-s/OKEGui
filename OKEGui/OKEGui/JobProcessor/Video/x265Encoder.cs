@@ -13,7 +13,6 @@ namespace OKEGui
     {
         //  public static readonly JobProcessorFactory Factory = new JobProcessorFactory(new ProcessorFactory(init), "x265Encoder");
 
-        private string commandLine = "";
         private string x265Path = "";
         private string vspipePath = "";
 
@@ -126,11 +125,5 @@ namespace OKEGui
             return sb.ToString();
         }
 
-        public override string Commandline
-        {
-            get {
-                return commandLine;
-            }
-        }
     }
 }

@@ -19,6 +19,7 @@ namespace OKEGui
         protected bool isProcessing = false;
         protected Process proc = new Process(); // the encoder process
         protected string executable; // path and filename of the commandline encoder to be used
+        protected string commandLine;
         protected ManualResetEvent mre = new ManualResetEvent(true); // lock used to pause encoding
         protected ManualResetEvent finishMre = new ManualResetEvent(false);
         protected ManualResetEvent stdoutDone = new ManualResetEvent(false);
@@ -76,11 +77,6 @@ namespace OKEGui
             return;
         }
 
-        public abstract string Commandline
-        {
-            get;
-        }
-
         /// <summary>
         /// handles the encoder process existing
         /// </summary>
@@ -125,7 +121,7 @@ namespace OKEGui
             proc = new Process();
             ProcessStartInfo pstart = new ProcessStartInfo();
             pstart.FileName = executable;
-            pstart.Arguments = Commandline;
+            pstart.Arguments = commandLine;
             pstart.RedirectStandardOutput = true;
             pstart.RedirectStandardError = true;
             pstart.WindowStyle = ProcessWindowStyle.Minimized;

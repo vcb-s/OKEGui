@@ -20,7 +20,6 @@ namespace OKEGui
             return null;
         }
 
-        private string commandLine;
         private VSVideoInfo videoInfo;
         private ManualResetEvent retrieved = new ManualResetEvent(false);
 
@@ -146,13 +145,6 @@ namespace OKEGui
 
         public override void setup(Job job, StatusUpdate su)
         {
-        }
-
-        public override string Commandline
-        {
-            get {
-                return commandLine;
-            }
         }
 
         public VSVideoInfo VideoInfo

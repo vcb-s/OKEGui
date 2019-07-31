@@ -90,7 +90,6 @@
     <Compile Include="TaskManager.cs" />
     <Compile Include="JobProcessor\Audio\FLACDecoder.cs" />
     <Compile Include="JobProcessor\Audio\QAACEncoder.cs" />
-    <Compile Include="JobProcessor\CMDPipeJobProcessor.cs" />
     <Compile Include="JobProcessor\Muxer\AutoMuxer.cs" />
     <Compile Include="JobProcessor\Demuxer\EACDemuxer.cs" />
     <Compile Include="JobProcessor\Video\VSPipeProcessor.cs" />

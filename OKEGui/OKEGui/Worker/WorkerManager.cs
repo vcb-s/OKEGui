@@ -354,7 +354,7 @@ namespace OKEGui
                                 AudioJob aEncode = new AudioJob("AAC");
                                 aEncode.Input = audioJob.Input;
                                 aEncode.Output = Path.ChangeExtension(audioJob.Input, ".aac");
-                                QAACEncoder qaac = new QAACEncoder(".\\tools\\qaac\\qaac64.exe", aEncode, audioJob.Bitrate > 0 ? audioJob.Bitrate : Utils.Constants.QAACBitrate);
+                                QAACEncoder qaac = new QAACEncoder(aEncode, audioJob.Bitrate > 0 ? audioJob.Bitrate : Utils.Constants.QAACBitrate);
 
                                 qaac.start();
                                 qaac.waitForFinish();

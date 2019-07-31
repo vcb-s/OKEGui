@@ -9,6 +9,7 @@ using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using OKEGui.JobProcessor;
 
 namespace OKEGui.Utils
 {
@@ -28,6 +29,11 @@ namespace OKEGui.Utils
             {
                 return false;
             }
+            if (!CheckQAAC())
+            {
+                return false;
+            }
+
 
             return true;
         }
@@ -107,6 +113,21 @@ namespace OKEGui.Utils
                 MessageBox.Show("请尝试重新安装VapourSynth，程序将退出。", "此文件无法读取");
                 return false;
             }
+        }
+
+        static Boolean CheckQAAC()
+        {
+            QAACEncoder e = new QAACEncoder("--check");
+            try
+            {
+                e.start();
+            } catch (OKETaskException ex)
+            {
+                ExceptionMsg msg = ExceptionParser.parse(ex, null);
+                MessageBox.Show(msg.errorMsg, ex.Message);
+                return false;
+            }
+            return true;
         }
     }
 }
