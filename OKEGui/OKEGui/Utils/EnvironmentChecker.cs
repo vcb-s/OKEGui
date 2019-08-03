@@ -56,31 +56,39 @@ namespace OKEGui.Utils
         {
             string vspipePath = Config.vspipePath;
             FileInfo vspipeInfo;
-            if (string.IsNullOrWhiteSpace(vspipePath))
-            {
-                RegistryKey key = Registry.LocalMachine.OpenSubKey("software\\vapoursynth");
-                if (key == null)
-                {
-                    key = Registry.CurrentUser.OpenSubKey("software\\vapoursynth");
-                }
-                if (key != null)
-                {
-                    vspipePath = key.GetValue("Path") as string;
-                }
-                if (!string.IsNullOrWhiteSpace(vspipePath))
-                {
-                    vspipePath += "\\core64\\vspipe.exe";
-                }
-            }
 
             if (!string.IsNullOrWhiteSpace(vspipePath))
             {
                 vspipeInfo = new FileInfo(vspipePath);
-
                 if (vspipeInfo.Exists)
                 {
                     Config.vspipePath = vspipePath;
                     return true;
+                }
+            }
+
+            RegistryKey key = Registry.LocalMachine.OpenSubKey("software\\vapoursynth");
+            if (key == null)
+            {
+                key = Registry.CurrentUser.OpenSubKey("software\\vapoursynth");
+            }
+            if (key != null)
+            {
+                vspipePath = key.GetValue("Path") as string;
+            }
+
+            if (!string.IsNullOrWhiteSpace(vspipePath))
+            {
+                foreach (var subPath in new[] {"core", "core64"})
+                {
+                    vspipeInfo = new FileInfo(vspipePath + $"\\{subPath}\\vspipe.exe");
+
+                    if (vspipeInfo.Exists)
+                    {
+                        vspipePath += $"\\{subPath}\\vspipe.exe";
+                        Config.vspipePath = vspipePath;
+                        return true;
+                    }
                 }
             }
 
