@@ -786,7 +786,7 @@ namespace OKEGui
             {
                 wizardInfo.InputScript = scriptFile.FullName;
                 wizardInfo.VSScript = File.ReadAllText(wizardInfo.InputScript);
-                if (!wizardInfo.VSScript.Contains("#OKE:INPUTFILE"))
+                if (!Constants.inputRegex.IsMatch(wizardInfo.VSScript))
                 {
                     System.Windows.MessageBox.Show("vpy里没有#OKE:INPUTFILE的标签。", "vpy没有为OKEGui设计", MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
@@ -1072,12 +1072,13 @@ namespace OKEGui
 
         private void WizardFinish(object sender, RoutedEventArgs e)
         {
-            // 检查输入脚本是否为oke模板
-            var isTemplate = wizardInfo.VSScript.Contains("#OKE:INPUTFILE");
-
             // 使用正则解析模板, 多行忽略大小写
-            Regex r = new Regex("#OKE:INPUTFILE([\\s]+\\w+[ ]*=[ ]*)([r]*[\"'].*[\"'])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            var inputTemplate = r.Split(wizardInfo.VSScript);
+            string[] inputTemplate = Constants.inputRegex.Split(wizardInfo.VSScript);
+            Debugger.Log(0, "", inputTemplate.Length.ToString() + "\n");
+            foreach (string s in inputTemplate)
+            {
+                Debugger.Log(0, "", s + "\n");
+            }
             if (inputTemplate.Length < 4 && wizardInfo.InputFile.Count() > 1)
             {
                 System.Windows.MessageBox.Show("任务创建失败！添加多个输入文件请确保VapourSynth脚本使用OKE提供的模板。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -1086,10 +1087,9 @@ namespace OKEGui
 
             // 处理DEBUG标签
             // TODO: 是否进行调试输出
-            if (wizardInfo.VSScript.Contains("#OKE:DEBUG") && true)
+            if (Constants.debugRegex.IsMatch(wizardInfo.VSScript))
             {
-                Regex dr = new Regex("#OKE:DEBUG([\\s]+\\w+[ ]*=[ ]*)(\\w+)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-                var debugTag = dr.Split(inputTemplate[3]);
+                string[] debugTag = Constants.debugRegex.Split(inputTemplate[3]);
                 if (debugTag.Length < 4)
                 {
                     // error

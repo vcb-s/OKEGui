@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace OKEGui.Utils
@@ -45,5 +46,10 @@ namespace OKEGui.Utils
 
         //Application configuration file
         public const string configFile = "OKEGuiConfig.json";
+
+        //Input and Debug regex
+        public static readonly Regex inputRegex = new Regex("# *OKE:INPUTFILE([\\s]+\\w+[ ]*=[ ]*)([r]*[\"'].*[\"'])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        public static readonly Regex debugRegex = new Regex("# *OKE:DEBUG([\\s]+\\w+[ ]*=[ ]*)(\\w+)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
     }
 }
