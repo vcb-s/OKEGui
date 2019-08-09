@@ -14,14 +14,10 @@
     </Window.Resources>
     <Grid>
         <xctk:Wizard x:Name="taskWizard" FinishButtonClosesWindow="True" Finish="WizardFinish">
-            <!--<xctk:WizardPage x:Name="IntroPage"
-                                   Title="新建压制任务"
-                                   Description="本向导将通过简单的几步创建压制任务">
-            </xctk:WizardPage>-->
             <xctk:WizardPage x:Name="SelectProjectFile" PageType="Interior"
-                                   Title="选择OKEGui项目文件"
-                                   Description="如果没有创建项目可以跳过这一步"
-                                   NextPage="{Binding ElementName=SelectVSScript}">
+                             Title="选择OKEGui项目文件"
+                             NextPage="{Binding ElementName=SelectInputFile}"
+                             CanSelectNextPage="False">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"></ColumnDefinition>
@@ -57,51 +53,10 @@
                     </Grid>
                 </Grid>
             </xctk:WizardPage>
-            <xctk:WizardPage x:Name="SelectVSScript" PageType="Interior"
-                                   Title="选择VapourSynth脚本文件"
-                                   Description="如果创建多个压制任务，请使用OKEGui提供的模板修改VS脚本"
-                                   NextPage="{Binding ElementName=SelectInputFile}"
-                                   PreviousPage="{Binding ElementName=SelectProjectFile}"
-                                   CanSelectNextPage="False"
-                             Loaded="SelectVSScript_Loaded">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="8*"></RowDefinition>
-                    </Grid.RowDefinitions>
-
-                    <Grid Margin="2" Grid.Column="0" Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="4*"></ColumnDefinition>
-                            <ColumnDefinition Width="64"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="24"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Label Grid.Column="0" Grid.Row="0">输入脚本</Label>
-                        <TextBox x:Name="InputScriptTextBox" Grid.Column="1" Grid.Row="0" Margin="0,0,2,0" Text="{Binding Path=InputScript}"></TextBox>
-                        <Button x:Name="OpenScriptBtn" Grid.Column="2" Grid.Row="0" Height="23" Click="OpenScriptBtn_Click">打开文件</Button>
-                    </Grid>
-
-                    <StackPanel Grid.Column="0" Grid.Row="1">
-                        <Label>脚本预览（只读）：</Label>
-                        <TextBox x:Name="ScriptPreview" Grid.Column="0" Grid.Row="1" IsReadOnly="True" Text="{Binding Path=VSScript}" Height="235"  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"></TextBox>
-                    </StackPanel>
-
-                    <Grid Grid.Column="0" Grid.Row="1">
-                    </Grid>
-                </Grid>
-            </xctk:WizardPage>
             <xctk:WizardPage x:Name="SelectInputFile" PageType="Interior"
-                                   Title="选择输入文件"
-                                   Description="如果使用OKE提供的模板，请选择输入文件；否则请跳过这一步"
-                                    NextPage="{Binding ElementName=SelectEncoder}"
-                                    PreviousPage="{Binding ElementName=SelectVSScript}"
-                                    CanSelectNextPage="False">
+                             Title="选择输入文件"
+                             PreviousPage="{Binding ElementName=SelectProjectFile}"
+                             CanFinish="False">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="64"></ColumnDefinition>
@@ -135,116 +90,6 @@
                     </Grid>
                 </Grid>
             </xctk:WizardPage>
-            <xctk:WizardPage x:Name="SelectEncoder" PageType="Interior"
-                                   Title="选择编码器"
-                                   Description="选择用于编码的可执行文件"
-                             NextPage="{Binding ElementName=SelectFormat}"
-                             PreviousPage="{Binding ElementName=SelectInputFile}"
-                             CanSelectNextPage="False"
-                             Loaded="SelectEncoder_Loaded">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="2*"></RowDefinition>
-                        <RowDefinition Height="7*"></RowDefinition>
-                        <RowDefinition Height="4*"></RowDefinition>
-                    </Grid.RowDefinitions>
-
-                    <Grid Margin="2" Grid.Column="0" Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="4*"></ColumnDefinition>
-                            <ColumnDefinition Width="64"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="24"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Label Grid.Column="0" Grid.Row="0">编码器</Label>
-                        <TextBox Grid.Column="1" Grid.Row="0" Margin="0,0,2,0" Text="{Binding Path=EncoderPath}"></TextBox>
-                        <Button x:Name="OpenEncoderBtn" Click="OpenEncoderBtn_Click" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right" Height="23" Width="64">打开文件</Button>
-                    </Grid>
-
-                    <StackPanel Grid.Column="0" Grid.Row="1">
-                        <Label>编码器信息：</Label>
-                        <Label></Label>
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock Grid.Column="0" Grid.Row="1" TextWrapping="WrapWithOverflow" Text="{Binding Path=EncoderInfo}"></TextBlock>
-                        </StackPanel>
-                    </StackPanel>
-
-                    <Grid Grid.Column="0" Grid.Row="2">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="64"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Label Grid.Column="0" Grid.Row="0">编码参数</Label>
-                            <TextBox Grid.Column="1" Grid.Row="0" Margin="0,0,2,0" IsReadOnly="True" Text="{Binding Path=EncoderParam}"></TextBox>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </xctk:WizardPage>
-            <!--<xctk:WizardPage x:Name="SelectEncodeParam" PageType="Interior"
-                                    Title="输入编码参数"
-                                    Description="请输入编码参数"
-                             NextPage="{Binding ElementName=SelectFormat}"
-                             PreviousPage="{Binding ElementName=SelectEncoder}">
-            </xctk:WizardPage>-->
-            <xctk:WizardPage x:Name="SelectFormat" PageType="Interior"
-                                    Title="选择输出格式"
-                                    Description="请选择封装格式，视频格式以及音频格式。其中，视频格式需要和编码器输出格式一致。"
-
-                PreviousPage="{Binding ElementName=SelectEncoder}"
-                             Leave="SelectFormat_Leave"
-                             CanFinish="True">
-                <Grid>
-                    <StackPanel Orientation="Vertical" VerticalAlignment="Top" Margin="0">
-                        <StackPanel Orientation="Horizontal" Margin="0,5,5,5">
-                            <Label>封装格式：</Label>
-                            <ComboBox Name="ContainerFormat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="2">
-                                <ComboBoxItem x:Name="MKVContainer" IsSelected="True" Content="MKV" />
-                                <ComboBoxItem x:Name="MP4Container" Content="MP4" />
-                                <ComboBoxItem x:Name="NoContainer" Content="不封装" />
-                            </ComboBox>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,5,5,5">
-                            <Label>视频格式：</Label>
-                            <ComboBox Name="VideoFormat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="2">
-                                <ComboBoxItem x:Name="HEVCVideo" IsSelected="True" Content="HEVC" />
-                                <ComboBoxItem x:Name="AVCVideo" Content="AVC" />
-                            </ComboBox>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,5,5,5">
-                            <Label>音频格式：</Label>
-                            <ComboBox Name="AudioFormat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="2">
-                                <ComboBoxItem x:Name="FLACAudio" IsSelected="True" Content="FLAC" />
-                                <ComboBoxItem x:Name="AACAudio" Content="AAC" />
-                                <ComboBoxItem x:Name="AC3Audio" Content="AC3" />
-                                <!--<ComboBoxItem Content="ALAC" />-->
-                            </ComboBox>
-                            <CheckBox IsChecked="{Binding Path=IsExtAudioOnly}" VerticalAlignment="Center" Visibility="Hidden">音频仅抽取</CheckBox>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,5,5,5">
-                            <TextBlock>如果需要封装章节，请将章节文件放在输入文件同一目录下并改名。<LineBreak />例：输入文件为00000.m2ts，章节文件则为00000.txt。</TextBlock>
-                        </StackPanel>
-                        <Label x:Name="OutputExample"></Label>
-                        <Label>
-                            <LineBreak></LineBreak>
-                        </Label>
-                        <Label>点击上一步检查或修改任务设置。也可以在任务创建后单独修改。</Label>
-                    </StackPanel>
-                </Grid>
-            </xctk:WizardPage>
-            <!--<xctk:WizardPage x:Name="LastPage" PageType="Interior"
-                                   Title="确认压制任务"
-                                   Description="点击上一步检查或修改任务设置"
-                                   CanFinish="True">
-            </xctk:WizardPage>-->
         </xctk:Wizard>
     </Grid>
 </Window>
