@@ -44,6 +44,9 @@ namespace OKEGui.Utils
         public const string qaacErrorMsg = "QAAC无法正常运行。请确保你安装了Apple Application Support 64bit";
         public const string qaacErrorSmr = "QAAC无法运行";
 
+        public const string audioFormatMistachMsg = "无法将{0}格式的音轨转为{1}格式。该文件{2}将跳过处理。请转告技术总监复查。";
+        public const string audioFormatMistachSmr = "音轨格式不匹配";
+
         //Application configuration file
         public const string configFile = "OKEGuiConfig.json";
 

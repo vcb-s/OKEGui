@@ -131,7 +131,7 @@ namespace OKEGui.Utils
                 e.start();
             } catch (OKETaskException ex)
             {
-                ExceptionMsg msg = ExceptionParser.parse(ex, null);
+                ExceptionMsg msg = ExceptionParser.Parse(ex, null);
                 MessageBox.Show(msg.errorMsg, ex.Message);
                 return false;
             }

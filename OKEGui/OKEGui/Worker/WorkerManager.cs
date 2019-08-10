@@ -286,12 +286,6 @@ namespace OKEGui
                             continue;
                         }
 
-                        // 只处理flac文件和AC3文件
-                        string audioExtension = track.File.GetExtension();
-                        if (audioExtension != ".flac" && audioExtension != ".ac3")
-                        {
-                            continue;
-                        }
                         AudioJob audioJob = new AudioJob(task.AudioTracks[id].OutputCodec);
                         audioJob.SetUpdate(task);
 
@@ -339,14 +333,8 @@ namespace OKEGui
                         if (job is AudioJob)
                         {
                             AudioJob audioJob = job as AudioJob;
-                            if (audioJob.CodecString == "FLAC" ||
-                                audioJob.CodecString == "AC3" ||
-                                audioJob.CodecString == "AUTO")
-                            {
-                                // 跳过当前轨道
-                                audioJob.Output = audioJob.Input;
-                            }
-                            else if (audioJob.CodecString == "AAC")
+                            string srcFmt = Path.GetExtension(audioJob.Input).ToUpper().Remove(0,1);
+                            if (srcFmt == "FLAC" && audioJob.CodecString == "AAC")
                             {
                                 task.CurrentStatus = "音频转码中";
                                 task.IsUnKnowProgress = true;
@@ -361,10 +349,16 @@ namespace OKEGui
 
                                 audioJob.Output = aEncode.Output;
                             }
+                            else if (srcFmt == audioJob.CodecString)
+                            {
+                                audioJob.Output = audioJob.Input;
+                            }
                             else
                             {
-                                // 未支持格式
-                                audioJob.Output = audioJob.Input;
+                                OKETaskException ex = new OKETaskException(Constants.audioFormatMistachSmr);
+                                ex.Data["SRC_FMT"] = srcFmt;
+                                ex.Data["DST_FMT"] = audioJob.CodecString;
+                                throw ex;
                             }
 
                             var audioFileInfo = new FileInfo(audioJob.Output);
@@ -443,7 +437,7 @@ namespace OKEGui
                 }
                 catch (OKETaskException ex)
                 {
-                    ExceptionMsg msg = ExceptionParser.parse(ex, task);
+                    ExceptionMsg msg = ExceptionParser.Parse(ex, task);
                     new System.Threading.Tasks.Task(() =>
                     System.Windows.MessageBox.Show(msg.errorMsg, msg.fileName)).Start();
                     task.IsRunning = false;

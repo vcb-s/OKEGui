@@ -40,7 +40,7 @@ namespace OKEGui.JobProcessor
 
     static class ExceptionParser
     {
-        public static ExceptionMsg parse(OKETaskException ex, TaskDetail task)
+        public static ExceptionMsg Parse(OKETaskException ex, TaskDetail task)
         {
             ExceptionMsg msg;
             if (task != null)
@@ -84,6 +84,10 @@ namespace OKEGui.JobProcessor
 
                 case Constants.qaacErrorSmr:
                     msg.errorMsg = string.Format(Constants.qaacErrorMsg);
+                    break;
+
+                case Constants.audioFormatMistachSmr:
+                    msg.errorMsg = string.Format(Constants.audioFormatMistachMsg, ex.Data["SRC_FMT"], ex.Data["DST_FMT"], task.InputFile);
                     break;
 
                 case Constants.unknownErrorSmr:
