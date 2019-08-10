@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,6 +21,8 @@ namespace OKEGui
         {
             InitializeComponent();
 
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            this.Title += " v" + version;
             if (EnvironmentChecker.CheckEnviornment())
             {
                 ConfigManager.WriteConfig();
