@@ -25,6 +25,7 @@ namespace OKEGui
         public enum TrackCodec
         {
             Unknown,
+            MPEG2,
             H264_AVC,
             RAW_PCM,
             DTSMA,
@@ -92,19 +93,16 @@ namespace OKEGui
         private string sourceFile;
 
         private static List<EacOutputTrackType> s_eacOutputs = new List<EacOutputTrackType> {
-            new EacOutputTrackType(TrackCodec.RAW_PCM,    "RAW/PCM",          "flac",    true, TrackType.Audio),
-            new EacOutputTrackType(TrackCodec.DTSMA,      "DTS Master Audio", "flac",    true, TrackType.Audio),
-
-            new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD/AC3",       "thd",     true, TrackType.Audio),
-            new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD",           "thd",     true, TrackType.Audio),
-
-            new EacOutputTrackType(TrackCodec.AC3,        "AC3",              "ac3",     true, TrackType.Audio),
-
-            new EacOutputTrackType(TrackCodec.DTS,        "DTS",              "dts",     true, TrackType.Audio),
-
+            new EacOutputTrackType(TrackCodec.RAW_PCM,    "RAW/PCM",          "flac",    true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.DTSMA,      "DTS Master Audio", "flac",    true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD/AC3",       "thd",     true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD",           "thd",     true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.AC3,        "AC3",              "ac3",     true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.DTS,        "DTS",              "dts",     true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.MPEG2,      "MPEG2",            "m2v",     false, TrackType.Video),
             new EacOutputTrackType(TrackCodec.H264_AVC,   "h264/AVC",         "h264",    false, TrackType.Video),
-            new EacOutputTrackType(TrackCodec.PGS,        "Subtitle (PGS)",   "sup",     true, TrackType.Subtitle),
-            new EacOutputTrackType(TrackCodec.Chapter,    "Chapters",         "txt",     true, TrackType.Chapter),
+            new EacOutputTrackType(TrackCodec.PGS,        "Subtitle (PGS)",   "sup",     true,  TrackType.Subtitle),
+            new EacOutputTrackType(TrackCodec.Chapter,    "Chapters",         "txt",     true,  TrackType.Chapter),
         };
 
         public EACDemuxer(string eacPath, string fileName)
