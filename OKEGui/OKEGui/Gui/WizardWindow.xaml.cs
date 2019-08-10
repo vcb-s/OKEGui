@@ -238,6 +238,7 @@ namespace OKEGui
                 // 主音轨
                 wizardInfo.AudioFormat = okeProj.AudioTracks[0].OutputCodec.ToUpper();
                 wizardInfo.AudioBitrate = okeProj.AudioTracks[0].Bitrate;
+                wizardInfo.AudioTracks.Clear();
 
                 // 添加音频参数到任务里面
                 foreach (var track in okeProj.AudioTracks)
@@ -465,11 +466,6 @@ namespace OKEGui
         {
             // 使用正则解析模板, 多行忽略大小写
             string[] inputTemplate = Constants.inputRegex.Split(wizardInfo.VSScript);
-            Debugger.Log(0, "", inputTemplate.Length.ToString() + "\n");
-            foreach (string s in inputTemplate)
-            {
-                Debugger.Log(0, "", s + "\n");
-            }
             if (inputTemplate.Length < 4 && wizardInfo.InputFile.Count() > 1)
             {
                 System.Windows.MessageBox.Show("任务创建失败！添加多个输入文件请确保VapourSynth脚本使用OKE提供的模板。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -535,7 +531,7 @@ namespace OKEGui
 
                 foreach (var audio in wizardInfo.AudioTracks)
                 {
-                    td.AudioTracks.Add(audio);
+                    td.AudioTracks.Add(audio.Clone() as AudioInfo);
                 }
 
                 // 更新输出文件拓展名

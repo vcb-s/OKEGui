@@ -154,7 +154,7 @@ namespace OKEGui
     }
 
     // 音轨信息
-    public class AudioInfo
+    public class AudioInfo : ICloneable
     {
         public int TrackId { get; set; }
         public string SourceCodec { get; set; }
@@ -163,6 +163,11 @@ namespace OKEGui
         public string Language { get; set; }
         public string ExtraArg { get; set; }
         public bool SkipMuxing { get; set; }
+
+        public Object Clone()
+        {
+            return this.MemberwiseClone() as AudioInfo;
+        }
     }
 
     /// <summary>
