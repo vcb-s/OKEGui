@@ -76,15 +76,11 @@ namespace OKEGui
             }
             catch (Exception e)
             {
-                // log.LogValue("Exception in compileFinalStats", e, ImageType.Warning);
+                Debugger.Log(0, "", "Exception compiling final stats" + e.ToString());
             }
         }
 
         #endregion helper methods
-
-        public override void setup(Job job, StatusUpdate su)
-        {
-        }
 
         protected bool setFrameNumber(string frameString, bool isUpdateSpeed = false)
         {

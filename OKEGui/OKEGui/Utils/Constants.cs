@@ -13,6 +13,9 @@ namespace OKEGui.Utils
         public const string QAACPath = ".\\tools\\qaac\\qaac64.exe";
         public const int QAACBitrate = 192;
 
+        //ffmpeg
+        public const string ffmpegPath = ".\\tools\\ffmpeg\\ffmpeg.exe";
+
         //Audio & sub language.
         public const string language = "jpn";
 

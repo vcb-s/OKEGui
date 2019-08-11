@@ -14,55 +14,12 @@ namespace OKEGui
         Completed,
     }
 
-    public class EACDemuxer
+    public partial class EACDemuxer
     {
         public enum ProcessState
         {
             FetchStream,
             ExtractStream,
-        }
-
-        public enum TrackCodec
-        {
-            Unknown,
-            MPEG2,
-            H264_AVC,
-            RAW_PCM,
-            DTSMA,
-            TRUEHD_AC3,
-            AC3,
-            DTS,
-            PGS,
-            Chapter,
-        }
-
-        public struct TrackInfo
-        {
-            public TrackCodec Codec;
-            public int Index;
-            public string Information;
-            public string RawOutput;
-            public string SourceFile;
-            public TrackType Type;
-            public bool SkipMuxing;
-
-            public string OutFileName
-            {
-                get {
-                    var directory = Path.GetDirectoryName(SourceFile);
-                    var baseName = Path.GetFileNameWithoutExtension(SourceFile);
-
-                    return $"{Path.Combine(directory, baseName)}_{Index}{FileExtension}";
-                }
-            }
-
-            public string FileExtension
-            {
-                get {
-                    TrackCodec type = Codec;
-                    return "." + s_eacOutputs.Find(val => val.Codec == type).FileExtension;
-                }
-            }
         }
 
         private struct EacOutputTrackType
@@ -113,7 +70,8 @@ namespace OKEGui
 
         private void StartEac(string arguments, bool asyncRead)
         {
-            var startInfo = new ProcessStartInfo {
+            var startInfo = new ProcessStartInfo
+            {
                 FileName = _eacPath,
                 Arguments = arguments + " -progressnumbers",
                 RedirectStandardOutput = true,
@@ -124,51 +82,70 @@ namespace OKEGui
             };
 
             proc.StartInfo = startInfo;
-            try {
+            try
+            {
                 proc.Start();
-                if (asyncRead) {
+                if (asyncRead)
+                {
                     new Thread(new ThreadStart(readStdErr)).Start();
                     new Thread(new ThreadStart(readStdOut)).Start();
                     proc.WaitForExit();
-                } else {
+                }
+                else
+                {
                     proc.WaitForExit();
                     readStream(proc.StandardOutput);
                 }
-            } catch (Exception e) { throw e; }
+            }
+            catch (Exception e) { throw e; }
         }
 
         private void readStream(StreamReader sr)
         {
             string line;
-            if (proc != null) {
-                try {
-                    while ((line = sr.ReadLine()) != null) {
-                        if (state == ProcessState.FetchStream) {
+            if (proc != null)
+            {
+                try
+                {
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        if (state == ProcessState.FetchStream)
+                        {
                             DetectFileTracks(line);
                             _progressCallback(0, EACProgressType.Analyze);
-                        } else if (state == ProcessState.ExtractStream) {
+                        }
+                        else if (state == ProcessState.ExtractStream)
+                        {
                             Regex rAnalyze = new Regex("analyze: ([0-9]+)%");
                             Regex rProgress = new Regex("process: ([0-9]+)%");
 
                             double p = 0;
-                            if (rAnalyze.IsMatch(line)) {
+                            if (rAnalyze.IsMatch(line))
+                            {
                                 double.TryParse(rAnalyze.Split(line)[1], out p);
-                                if (p > 1) {
+                                if (p > 1)
+                                {
                                     _progressCallback(p, EACProgressType.Analyze);
                                 }
-                            } else if (rProgress.IsMatch(line)) {
+                            }
+                            else if (rProgress.IsMatch(line))
+                            {
                                 double.TryParse(rProgress.Split(line)[1], out p);
-                                if (p > 1) {
+                                if (p > 1)
+                                {
                                     _progressCallback(p, EACProgressType.Process);
                                 }
                             }
 
-                            if (line.ToLower().Contains("done.")) {
+                            if (line.ToLower().Contains("done."))
+                            {
                                 _progressCallback(100, EACProgressType.Completed);
                             }
                         }
                     }
-                } catch (Exception e) {
+                }
+                catch (Exception e)
+                {
                     System.Windows.MessageBox.Show(e.ToString());
                     throw e;
                 }
@@ -178,10 +155,13 @@ namespace OKEGui
         private void readStdOut()
         {
             StreamReader sr = null;
-            try {
+            try
+            {
                 sr = proc.StandardOutput;
-            } catch (Exception e) {
-                // log.LogValue("Exception getting IO reader for stdout", e, ImageType.Error);
+            }
+            catch (Exception e)
+            {
+                Debugger.Log(0, "", "Exception getting IO reader for stdout" + e.ToString());
                 return;
             }
             readStream(sr);
@@ -190,10 +170,13 @@ namespace OKEGui
         private void readStdErr()
         {
             StreamReader sr = null;
-            try {
+            try
+            {
                 sr = proc.StandardError;
-            } catch (Exception e) {
-                // log.LogValue("Exception getting IO reader for stderr", e, ImageType.Error);
+            }
+            catch (Exception e)
+            {
+                Debugger.Log(0, "", "Exception getting IO reader for stderr" + e.ToString());
                 return;
             }
             readStream(sr);
@@ -218,18 +201,21 @@ namespace OKEGui
             line.Trim();
             if (string.IsNullOrEmpty(line)) return;
 
-            if (Regex.IsMatch(line, @"^\d*?: .*$")) {
+            if (Regex.IsMatch(line, @"^\d*?: .*$"))
+            {
                 //原盘没有信息的PGS字幕
                 if (line.Contains("PGS") && !line.Contains(","))
                     line += ", Japanese";
 
                 var match = Regex.Match(line, @"^(\d*?): (.*?), (.*?)$");
 
-                if (match.Groups.Count < 4) {
+                if (match.Groups.Count < 4)
+                {
                     return;
                 }
 
-                var trackInfo = new TrackInfo {
+                var trackInfo = new TrackInfo
+                {
                     Index = Convert.ToInt32(match.Groups[1].Value),
                     Codec = EacOutputToTrackCodec(match.Groups[2].Value),
                     Information = match.Groups[3].Value.Trim(),
@@ -239,7 +225,8 @@ namespace OKEGui
                     SkipMuxing = false
                 };
 
-                if (TrackCodec.Unknown == trackInfo.Codec) {
+                if (TrackCodec.Unknown == trackInfo.Codec)
+                {
                     throw new ArgumentException($"不明类型: {trackInfo.RawOutput}");
                 }
                 tracks.Add(trackInfo);
@@ -253,7 +240,8 @@ namespace OKEGui
         /// <param name="completedCallback">抽取的轨道，不包含重复轨道；重复轨道文件名带有.bak</param>
         public MediaFile Extract(Action<double, EACProgressType> progressCallback)
         {
-            if (!new FileInfo(sourceFile).Exists) {
+            if (!new FileInfo(sourceFile).Exists)
+            {
                 return null;
             }
             _progressCallback = progressCallback;
@@ -264,8 +252,10 @@ namespace OKEGui
             var args = new List<string>();
             var extractResult = new List<TrackInfo>();
 
-            foreach (var track in tracks) {
-                if (!s_eacOutputs.Find(val => val.Codec == track.Codec).Extract) {
+            foreach (var track in tracks)
+            {
+                if (!s_eacOutputs.Find(val => val.Codec == track.Codec).Extract)
+                {
                     continue;
                 };
 
@@ -275,52 +265,75 @@ namespace OKEGui
             state = ProcessState.ExtractStream;
             StartEac($"\"{sourceFile}\" {string.Join(" ", args)}", true);
 
-            Dictionary<int, long> trackSize = new Dictionary<int, long>();
-
-            foreach (var track in extractResult) {
+            foreach (TrackInfo track in extractResult)
+            {
                 FileInfo finfo = new FileInfo(track.OutFileName);
-                if (!finfo.Exists && finfo.Length > 0) {
+                if (!finfo.Exists || finfo.Length == 0)
+                {
                     throw new Exception("文件输出失败: " + track.OutFileName);
                 }
-
-                trackSize.Add(track.Index, finfo.Length);
+                else
+                {
+                    track.fileSize = finfo.Length;
+                }
+                if (track.Type == TrackType.Audio)
+                {
+                    FFmpegVolumeChecker checker = new FFmpegVolumeChecker(track.OutFileName);
+                    checker.start();
+                    checker.waitForFinish();
+                    track.maxVolume = checker.MaxVolume;
+                    track.meanVolume = checker.MeanVolume;
+                }
             }
 
             List<int> removeList = new List<int>();
-            foreach (var item in trackSize) {
-                if (removeList.Contains(item.Key)) {
+            for (int i = 0; i < extractResult.Count; i++)
+            {
+                TrackInfo track = extractResult[i];
+                if (removeList.Contains(track.Index))
+                {
+                    continue;
+                }
+                if (track.IsEmpty())
+                {
+                    removeList.Add(track.Index);
+                    track.MarkSkipping();
                     continue;
                 }
 
-                foreach (var citem in trackSize) {
-                    if (citem.Key == item.Key ||
-                        Math.Abs(item.Value - citem.Value) > 1024) {
-                        continue;
-                    }
-
-                    int idx = extractResult.FindIndex(t => { return t.Index == citem.Key; });
-                    TrackInfo ctrack = extractResult[idx];
-                    if (ctrack.Index == citem.Key && ctrack.FileExtension == ".flac") {
-                        removeList.Add(ctrack.Index);
-                        File.Move(ctrack.OutFileName, Path.ChangeExtension(ctrack.OutFileName, ".bak") + ctrack.FileExtension);
-                        ctrack.SkipMuxing = true;
-                        extractResult[idx] = ctrack;
+                for (int j = i + 1; j < extractResult.Count; j++)
+                {
+                    TrackInfo other = extractResult[j];
+                    if (track.IsDuplicate(other))
+                    {
+                        removeList.Add(other.Index);
+                        other.MarkSkipping();
                     }
                 }
             }
 
             MediaFile mf = new MediaFile();
-            foreach (var item in extractResult) {
+            foreach (var item in extractResult)
+            {
                 OKEFile file = new OKEFile(item.OutFileName);
-                if (item.Type == TrackType.Audio) {
+                if (item.Type == TrackType.Audio)
+                {
                     mf.AddTrack(new AudioTrack(file, new AudioInfo { SkipMuxing = item.SkipMuxing }));
-                } else if (item.Type == TrackType.Subtitle) {
+                }
+                else if (item.Type == TrackType.Subtitle)
+                {
                     mf.AddTrack(new SubtitleTrack(file, null));
-                } else if (item.Type == TrackType.Chapter) {
+                }
+                else if (item.Type == TrackType.Chapter)
+                {
                     mf.AddTrack(new ChapterTrack(file));
-                } else if (item.Type == TrackType.Video) {
+                }
+                else if (item.Type == TrackType.Video)
+                {
                     mf.AddTrack(new VideoTrack(file, null));
-                } else {
+                }
+                else
+                {
                     System.Windows.MessageBox.Show(item.OutFileName, "不认识的轨道呢");
                 }
             }

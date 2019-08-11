@@ -43,10 +43,5 @@ namespace OKEGui
                 SetFinish();
             }
         }
-
-        public override void setup(Job job, StatusUpdate su)
-        {
-        }
-
     }
 }

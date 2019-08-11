@@ -33,7 +33,10 @@ namespace OKEGui.Utils
             {
                 return false;
             }
-
+            if (!CheckQAAC())
+            {
+                return false;
+            }
 
             return true;
         }
@@ -136,6 +139,21 @@ namespace OKEGui.Utils
                 return false;
             }
             return true;
+        }
+
+        static Boolean CheckFfmpeg()
+        {
+            FileInfo ffmpegInfo = new FileInfo(Constants.ffmpegPath);
+
+            if (ffmpegInfo.Exists)
+            {
+                return true;
+            }
+            else
+            {
+                MessageBox.Show("请更新tools工具包。", "无法找到ffmpeg");
+                return false;
+            }
         }
     }
 }

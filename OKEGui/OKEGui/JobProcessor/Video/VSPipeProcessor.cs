@@ -143,10 +143,6 @@ namespace OKEGui
             retrieved.WaitOne();
         }
 
-        public override void setup(Job job, StatusUpdate su)
-        {
-        }
-
         public VSVideoInfo VideoInfo
         {
             get {

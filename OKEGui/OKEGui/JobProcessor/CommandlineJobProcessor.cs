@@ -113,8 +113,6 @@ namespace OKEGui
 
         #region IVideoEncoder overridden Members
 
-        public abstract void setup(Job job, StatusUpdate su);
-
         // TODO: 默认优先级
         public void start()
         {
@@ -285,7 +283,7 @@ namespace OKEGui
             try {
                 sr = proc.StandardOutput;
             } catch (Exception e) {
-                // log.LogValue("Exception getting IO reader for stdout", e, ImageType.Error);
+                Debugger.Log(0, "", "Exception getting IO reader for stdout" + e.ToString());
                 stdoutDone.Set();
                 return;
             }
@@ -298,7 +296,7 @@ namespace OKEGui
             try {
                 sr = proc.StandardError;
             } catch (Exception e) {
-                // log.LogValue("Exception getting IO reader for stderr", e, ImageType.Error);
+                Debugger.Log(0, "", "Exception getting IO reader for stderr" + e.ToString());
                 stderrDone.Set();
                 return;
             }

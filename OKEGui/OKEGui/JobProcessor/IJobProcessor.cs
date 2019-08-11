@@ -8,12 +8,6 @@
     public interface IJobProcessor
     {
         /// <summary>
-        /// sets up encoding
-        /// </summary
-        /// <param name="job">the job to be processed</param>
-        void setup(Job job, StatusUpdate su);
-
-        /// <summary>
         /// starts the encoding process
         /// </summary>
         void start();

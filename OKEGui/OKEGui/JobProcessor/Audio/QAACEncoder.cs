@@ -41,10 +41,5 @@ namespace OKEGui
                 throw new OKETaskException(Constants.qaacErrorSmr);
             }
         }
-
-        public override void setup(Job job, StatusUpdate su)
-        {
-        }
-
     }
 }

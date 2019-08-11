@@ -249,7 +249,7 @@ namespace OKEGui
             try {
                 sr = proc.StandardOutput;
             } catch (Exception e) {
-                // log.LogValue("Exception getting IO reader for stdout", e, ImageType.Error);
+                Debugger.Log(0, "", "Exception getting IO reader for stdout" + e.ToString());
                 return;
             }
             readStream(sr);
@@ -261,7 +261,7 @@ namespace OKEGui
             try {
                 sr = proc.StandardError;
             } catch (Exception e) {
-                // log.LogValue("Exception getting IO reader for stderr", e, ImageType.Error);
+                Debugger.Log(0, "", "Exception getting IO reader for stderr" + e.ToString());
                 return;
             }
             readStream(sr);
