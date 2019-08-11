@@ -33,7 +33,7 @@ namespace OKEGui.Utils
             {
                 return false;
             }
-            if (!CheckQAAC())
+            if (!CheckFfmpeg())
             {
                 return false;
             }
