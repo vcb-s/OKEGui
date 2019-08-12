@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using OKEGui.Utils;
+using OKEGui.Worker;
 
 namespace OKEGui
 {
@@ -41,8 +42,12 @@ namespace OKEGui
             BtnStop.IsEnabled = false;
             BtnEdit.IsEnabled = false;
 
-            WorkerCount++;
-            wm.AddWorker("工作单元-" + WorkerCount.ToString());
+            int numaCount = NumaNode.NumaCount;
+            for (int i = 0; i < numaCount; i++)
+            {
+                WorkerCount++;
+                wm.AddWorker("工作单元-" + WorkerCount.ToString());
+            }
             this.WorkerNumber.Text = "工作单元：" + WorkerCount.ToString();
         }
 

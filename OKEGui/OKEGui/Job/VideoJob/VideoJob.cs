@@ -17,6 +17,7 @@
         public double Fps;
         public uint FpsNum;
         public uint FpsDen;
+        public int NumaNode;
 
         public VideoJob() : base()
         {

@@ -9,49 +9,31 @@ using OKEGui.JobProcessor;
 
 namespace OKEGui
 {
-    public class x265Encoder : CommandlineVideoEncoder
+    public class X265Encoder : CommandlineVideoEncoder
     {
-        //  public static readonly JobProcessorFactory Factory = new JobProcessorFactory(new ProcessorFactory(init), "x265Encoder");
+        private readonly string x265Path = "";
+        private readonly string vspipePath = "";
 
-        private string x265Path = "";
-        private string vspipePath = "";
-
-        public static IJobProcessor init(Job j, string extractParam)
-        {
-            if (j is VideoJob && ((j as VideoJob).CodecString == "X265" || (j as VideoJob).CodecString == "HEVC")) {
-                return new x265Encoder((j as VideoJob), extractParam);
-            }
-            return null;
-        }
-
-        public x265Encoder(Job j, string extractParam)
-            : base()
+        public X265Encoder(Job j) : base()
         {
             job = j as VideoJob;
             getInputProperties(job);
 
             executable = Path.Combine(Environment.SystemDirectory, "cmd.exe");
 
-            if (File.Exists(job.EncoderPath)) {
+            if (File.Exists(job.EncoderPath))
+            {
                 this.x265Path = job.EncoderPath;
             }
 
             // 获取VSPipe路径
             this.vspipePath = ConfigManager.Config.vspipePath;
 
-            commandLine = BuildCommandline(extractParam);
+            commandLine = BuildCommandline(job.EncodeParam, job.NumaNode);
         }
 
         public override void ProcessLine(string line, StreamType stream)
         {
-            //if (line.StartsWith("[")) // status update
-            //{
-            //    int frameNumberStart = line.IndexOf("]", 4) + 2;
-            //    int frameNumberEnd = line.IndexOf("/");
-            //    if (frameNumberStart > 0 && frameNumberEnd > 0 && frameNumberEnd > frameNumberStart)
-            //        if (base.setFrameNumber(line.Substring(frameNumberStart, frameNumberEnd - frameNumberStart).Trim()))
-            //            return;
-            //}
             if (line.Contains("x265 [error]:"))
             {
                 OKETaskException ex = new OKETaskException(Constants.x265ErrorSmr);
@@ -66,7 +48,8 @@ namespace OKEGui
                 throw ex;
             }
 
-            if (line.ToLowerInvariant().Contains("encoded")) {
+            if (line.ToLowerInvariant().Contains("encoded"))
+            {
                 Regex rf = new Regex("encoded ([0-9]+) frames in ([0-9]+.[0-9]+)s \\(([0-9]+.[0-9]+) fps\\), ([0-9]+.[0-9]+) kb/s, Avg QP:(([0-9]+.[0-9]+))");
 
                 var result = rf.Split(line);
@@ -74,7 +57,8 @@ namespace OKEGui
                 ulong reportedFrames = ulong.Parse(result[1]);
 
                 // 这里是平均速度
-                if (!base.setSpeed(result[3])) {
+                if (!base.setSpeed(result[3]))
+                {
                     return;
                 }
 
@@ -86,32 +70,34 @@ namespace OKEGui
             Regex r = new Regex("([0-9]+) frames: ([0-9]+.[0-9]+) fps, ([0-9]+.[0-9]+) kb/s", RegexOptions.IgnoreCase);
 
             var status = r.Split(line);
-            if (status.Length < 3) {
+            if (status.Length < 3)
+            {
                 return;
             }
 
-            if (!base.setFrameNumber(status[1], true)) {
+            if (!base.setFrameNumber(status[1], true))
+            {
                 return;
             }
 
             base.setBitrate(status[3], "kb/s");
 
-            if (!base.setSpeed(status[2])) {
+            if (!base.setSpeed(status[2]))
+            {
                 return;
             }
 
             base.ProcessLine(line, stream);
         }
 
-        // TODO: 改为静态
-        public /*static*/ string BuildCommandline(string extractParam)
+        private string BuildCommandline(string extractParam, int numaNode)
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("/c ");
-            sb.Append("\"");
+            sb.Append("/c \"start \"foo\" /b /wait /affinity 0xFFFFFFF /node ");
+            sb.Append(numaNode.ToString());
             // 构建vspipe参数
-            sb.Append("\"" + vspipePath + "\"");
+            sb.Append(" \"" + vspipePath + "\"");
             sb.Append(" --y4m ");
             sb.Append("\"" + job.Input + "\"");
             sb.Append(" - | ");

@@ -129,7 +129,7 @@ namespace OKEGui
             //proc.EnableRaisingEvents = true;
             //proc.Exited += new EventHandler(proc_Exited);
             bWaitForExit = false;
-            Debugger.Log(0, "Job command line", pstart.FileName + " " + pstart.Arguments);
+            Debugger.Log(0, "Job command line", pstart.FileName + " " + pstart.Arguments + "\n");
 
             try {
                 bool started = proc.Start();

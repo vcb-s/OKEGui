@@ -6,7 +6,7 @@ using System.IO;
 using OKEGui.Utils;
 using OKEGui.JobProcessor;
 
-namespace OKEGui
+namespace OKEGui.Worker
 {
     // TODO: 目前只考虑压制全部任务；以后可能会各步骤分开进行，或者进行其他任务
     // TODO: TaskManger 做成接口。各种不同类型任务分开管理。
@@ -22,6 +22,7 @@ namespace OKEGui
         public WorkerType RunningType;
         public TaskManager taskManager;
         public BackgroundWorker bgWorker;
+        public int numaNode;
     }
 
     public class WorkerManager
@@ -104,6 +105,7 @@ namespace OKEGui
             args.RunningType = workerType[name];
             args.taskManager = tm;
             args.bgWorker = worker;
+            args.numaNode = NumaNode.NextNuma();
 
             worker.RunWorkerAsync(args);
             return true;
@@ -310,6 +312,12 @@ namespace OKEGui
                         videoJob.FpsNum = task.FpsNum;
                         videoJob.FpsDen = task.FpsDen;
 
+                        videoJob.NumaNode = args.numaNode;
+                        if (!task.EncoderParam.ToLower().Contains("--pools"))
+                        {
+                            videoJob.EncodeParam += " --pools " + NumaNode.X265PoolsParam(videoJob.NumaNode);
+                        }
+
                         task.JobQueue.Enqueue(videoJob);
                     }
 
@@ -333,7 +341,7 @@ namespace OKEGui
                         if (job is AudioJob)
                         {
                             AudioJob audioJob = job as AudioJob;
-                            string srcFmt = Path.GetExtension(audioJob.Input).ToUpper().Remove(0,1);
+                            string srcFmt = Path.GetExtension(audioJob.Input).ToUpper().Remove(0, 1);
                             if (srcFmt == "FLAC" && audioJob.CodecString == "AAC")
                             {
                                 task.CurrentStatus = "音频转码中";
@@ -380,7 +388,7 @@ namespace OKEGui
                             {
                                 task.CurrentStatus = "获取信息中";
                                 task.IsUnKnowProgress = true;
-                                IJobProcessor processor = x265Encoder.init(job, task.EncoderParam);
+                                X265Encoder processor = new X265Encoder(job);
 
                                 task.CurrentStatus = "压制中";
                                 task.ProgressValue = 0.0;
