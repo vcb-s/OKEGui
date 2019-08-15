@@ -14,6 +14,7 @@ namespace OKEGui.Worker
         public static extern bool GetNumaHighestNodeNumber([Out] out uint HighestNodeNumber);
 
         public static readonly int NumaCount;
+        public static readonly int UsableCoreCount;
         static int CurrentNuma;
 
         static NumaNode()
@@ -21,6 +22,7 @@ namespace OKEGui.Worker
             GetNumaHighestNodeNumber(out uint temp);
             CurrentNuma = (int)temp;
             NumaCount = CurrentNuma + 1;
+            UsableCoreCount = Environment.ProcessorCount;
         }
 
         public static int NextNuma()

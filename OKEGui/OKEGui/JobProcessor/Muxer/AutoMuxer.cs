@@ -39,7 +39,7 @@ namespace OKEGui
         };
 
         private static List<string> s_VideoFileExtensions = new List<string> {
-            ".hevc", ".h265", ".avc", ".h264"
+            ".hevc", ".h265", ".avc", ".h264", ".mkv"
         };
 
         private string _mkvMergePath;

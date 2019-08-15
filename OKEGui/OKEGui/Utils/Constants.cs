@@ -29,6 +29,9 @@ namespace OKEGui.Utils
         public const string fpsMismatchMsg = "输出FPS和指定FPS不一致。json里指定帧率为{0}，vs输出帧率为{1}。该文件{2}将跳过处理。请转告技术总监复查。";
         public const string fpsMismatchSmr = "FPS不一致";
 
+        public const string x264ErrorMsg = "x264出错:{0}。该文件{1}将跳过处理。请转告技术总监复查。";
+        public const string x264ErrorSmr = "x264出错";
+
         public const string x265ErrorMsg = "x265出错:{0}。该文件{1}将跳过处理。请转告技术总监复查。";
         public const string x265ErrorSmr = "x265出错";
 
@@ -40,6 +43,9 @@ namespace OKEGui.Utils
 
         public const string vsCrashMsg = "压制未能完成，预计是vs崩溃。该文件{0}将跳过处理，半成品以HEVC形式保留在目录中。请转告技术总监复查。";
         public const string vsCrashSmr = "vs崩溃";
+
+        public const string x264CrashMsg = "压制未能完成，预计是x264崩溃。该文件{0}将跳过处理，如果是MKV输出，半成品以_.mkv形式保留在目录中。请转告技术总监复查。";
+        public const string x264CrashSmr = "x264崩溃";
 
         public const string x265CrashMsg = "压制未能完成，预计是x265崩溃。该文件{0}将跳过处理，半成品以HEVC形式保留在目录中。请转告技术总监复查。";
         public const string x265CrashSmr = "x265崩溃";

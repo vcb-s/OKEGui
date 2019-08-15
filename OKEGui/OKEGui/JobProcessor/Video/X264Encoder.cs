@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -8,12 +9,12 @@ using OKEGui.JobProcessor;
 
 namespace OKEGui
 {
-    public class X265Encoder : CommandlineVideoEncoder
+    public class X264Encoder : CommandlineVideoEncoder
     {
-        private readonly string X265Path = "";
-        private readonly string vspipePath = "";
+        private readonly string X264Path = "";
+        private readonly string VspipePath = "";
 
-        public X265Encoder(Job j) : base()
+        public X264Encoder(Job j) : base()
         {
             job = j as VideoJob;
             getInputProperties(job);
@@ -22,46 +23,46 @@ namespace OKEGui
 
             if (File.Exists(job.EncoderPath))
             {
-                this.X265Path = job.EncoderPath;
+                this.X264Path = job.EncoderPath;
             }
 
             // 获取VSPipe路径
-            this.vspipePath = ConfigManager.Config.vspipePath;
+            this.VspipePath = ConfigManager.Config.vspipePath;
 
             commandLine = BuildCommandline(job.EncodeParam, job.NumaNode);
         }
 
         public override void ProcessLine(string line, StreamType stream)
         {
-            if (line.Contains("x265 [error]:"))
+            if (line.Contains("x264 [error]:"))
             {
-                OKETaskException ex = new OKETaskException(Constants.x265ErrorSmr);
+                OKETaskException ex = new OKETaskException(Constants.x264ErrorSmr);
                 ex.progress = 0.0;
-                ex.Data["X265_ERROR"] = line.Substring(14);
+                ex.Data["X264_ERROR"] = line.Substring(14);
                 throw ex;
             }
 
             if (line.Contains("Error: fwrite() call failed when writing frame: "))
             {
-                OKETaskException ex = new OKETaskException(Constants.x265CrashSmr);
+                OKETaskException ex = new OKETaskException(Constants.x264CrashSmr);
                 throw ex;
             }
 
             if (line.ToLowerInvariant().Contains("encoded"))
             {
-                Regex rf = new Regex("encoded ([0-9]+) frames in ([0-9]+.[0-9]+)s \\(([0-9]+.[0-9]+) fps\\), ([0-9]+.[0-9]+) kb/s, Avg QP:(([0-9]+.[0-9]+))");
+                Regex rf = new Regex("encoded ([0-9]+) frames, ([0-9]+.[0-9]+) fps, ([0-9]+.[0-9]+) kb/s");
 
                 var result = rf.Split(line);
 
                 ulong reportedFrames = ulong.Parse(result[1]);
 
                 // 这里是平均速度
-                if (!base.setSpeed(result[3]))
+                if (!base.setSpeed(result[2]))
                 {
                     return;
                 }
 
-                Debugger.Log(0, "EncodeFinish", result[3] + "fps\n");
+                Debugger.Log(0, "EncodeFinish", result[2] + "fps\n");
 
                 base.encodeFinish(reportedFrames);
             }
@@ -96,14 +97,14 @@ namespace OKEGui
             sb.Append("/c \"start \"foo\" /b /wait /affinity 0xFFFFFFF /node ");
             sb.Append(numaNode.ToString());
             // 构建vspipe参数
-            sb.Append(" \"" + vspipePath + "\"");
+            sb.Append(" \"" + VspipePath + "\"");
             sb.Append(" --y4m ");
             sb.Append("\"" + job.Input + "\"");
             sb.Append(" - | ");
 
-            // 构建x265参数
-            sb.Append("\"" + X265Path + "\"");
-            sb.Append(" --y4m " + extractParam + " -o ");
+            // 构建X264参数
+            sb.Append("\"" + X264Path + "\"");
+            sb.Append(" --demuxer y4m " + extractParam + " -o ");
             sb.Append("\"" + job.Output + "\" -");
             sb.Append("\"");
 

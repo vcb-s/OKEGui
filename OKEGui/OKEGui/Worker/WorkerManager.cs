@@ -299,27 +299,36 @@ namespace OKEGui.Worker
                     }
 
                     // 新建视频处理工作
+                    VideoJob videoJob = new VideoJob(task.VideoFormat);
+                    videoJob.SetUpdate(task);
+
+                    videoJob.Input = task.InputScript;
+                    videoJob.EncoderPath = task.EncoderPath;
+                    videoJob.EncodeParam = task.EncoderParam;
+                    videoJob.Fps = task.Fps;
+                    videoJob.FpsNum = task.FpsNum;
+                    videoJob.FpsDen = task.FpsDen;
+                    videoJob.NumaNode = args.numaNode;
+
                     if (task.VideoFormat == "HEVC")
                     {
-                        VideoJob videoJob = new VideoJob(task.VideoFormat);
-                        videoJob.SetUpdate(task);
-
-                        videoJob.Input = task.InputScript;
                         videoJob.Output = new FileInfo(task.InputFile).FullName + ".hevc";
-                        videoJob.EncoderPath = task.EncoderPath;
-                        videoJob.EncodeParam = task.EncoderParam;
-                        videoJob.Fps = task.Fps;
-                        videoJob.FpsNum = task.FpsNum;
-                        videoJob.FpsDen = task.FpsDen;
-
-                        videoJob.NumaNode = args.numaNode;
                         if (!task.EncoderParam.ToLower().Contains("--pools"))
                         {
                             videoJob.EncodeParam += " --pools " + NumaNode.X265PoolsParam(videoJob.NumaNode);
                         }
-
-                        task.JobQueue.Enqueue(videoJob);
                     }
+                    else
+                    {
+                        videoJob.Output = new FileInfo(task.InputFile).FullName;
+                        videoJob.Output += task.ContainerFormat == "MKV" ? "_.mkv" : ".h264";
+                        if (!task.EncoderParam.ToLower().Contains("--threads") && NumaNode.UsableCoreCount > 10)
+                        {
+                            videoJob.EncodeParam += " --threads 16";
+                        }
+                    }
+
+                    task.JobQueue.Enqueue(videoJob);
 
                     // 添加字幕文件
                     for (int id = 0; id < srcTracks.SubtitleTracks.Count; id++)
@@ -384,20 +393,24 @@ namespace OKEGui.Worker
                         }
                         else if (job is VideoJob)
                         {
+                            CommandlineVideoEncoder processor;
+                            task.CurrentStatus = "获取信息中";
+                            task.IsUnKnowProgress = true;
                             if (job.CodecString == "HEVC")
                             {
-                                task.CurrentStatus = "获取信息中";
-                                task.IsUnKnowProgress = true;
-                                X265Encoder processor = new X265Encoder(job);
-
-                                task.CurrentStatus = "压制中";
-                                task.ProgressValue = 0.0;
-                                processor.start();
-                                processor.waitForFinish();
+                                processor = new X265Encoder(job);
                             }
+                            else
+                            {
+                                processor = new X264Encoder(job);
+                            }
+                            task.CurrentStatus = "压制中";
+                            task.ProgressValue = 0.0;
+                            processor.start();
+                            processor.waitForFinish();
 
                             VideoInfo info = new VideoInfo();
-                            VideoJob videoJob = job as VideoJob;
+                            videoJob = job as VideoJob;
                             info.Fps = videoJob.Fps;
                             info.FpsNum = videoJob.FpsNum;
                             info.FpsDen = videoJob.FpsDen;

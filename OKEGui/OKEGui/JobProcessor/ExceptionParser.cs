@@ -66,6 +66,10 @@ namespace OKEGui.JobProcessor
                     msg.errorMsg = string.Format(Constants.fpsMismatchMsg, ex.Data["SRC_FPS"], ex.Data["DST_FPS"], task.InputFile);
                     break;
 
+                case Constants.x264ErrorSmr:
+                    msg.errorMsg = string.Format(Constants.x264ErrorMsg, ex.Data["X264_ERROR"], task.InputFile);
+                    break;
+
                 case Constants.x265ErrorSmr:
                     msg.errorMsg = string.Format(Constants.x265ErrorMsg, ex.Data["X265_ERROR"], task.InputFile);
                     break;
@@ -76,6 +80,10 @@ namespace OKEGui.JobProcessor
 
                 case Constants.vsCrashSmr:
                     msg.errorMsg = string.Format(Constants.vsCrashMsg, task.InputFile);
+                    break;
+
+                case Constants.x264CrashSmr:
+                    msg.errorMsg = string.Format(Constants.x264CrashMsg, task.InputFile);
                     break;
 
                 case Constants.x265CrashSmr:

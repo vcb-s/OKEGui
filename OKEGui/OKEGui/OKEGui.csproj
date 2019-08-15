@@ -91,6 +91,7 @@
     <Compile Include="JobProcessor\Audio\FFmpegVolumeChecker.cs" />
     <Compile Include="JobProcessor\Demuxer\TrackInfo.cs" />
     <Compile Include="JobProcessor\ExceptionParser.cs" />
+    <Compile Include="JobProcessor\Video\X264Encoder.cs" />
     <Compile Include="TaskManager.cs" />
     <Compile Include="JobProcessor\Audio\FLACDecoder.cs" />
     <Compile Include="JobProcessor\Audio\QAACEncoder.cs" />
@@ -116,9 +117,9 @@
       <DependentUpon>WizardWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="JobProcessor\CommandlineJobProcessor.cs" />
-    <Compile Include="JobProcessor\CommandlineVideoEncoder.cs" />
+    <Compile Include="JobProcessor\Video\CommandlineVideoEncoder.cs" />
     <Compile Include="JobProcessor\IJobProcessor.cs" />
-    <Compile Include="JobProcessor\Video\x265Encoder.cs" />
+    <Compile Include="JobProcessor\Video\X265Encoder.cs" />
     <Compile Include="Job\Job.cs" />
     <Compile Include="Job\StatusUpdate.cs" />
     <Compile Include="Job\VideoJob\VideoJob.cs" />

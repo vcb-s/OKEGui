@@ -118,7 +118,6 @@ namespace OKEGui
             public string Encoder;
             public string EncoderParam;
             public string ContainerFormat;
-            public string VideoFormat;
             public double Fps;
             public uint FpsNum;
             public uint FpsDen;
@@ -154,12 +153,19 @@ namespace OKEGui
 
             wizardInfo.TaskNamePrefix = okeProj.ProjectName;
 
-            if (okeProj.EncoderType.ToLower() != "x265")
-            {
-                System.Windows.MessageBox.Show("啊，目前只能支持x265编码", "版本不对", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
             wizardInfo.EncoderType = okeProj.EncoderType.ToLower();
+            switch (wizardInfo.EncoderType)
+            {
+                case "x264":
+                    wizardInfo.VideoFormat = "AVC";
+                    break;
+                case "x265":
+                    wizardInfo.VideoFormat = "HEVC";
+                    break;
+                default:
+                    System.Windows.MessageBox.Show("EncoderType请填写x264或者x265", "编码器版本错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+            }
 
             // 获取编码器全路径
             FileInfo encoder = new FileInfo(projDir.FullName + "\\" + okeProj.Encoder);
@@ -188,12 +194,6 @@ namespace OKEGui
             }
 
             // 设置视频编码
-            if (okeProj.VideoFormat.ToUpper() != "HEVC")
-            {
-                System.Windows.MessageBox.Show("现在只能支持HEVC编码", "编码格式不对", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-            wizardInfo.VideoFormat = okeProj.VideoFormat.ToUpper();
 
             // 设置视频帧率
             if (okeProj.Fps <= 0 && (okeProj.FpsNum <= 0 || okeProj.FpsDen <= 0))
