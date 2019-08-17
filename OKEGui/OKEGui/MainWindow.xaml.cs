@@ -182,13 +182,6 @@ namespace OKEGui
                 return;
             }
 
-            SubWindow subWin = new SubWindow(item);
-            subWin.ShowDialog();
-
-            if (!tm.UpdateTask(subWin.GetNewTaskDetail())) {
-                System.Windows.MessageBox.Show("任务更新失败！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
             return;
         }
 
