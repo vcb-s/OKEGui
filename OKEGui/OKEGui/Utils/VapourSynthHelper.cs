@@ -51,14 +51,12 @@ namespace OKEGui
     public class VapourSynthHelper
     {
         private int totalFrames;
-        private double fps;
         private long fpsNum;
         private long fpsDen;
         private int width;
         private int height;
         private bool isInit;
         private VSVideoInfo videoInfo;
-        private VSCoreInfo coreInfo;
 
         private int vsHandle;
         // private CVSHelper vss;
@@ -138,11 +136,6 @@ namespace OKEGui
         public int TotalFreams
         {
             get { return totalFrames; }
-        }
-
-        public double Fps
-        {
-            get { return fps; }
         }
 
         public long FpsNum

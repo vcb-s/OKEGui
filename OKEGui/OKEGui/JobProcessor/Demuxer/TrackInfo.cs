@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-
+using OKEGui.Model;
 
 namespace OKEGui
 {
@@ -28,7 +28,7 @@ namespace OKEGui
             public string RawOutput;
             public string SourceFile;
             public TrackType Type;
-            public bool SkipMuxing;
+            public bool DupOrEmpty;
             public long fileSize;
             public double meanVolume;
             public double maxVolume;
@@ -82,7 +82,7 @@ namespace OKEGui
             public void MarkSkipping()
             {
                 File.Move(OutFileName, Path.ChangeExtension(OutFileName, ".bak") + FileExtension);
-                SkipMuxing = true;
+                DupOrEmpty = true;
             }
         }
     }

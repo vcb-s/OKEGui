@@ -88,22 +88,28 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="JobProcessor\Audio\FFmpegVolumeChecker.cs" />
+    <Compile Include="JobProcessor\Demuxer\FFmpegVolumeChecker.cs" />
     <Compile Include="JobProcessor\Demuxer\TrackInfo.cs" />
     <Compile Include="JobProcessor\ExceptionParser.cs" />
     <Compile Include="JobProcessor\Video\X264Encoder.cs" />
+    <Compile Include="Model\Info\AudioInfo.cs" />
+    <Compile Include="Model\Info\Info.cs" />
+    <Compile Include="Model\Info\VideoInfo.cs" />
+    <Compile Include="Model\JobProfile.cs" />
+    <Compile Include="Model\Track\AudioTrack.cs" />
+    <Compile Include="Model\Track\ChapterTrack.cs" />
+    <Compile Include="Model\Track\Track.cs" />
+    <Compile Include="Model\Track\SubtitleTrack.cs" />
+    <Compile Include="Model\Track\VideoTrack.cs" />
     <Compile Include="TaskManager.cs" />
-    <Compile Include="JobProcessor\Audio\FLACDecoder.cs" />
     <Compile Include="JobProcessor\Audio\QAACEncoder.cs" />
     <Compile Include="JobProcessor\Muxer\AutoMuxer.cs" />
     <Compile Include="JobProcessor\Demuxer\EACDemuxer.cs" />
     <Compile Include="JobProcessor\Video\VSPipeProcessor.cs" />
     <Compile Include="Job\AudioJob\AudioJob.cs" />
-    <Compile Include="Job\Interface\IFile.cs" />
-    <Compile Include="Job\Interface\IMediaMuxer.cs" />
-    <Compile Include="Job\Interface\MediaFile.cs" />
+    <Compile Include="Model\OKEFile.cs" />
+    <Compile Include="Model\MediaFile.cs" />
     <Compile Include="Job\VideoJob\VideoInfoJob.cs" />
-    <Compile Include="Job\Muxer\MuxJob.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

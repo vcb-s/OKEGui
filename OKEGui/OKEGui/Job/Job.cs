@@ -7,6 +7,14 @@ namespace OKEGui
 
     public enum JobStatus : int { WAITING = 0, PROCESSING, POSTPONED, ERROR, ABORTED, DONE, SKIP, ABORTING };
 
+    public enum JobType
+    {
+        Video,
+        Audio,
+        VideoInfo,
+        Mux
+    }
+
     // status of job, 0: waiting, 1: processing, 2: postponed, 3: error, 4: aborted, 5: done, 6: skip, 7: aborting
 
     /// <summary>
@@ -20,12 +28,16 @@ namespace OKEGui
         public string Output;
         public List<string> FilesToDelete;
 
+        #endregion important details
+
         #region JobStatus
 
         public string Status
         {
-            set {
-                if (ts != null) {
+            set
+            {
+                if (ts != null)
+                {
                     ts.CurrentStatus = value;
                 }
             }
@@ -33,8 +45,10 @@ namespace OKEGui
 
         public double Progress
         {
-            set {
-                if (ts != null) {
+            set
+            {
+                if (ts != null)
+                {
                     ts.ProgressValue = value;
                 }
             }
@@ -42,8 +56,10 @@ namespace OKEGui
 
         public string Speed
         {
-            set {
-                if (ts != null) {
+            set
+            {
+                if (ts != null)
+                {
                     ts.Speed = value;
                 }
             }
@@ -51,8 +67,10 @@ namespace OKEGui
 
         public TimeSpan TimeRemain
         {
-            set {
-                if (ts != null) {
+            set
+            {
+                if (ts != null)
+                {
                     ts.TimeRemain = value;
                 }
             }
@@ -60,8 +78,10 @@ namespace OKEGui
 
         public string BitRate
         {
-            set {
-                if (ts != null) {
+            set
+            {
+                if (ts != null)
+                {
                     ts.BitRate = value;
                 }
             }
@@ -76,22 +96,15 @@ namespace OKEGui
 
         #endregion JobStatus
 
-        #endregion important details
-
         #region init
-
-        public Job() : this(null, null)
+        public Job()
         {
+
         }
 
-        public Job(string input, string output)
+        public Job(string codec) : base()
         {
-            Input = input;
-            Output = output;
-            if (!string.IsNullOrEmpty(input) && input == output)
-                throw new Exception("Input and output files may not be the same");
-
-            FilesToDelete = new List<string>();
+            CodecString = codec.ToUpper();
         }
 
         #endregion init
@@ -101,18 +114,9 @@ namespace OKEGui
         /// <summary>
         /// 使用的编码格式
         /// </summary>
-        public virtual string CodecString
-        {
-            get { return ""; }
-        }
+        public string CodecString;
 
-        /// <summary>
-        /// 任务类型（VideoEncode, AudioEncode, Demux, Mux, Other）
-        /// </summary>
-        public abstract string JobType
-        {
-            get;
-        }
+        public abstract JobType GetJobType();
 
         #endregion queue display details
     }

@@ -58,9 +58,9 @@ namespace OKEGui
             info = DeepCopy<TaskDetail>(task);
             this.DataContext = info;
 
-            ContainerFormat.Text = info.ContainerFormat;
-            VideoFormat.Text = info.VideoFormat;
-            AudioFormat.Text = info.AudioFormat;
+            ContainerFormat.Text = info.Profile.ContainerFormat;
+            VideoFormat.Text = info.Profile.VideoFormat;
+            AudioFormat.Text = info.Profile.AudioFormat;
 
             InputFileList.Items.Add(info.InputFile);
 
@@ -81,9 +81,9 @@ namespace OKEGui
             // 保存更改
             oldInfo = info;
 
-            oldInfo.ContainerFormat = ContainerFormat.Text == "不封装" ? "" : ContainerFormat.Text;
-            oldInfo.VideoFormat = VideoFormat.Text;
-            oldInfo.AudioFormat = AudioFormat.Text;
+            oldInfo.Profile.ContainerFormat = ContainerFormat.Text == "不封装" ? "" : ContainerFormat.Text;
+            oldInfo.Profile.VideoFormat = VideoFormat.Text;
+            oldInfo.Profile.AudioFormat = AudioFormat.Text;
 
             // 更新输出文件拓展名
             if (!oldInfo.UpdateOutputFileName()) {
@@ -116,7 +116,7 @@ namespace OKEGui
         {
             Process editor = new Process();
             editor.StartInfo.FileName = @"c:\Windows\System32\notepad.exe";
-            editor.StartInfo.Arguments = info.InputScript;
+            editor.StartInfo.Arguments = info.Profile.InputScript;
             editor.Start();
         }
     }

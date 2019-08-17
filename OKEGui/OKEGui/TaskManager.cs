@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using OKEGui.Model;
 
 namespace OKEGui
 {
@@ -50,7 +51,8 @@ namespace OKEGui
 
         public bool CheckTask(TaskDetail td)
         {
-            if (td.InputScript == "") {
+            JobProfile profile = td.Profile;
+            if (profile.InputScript == "") {
                 return false;
             }
 
@@ -58,11 +60,11 @@ namespace OKEGui
                 return false;
             }
 
-            if (td.EncoderPath == "") {
+            if (profile.Encoder == "") {
                 return false;
             }
 
-            if (td.EncoderParam == "") {
+            if (profile.EncoderParam == "") {
                 // 这里只是额外参数，必要参数会在执行任务之前加上
             }
 
@@ -70,11 +72,11 @@ namespace OKEGui
                 return false;
             }
 
-            if (td.VideoFormat == "") {
+            if (profile.VideoFormat == "") {
                 return false;
             }
 
-            if (td.AudioFormat == "") {
+            if (profile.AudioFormat == "") {
                 return false;
             }
 

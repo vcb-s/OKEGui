@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using OKEGui.Utils;
+using OKEGui.Model;
 using OKEGui.JobProcessor;
 
 namespace OKEGui.Worker
@@ -202,6 +203,7 @@ namespace OKEGui.Worker
             while (isRunning)
             {
                 TaskDetail task = args.taskManager.GetNextTask();
+                JobProfile profile = task.Profile;
 
                 // 检查是否已经完成全部任务
                 if (task == null)
@@ -264,56 +266,57 @@ namespace OKEGui.Worker
                         });
 
                     // 新建音频处理工作
-                    if (srcTracks.AudioTracks.Count != task.AudioTracks.Count)
+                    if (srcTracks.AudioTracks.Count != profile.AudioTracks.Count)
                     {
                         OKETaskException ex = new OKETaskException(Constants.audioNumMismatchSmr);
                         ex.progress = 0.0;
                         ex.Data["SRC_TRACK"] = srcTracks.AudioTracks.Count;
-                        ex.Data["DST_TRACK"] = task.AudioTracks.Count;
+                        ex.Data["DST_TRACK"] = profile.AudioTracks.Count;
                         throw ex;
                     }
                     else
                     {
                         for (int i = 0; i < srcTracks.AudioTracks.Count; i++)
                         {
-                            task.AudioTracks[i].SkipMuxing |= srcTracks.AudioTracks[i].AudioInfo.SkipMuxing;
+                            profile.AudioTracks[i].DupOrEmpty |= srcTracks.AudioTracks[i].Info.DupOrEmpty;
                         }
                     }
 
                     for (int id = 0; id < srcTracks.AudioTracks.Count; id++)
                     {
                         AudioTrack track = srcTracks.AudioTracks[id];
-                        if (task.AudioTracks[id].SkipMuxing)
+                        MuxOption option = profile.AudioTracks[id].MuxOption;
+                        if (option != MuxOption.Default)
                         {
                             continue;
                         }
 
-                        AudioJob audioJob = new AudioJob(task.AudioTracks[id].OutputCodec);
+                        AudioJob audioJob = new AudioJob(profile.AudioTracks[id].OutputCodec);
                         audioJob.SetUpdate(task);
 
                         audioJob.Input = track.File.GetFullPath();
-                        audioJob.Language = task.AudioTracks[id].Language;
-                        audioJob.Bitrate = task.AudioTracks[id].Bitrate;
+                        audioJob.Language = profile.AudioTracks[id].Language;
+                        audioJob.Bitrate = profile.AudioTracks[id].Bitrate;
 
                         task.JobQueue.Enqueue(audioJob);
                     }
 
                     // 新建视频处理工作
-                    VideoJob videoJob = new VideoJob(task.VideoFormat);
+                    VideoJob videoJob = new VideoJob(profile.VideoFormat);
                     videoJob.SetUpdate(task);
 
-                    videoJob.Input = task.InputScript;
-                    videoJob.EncoderPath = task.EncoderPath;
-                    videoJob.EncodeParam = task.EncoderParam;
-                    videoJob.Fps = task.Fps;
-                    videoJob.FpsNum = task.FpsNum;
-                    videoJob.FpsDen = task.FpsDen;
+                    videoJob.Input = profile.InputScript;
+                    videoJob.EncoderPath = profile.Encoder;
+                    videoJob.EncodeParam = profile.EncoderParam;
+                    videoJob.Fps = profile.Fps;
+                    videoJob.FpsNum = profile.FpsNum;
+                    videoJob.FpsDen = profile.FpsDen;
                     videoJob.NumaNode = args.numaNode;
 
-                    if (task.VideoFormat == "HEVC")
+                    if (profile.VideoFormat == "HEVC")
                     {
                         videoJob.Output = new FileInfo(task.InputFile).FullName + ".hevc";
-                        if (!task.EncoderParam.ToLower().Contains("--pools"))
+                        if (!profile.EncoderParam.ToLower().Contains("--pools"))
                         {
                             videoJob.EncodeParam += " --pools " + NumaNode.X265PoolsParam(videoJob.NumaNode);
                         }
@@ -321,8 +324,8 @@ namespace OKEGui.Worker
                     else
                     {
                         videoJob.Output = new FileInfo(task.InputFile).FullName;
-                        videoJob.Output += task.ContainerFormat == "MKV" ? "_.mkv" : ".h264";
-                        if (!task.EncoderParam.ToLower().Contains("--threads") && NumaNode.UsableCoreCount > 10)
+                        videoJob.Output += profile.ContainerFormat == "MKV" ? "_.mkv" : ".h264";
+                        if (!profile.EncoderParam.ToLower().Contains("--threads") && NumaNode.UsableCoreCount > 10)
                         {
                             videoJob.EncodeParam += " --threads 16";
                         }
@@ -333,12 +336,12 @@ namespace OKEGui.Worker
                     // 添加字幕文件
                     for (int id = 0; id < srcTracks.SubtitleTracks.Count; id++)
                     {
-                        if (!task.IncludeSub)
+                        if (!profile.IncludeSub)
                         {
                             continue;
                         }
                         SubtitleTrack track = srcTracks.SubtitleTracks[id];
-                        track.Language = task.SubtitleLanguage;
+                        track.Info.Language = profile.SubtitleLanguage;
 
                         task.MediaOutFile.AddTrack(track);
                     }
@@ -409,11 +412,8 @@ namespace OKEGui.Worker
                             processor.start();
                             processor.waitForFinish();
 
-                            VideoInfo info = new VideoInfo();
                             videoJob = job as VideoJob;
-                            info.Fps = videoJob.Fps;
-                            info.FpsNum = videoJob.FpsNum;
-                            info.FpsDen = videoJob.FpsDen;
+                            VideoInfo info = new VideoInfo(videoJob.FpsNum, videoJob.FpsDen);
 
                             task.MediaOutFile.AddTrack(new VideoTrack(new OKEFile(job.Output), info));
                         }
@@ -432,7 +432,7 @@ namespace OKEGui.Worker
 
 
                     // 封装
-                    if (task.ContainerFormat != "")
+                    if (profile.ContainerFormat != "")
                     {
                         task.CurrentStatus = "封装中";
                         FileInfo mkvInfo = new FileInfo(".\\tools\\mkvtoolnix\\mkvmerge.exe");

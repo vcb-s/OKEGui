@@ -7,14 +7,9 @@
             this.Input = input;
         }
 
-        public override string JobType
+        public override JobType GetJobType()
         {
-            get { return "video info"; }
-        }
-
-        public override string CodecString
-        {
-            get { return ""; }
+            return JobType.VideoInfo;
         }
     }
 }

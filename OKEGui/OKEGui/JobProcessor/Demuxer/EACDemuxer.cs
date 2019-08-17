@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
+using OKEGui.Model;
 
 namespace OKEGui
 {
@@ -222,7 +223,7 @@ namespace OKEGui
                     RawOutput = line,
                     SourceFile = sourceFile,
                     Type = EacOutputToTrackType(match.Groups[2].Value),
-                    SkipMuxing = false
+                    DupOrEmpty = false
                 };
 
                 if (TrackCodec.Unknown == trackInfo.Codec)
@@ -318,11 +319,11 @@ namespace OKEGui
                 OKEFile file = new OKEFile(item.OutFileName);
                 if (item.Type == TrackType.Audio)
                 {
-                    mf.AddTrack(new AudioTrack(file, new AudioInfo { SkipMuxing = item.SkipMuxing }));
+                    mf.AddTrack(new AudioTrack(file, new AudioInfo { DupOrEmpty = item.DupOrEmpty }));
                 }
                 else if (item.Type == TrackType.Subtitle)
                 {
-                    mf.AddTrack(new SubtitleTrack(file, null));
+                    mf.AddTrack(new SubtitleTrack(file, new Info()));
                 }
                 else if (item.Type == TrackType.Chapter)
                 {
@@ -330,7 +331,7 @@ namespace OKEGui
                 }
                 else if (item.Type == TrackType.Video)
                 {
-                    mf.AddTrack(new VideoTrack(file, null));
+                    mf.AddTrack(new VideoTrack(file, new VideoInfo()));
                 }
                 else
                 {

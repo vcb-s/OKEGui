@@ -4,10 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
+using OKEGui.Model;
 
 namespace OKEGui
 {
-    public class AutoMuxer : IMediaMuxer
+    public class AutoMuxer
     {
         private enum OutputType
         {
@@ -292,7 +293,7 @@ namespace OKEGui
             StartProcess(mainProgram, args);
         }
 
-        public IFile StartMuxing(string path, MediaFile mediaFile)
+        public OKEFile StartMuxing(string path, MediaFile mediaFile)
         {
             List<string> input = new List<string>();
             string videoFps = "";
@@ -300,22 +301,23 @@ namespace OKEGui
             List<string> subtitleLanguages = new List<string>();
 
             foreach (var track in mediaFile.Tracks) {
-                if (track.IsDisable) {
+                if (track.Info.MuxOption != MuxOption.Default) {
                     continue;
                 }
                 switch (track.TrackType)
                 {
                     case TrackType.Audio:
                         AudioTrack audioTrack = track as AudioTrack;
-                        audioLanguages.Add(audioTrack.AudioInfo.Language);
+                        audioLanguages.Add(audioTrack.Info.Language);
                         break;
                     case TrackType.Video:
                         VideoTrack videoTrack = track as VideoTrack;
-                        videoFps = $"{videoTrack.VideoInfo.FpsNum}/{videoTrack.VideoInfo.FpsDen}";
+                        VideoInfo videoInfo = track.Info as VideoInfo;
+                        videoFps = $"{videoInfo.FpsNum}/{videoInfo.FpsDen}";
                         break;
                     case TrackType.Subtitle:
                         SubtitleTrack subtitleTrack = track as SubtitleTrack;
-                        subtitleLanguages.Add(subtitleTrack.Language);
+                        subtitleLanguages.Add(subtitleTrack.Info.Language);
                         break;
                 }
                     
@@ -324,7 +326,7 @@ namespace OKEGui
 
             this.StartMerge(input, path, videoFps, audioLanguages, subtitleLanguages);
 
-            IFile outFile = new OKEFile(path);
+            OKEFile outFile = new OKEFile(path);
             outFile.AddCRC32();
 
             return outFile.Exists() ? outFile : null;
