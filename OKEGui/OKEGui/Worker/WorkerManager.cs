@@ -203,7 +203,6 @@ namespace OKEGui.Worker
             while (isRunning)
             {
                 TaskDetail task = args.taskManager.GetNextTask();
-                JobProfile profile = task.Profile;
 
                 // 检查是否已经完成全部任务
                 if (task == null)
@@ -225,6 +224,7 @@ namespace OKEGui.Worker
                     return;
                 }
 
+                JobProfile profile = task.Profile;
                 try
                 {
                     task.WorkerName = args.Name;
@@ -240,7 +240,7 @@ namespace OKEGui.Worker
                         ex.progress = 0.0;
                         throw ex;
                     }
-                    MediaFile srcTracks = new EACDemuxer(eacInfo.FullName, task.InputFile).Extract(
+                    MediaFile srcTracks = new EACDemuxer(eacInfo.FullName, task.InputFile, profile.AudioTracks).Extract(
                         (double progress, EACProgressType type) =>
                         {
                             switch (type)
@@ -266,39 +266,27 @@ namespace OKEGui.Worker
                         });
 
                     // 新建音频处理工作
-                    if (srcTracks.AudioTracks.Count != profile.AudioTracks.Count)
-                    {
-                        OKETaskException ex = new OKETaskException(Constants.audioNumMismatchSmr);
-                        ex.progress = 0.0;
-                        ex.Data["SRC_TRACK"] = srcTracks.AudioTracks.Count;
-                        ex.Data["DST_TRACK"] = profile.AudioTracks.Count;
-                        throw ex;
-                    }
-                    else
-                    {
-                        for (int i = 0; i < srcTracks.AudioTracks.Count; i++)
-                        {
-                            profile.AudioTracks[i].DupOrEmpty |= srcTracks.AudioTracks[i].Info.DupOrEmpty;
-                        }
-                    }
-
                     for (int id = 0; id < srcTracks.AudioTracks.Count; id++)
                     {
                         AudioTrack track = srcTracks.AudioTracks[id];
-                        MuxOption option = profile.AudioTracks[id].MuxOption;
-                        if (option != MuxOption.Default)
+                        OKEFile file = track.File;
+                        AudioInfo info = track.Info as AudioInfo;
+                        MuxOption option = info.MuxOption;
+                        switch (option)
                         {
-                            continue;
+                            case MuxOption.Default:
+                            case MuxOption.Mka:
+                            case MuxOption.External:
+                                AudioJob audioJob = new AudioJob(info);
+                                audioJob.SetUpdate(task);
+                                audioJob.Input = file.GetFullPath();
+                                audioJob.Output = Path.ChangeExtension(audioJob.Input, "." + audioJob.CodecString.ToLower());
+
+                                task.JobQueue.Enqueue(audioJob);
+                                break;
+                            default:
+                                break;
                         }
-
-                        AudioJob audioJob = new AudioJob(profile.AudioTracks[id].OutputCodec);
-                        audioJob.SetUpdate(task);
-
-                        audioJob.Input = track.File.GetFullPath();
-                        audioJob.Language = profile.AudioTracks[id].Language;
-                        audioJob.Bitrate = profile.AudioTracks[id].Bitrate;
-
-                        task.JobQueue.Enqueue(audioJob);
                     }
 
                     // 新建视频处理工作
@@ -353,27 +341,19 @@ namespace OKEGui.Worker
                         if (job is AudioJob)
                         {
                             AudioJob audioJob = job as AudioJob;
+                            AudioInfo info = audioJob.Info as AudioInfo;
                             string srcFmt = Path.GetExtension(audioJob.Input).ToUpper().Remove(0, 1);
                             if (srcFmt == "FLAC" && audioJob.CodecString == "AAC")
                             {
                                 task.CurrentStatus = "音频转码中";
                                 task.IsUnKnowProgress = true;
 
-                                AudioJob aEncode = new AudioJob("AAC");
-                                aEncode.Input = audioJob.Input;
-                                aEncode.Output = Path.ChangeExtension(audioJob.Input, ".aac");
-                                QAACEncoder qaac = new QAACEncoder(aEncode, audioJob.Bitrate > 0 ? audioJob.Bitrate : Utils.Constants.QAACBitrate);
+                                QAACEncoder qaac = new QAACEncoder(audioJob, info.Bitrate);
 
                                 qaac.start();
                                 qaac.waitForFinish();
-
-                                audioJob.Output = aEncode.Output;
                             }
-                            else if (srcFmt == audioJob.CodecString)
-                            {
-                                audioJob.Output = audioJob.Input;
-                            }
-                            else
+                            else if (srcFmt != audioJob.CodecString)
                             {
                                 OKETaskException ex = new OKETaskException(Constants.audioFormatMistachSmr);
                                 ex.Data["SRC_FMT"] = srcFmt;
@@ -381,18 +361,21 @@ namespace OKEGui.Worker
                                 throw ex;
                             }
 
-                            var audioFileInfo = new FileInfo(audioJob.Output);
-                            if (audioFileInfo.Length < 1024)
+                            OKEFile outputFile = new OKEFile(job.Output);
+                            switch (info.MuxOption)
                             {
-                                // 无效音轨
-                                File.Move(audioJob.Output, Path.ChangeExtension(audioJob.Output, ".bak") + audioFileInfo.Extension);
-                                continue;
+                                case MuxOption.Default:
+                                    task.MediaOutFile.AddTrack(new AudioTrack(outputFile, info));
+                                    break;
+                                case MuxOption.Mka:
+                                    task.MkaOutFile.AddTrack(new AudioTrack(outputFile, info));
+                                    break;
+                                case MuxOption.External:
+                                    outputFile.AddCRC32();
+                                    break;
+                                default:
+                                    break;
                             }
-
-                            AudioInfo info = new AudioInfo();
-                            info.Language = audioJob.Language;
-
-                            task.MediaOutFile.AddTrack(new AudioTrack(new OKEFile(job.Output), info));
                         }
                         else if (job is VideoJob)
                         {
@@ -451,6 +434,17 @@ namespace OKEGui.Worker
                         muxer.ProgressChanged += progress => task.ProgressValue = progress;
 
                         muxer.StartMuxing(Path.GetDirectoryName(task.InputFile) + "\\" + task.OutputFile, task.MediaOutFile);
+                    }
+                    if (task.MkaOutFile.Tracks.Count > 0)
+                    {
+                        task.CurrentStatus = "封装MKA中";
+                        FileInfo mkvInfo = new FileInfo(".\\tools\\mkvtoolnix\\mkvmerge.exe");
+                        FileInfo lsmash = new FileInfo(".\\tools\\l-smash\\muxer.exe");
+                        AutoMuxer muxer = new AutoMuxer(mkvInfo.FullName, lsmash.FullName);
+                        muxer.ProgressChanged += progress => task.ProgressValue = progress;
+                        string mkaOutputFile = task.InputFile + ".mka";
+
+                        muxer.StartMuxing(mkaOutputFile, task.MkaOutFile);
                     }
 
                     task.CurrentStatus = "完成";

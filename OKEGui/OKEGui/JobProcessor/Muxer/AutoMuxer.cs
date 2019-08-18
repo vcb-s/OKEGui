@@ -108,6 +108,7 @@ namespace OKEGui
             episode.OutputFile = outputFileName;
             switch (Path.GetExtension(outputFileName).ToLower()) {
                 case ".mkv":
+                case ".mka":
                     episode.OutputFileType = OutputType.Mkv;
                     break;
 
@@ -133,8 +134,11 @@ namespace OKEGui
             // parameters.Add("--ui-language zh_CN");
             parameters.Add($"--output \"{episode.OutputFile}\"");
 
-            parameters.Add(string.Format(trackTemplate, "und", episode.VideoFile));
-            trackOrder.Add($"{fileID++}:0");
+            if (episode.VideoFile != null)
+            {
+                parameters.Add(string.Format(trackTemplate, "und", episode.VideoFile));
+                trackOrder.Add($"{fileID++}:0");
+            }
 
             for (int i = 0; i < episode.AudioFiles.Count; i++) {
                 string audioFile = episode.AudioFiles[i];
@@ -192,6 +196,7 @@ namespace OKEGui
             };
 
             proc.StartInfo = startInfo;
+            Debugger.Log(0, "", filename + " " + arguments + "\n");
 
             try {
                 proc.Start();
@@ -301,7 +306,7 @@ namespace OKEGui
             List<string> subtitleLanguages = new List<string>();
 
             foreach (var track in mediaFile.Tracks) {
-                if (track.Info.MuxOption != MuxOption.Default) {
+                if (track.Info.MuxOption != MuxOption.Default && track.Info.MuxOption != MuxOption.Mka) {
                     continue;
                 }
                 switch (track.TrackType)

@@ -4,12 +4,11 @@ namespace OKEGui
 {
     class AudioJob : Job
     {
-        public string Language;
-        public int Bitrate;
+        public readonly AudioInfo Info;
 
-        public AudioJob(string codec) : base(codec)
+        public AudioJob(AudioInfo info) : base(info.OutputCodec)
         {
-
+            Info = info;
         }
 
         public override JobType GetJobType()

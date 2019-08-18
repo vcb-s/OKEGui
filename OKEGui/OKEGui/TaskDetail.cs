@@ -249,6 +249,7 @@ namespace OKEGui
         /// 输出文件结构
         /// </summary>
         public MediaFile MediaOutFile = new MediaFile();
+        public MediaFile MkaOutFile = new MediaFile();
 
         public JobProfile Profile;
 

@@ -12,7 +12,7 @@
     },{
         "TrackId" : 1,
         "OutputCodec" : "flac",
-        "SkipMuxing" : true
+        "MuxOption" : "Skip"
     }],
     "InputScript" : "demo_720p.vpy",
     "Fps" : 23.976

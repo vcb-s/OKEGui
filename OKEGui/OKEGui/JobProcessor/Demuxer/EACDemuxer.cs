@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
+using OKEGui.JobProcessor;
 using OKEGui.Model;
+using OKEGui.Utils;
 
 namespace OKEGui
 {
@@ -49,6 +51,7 @@ namespace OKEGui
         private ManualResetEvent mre = new ManualResetEvent(false);
         private ProcessState state;
         private string sourceFile;
+        private List<AudioInfo> JobAudio;
 
         private static List<EacOutputTrackType> s_eacOutputs = new List<EacOutputTrackType> {
             new EacOutputTrackType(TrackCodec.RAW_PCM,    "RAW/PCM",          "flac",    true,  TrackType.Audio),
@@ -63,10 +66,12 @@ namespace OKEGui
             new EacOutputTrackType(TrackCodec.Chapter,    "Chapters",         "txt",     true,  TrackType.Chapter),
         };
 
-        public EACDemuxer(string eacPath, string fileName)
+        public EACDemuxer(string eacPath, string fileName, List<AudioInfo> jobAudio)
         {
             _eacPath = eacPath;
             sourceFile = fileName;
+            JobAudio = new List<AudioInfo>();
+            JobAudio.AddRange(jobAudio);
         }
 
         private void StartEac(string arguments, bool asyncRead)
@@ -252,17 +257,45 @@ namespace OKEGui
 
             var args = new List<string>();
             var extractResult = new List<TrackInfo>();
+            List<TrackInfo> srcAudio = new List<TrackInfo>();
 
-            foreach (var track in tracks)
+            foreach (TrackInfo track in tracks)
             {
-                if (!s_eacOutputs.Find(val => val.Codec == track.Codec).Extract)
+                if (track.Type == TrackType.Audio)
+                {
+                    srcAudio.Add(track);
+                }
+            }
+            if (srcAudio.Count != JobAudio.Count)
+            {
+                OKETaskException ex = new OKETaskException(Constants.audioNumMismatchSmr);
+                ex.progress = 0.0;
+                ex.Data["SRC_TRACK"] = srcAudio.Count;
+                ex.Data["DST_TRACK"] = JobAudio.Count;
+                throw ex;
+            }
+            int audioId = 0;
+            foreach (TrackInfo track in tracks)
+            {
+                EacOutputTrackType trackType = s_eacOutputs.Find(val => val.Codec == track.Codec);
+                if (!trackType.Extract)
                 {
                     continue;
                 };
+                if (track.Type == TrackType.Audio)
+                {
+                    AudioInfo jobAudioInfo = JobAudio[audioId++];
+                    if (jobAudioInfo.MuxOption == MuxOption.Skip)
+                    {
+                        continue;
+                    }
+                }
 
                 args.Add($"{track.Index}:\"{track.OutFileName}\"");
                 extractResult.Add(track);
             }
+            JobAudio.RemoveAll(info => info.MuxOption == MuxOption.Skip);
+
             state = ProcessState.ExtractStream;
             StartEac($"\"{sourceFile}\" {string.Join(" ", args)}", true);
 
@@ -314,12 +347,15 @@ namespace OKEGui
             }
 
             MediaFile mf = new MediaFile();
+            audioId = 0;
             foreach (var item in extractResult)
             {
                 OKEFile file = new OKEFile(item.OutFileName);
                 if (item.Type == TrackType.Audio)
                 {
-                    mf.AddTrack(new AudioTrack(file, new AudioInfo { DupOrEmpty = item.DupOrEmpty }));
+                    AudioInfo info = JobAudio[audioId++];
+                    info.DupOrEmpty = item.DupOrEmpty;
+                    mf.AddTrack(new AudioTrack(file, info));
                 }
                 else if (item.Type == TrackType.Subtitle)
                 {
