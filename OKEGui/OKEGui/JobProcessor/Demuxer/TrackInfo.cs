@@ -29,9 +29,10 @@ namespace OKEGui
             public string SourceFile;
             public TrackType Type;
             public bool DupOrEmpty;
-            public long fileSize;
-            public double meanVolume;
-            public double maxVolume;
+            public int Length;
+            public long FileSize;
+            public double MeanVolume;
+            public double MaxVolume;
 
             public string OutFileName
             {
@@ -58,9 +59,11 @@ namespace OKEGui
                 switch (Type)
                 {
                     case TrackType.Audio:
-                        return meanVolume < -70 && maxVolume < -30;
+                        return MeanVolume < -70 && MaxVolume < -30;
+                    case TrackType.Subtitle:
+                        return FileSize / Length < 6 * 1024 * 1024 / 3600;
                     default:
-                        return fileSize == 0;
+                        return FileSize < 64;
                 }
             }
 
@@ -73,9 +76,9 @@ namespace OKEGui
                 switch (Type)
                 {
                     case TrackType.Audio:
-                        return Math.Abs(meanVolume - other.meanVolume) < 0.15 && Math.Abs(maxVolume - other.maxVolume) < 0.15;
+                        return Math.Abs(MeanVolume - other.MeanVolume) < 0.15 && Math.Abs(MaxVolume - other.MaxVolume) < 0.15;
                     default:
-                        return fileSize == other.fileSize;
+                        return FileSize == other.FileSize;
                 }
             }
 

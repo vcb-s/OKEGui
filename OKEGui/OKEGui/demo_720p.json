@@ -15,5 +15,8 @@
         "MuxOption" : "Skip"
     }],
     "InputScript" : "demo_720p.vpy",
-    "Fps" : 23.976
+    "Fps" : 23.976,
+    "SubtitleTracks" : [{
+        "MuxOption" : "Skip"
+    }]
 }

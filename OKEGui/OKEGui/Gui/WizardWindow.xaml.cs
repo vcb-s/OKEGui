@@ -184,11 +184,28 @@ namespace OKEGui
             }
 
             json.SubtitleLanguage = string.IsNullOrEmpty(json.SubtitleLanguage) ? Constants.language : json.SubtitleLanguage;
+            if (json.IncludeSub && json.SubtitleTracks == null)
+            {
+                System.Windows.MessageBox.Show("现在用SubtitleTracks指定字幕，指定了IncludeSub = true将视为有一条视频轨道", "IncludeSub不再使用", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Info info = new Info
+                {
+                    Language = json.SubtitleLanguage
+                };
+                json.SubtitleTracks = new List<Info> { info };
+            }
 
-            if (json.AudioTracks.Count > 0)
+            if (json.AudioTracks != null && json.AudioTracks.Count > 0)
             {
                 // 主音轨
-                json.AudioFormat = json.AudioTracks[0].OutputCodec.ToUpper();
+                json.AudioFormat = json.AudioTracks[0].OutputCodec;
+                if (string.IsNullOrEmpty(json.AudioFormat))
+                {
+                    json.AudioFormat = "AAC";
+                }
+                else
+                {
+                    json.AudioFormat = json.AudioFormat.ToUpper();
+                }
 
                 // 添加音频参数到任务里面
                 foreach (var track in json.AudioTracks)
@@ -207,6 +224,10 @@ namespace OKEGui
                         track.MuxOption = MuxOption.Skip;
                     }
                 }
+            }
+            else
+            {
+                json.AudioFormat = "AAC";
             }
 
             if (json.AudioFormat != "FLAC" && json.AudioFormat != "AAC" &&

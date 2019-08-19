@@ -13,7 +13,7 @@ namespace OKEGui.Utils
 
         public Cleaner() : this(
             new List<string> { "flac", "alac", "aac", "ac3", "dts", "sup", "Log.txt", "vpy" },
-            new List<string> { "hevc", "mkv", "mp4" })
+            new List<string> { "hevc", "mkv", "mp4", "mka", "h264" })
         {
         }
         public Cleaner(List<string> sfxRemove, List<string> sfxRename)

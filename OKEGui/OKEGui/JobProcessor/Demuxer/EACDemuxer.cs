@@ -52,6 +52,8 @@ namespace OKEGui
         private ProcessState state;
         private string sourceFile;
         private List<AudioInfo> JobAudio;
+        private List<Info> JobSub;
+        private int length;
 
         private static List<EacOutputTrackType> s_eacOutputs = new List<EacOutputTrackType> {
             new EacOutputTrackType(TrackCodec.RAW_PCM,    "RAW/PCM",          "flac",    true,  TrackType.Audio),
@@ -66,12 +68,20 @@ namespace OKEGui
             new EacOutputTrackType(TrackCodec.Chapter,    "Chapters",         "txt",     true,  TrackType.Chapter),
         };
 
-        public EACDemuxer(string eacPath, string fileName, List<AudioInfo> jobAudio)
+        public EACDemuxer(string eacPath, string fileName, JobProfile jobProfile)
         {
             _eacPath = eacPath;
             sourceFile = fileName;
             JobAudio = new List<AudioInfo>();
-            JobAudio.AddRange(jobAudio);
+            if (jobProfile.AudioTracks != null)
+            {
+                JobAudio.AddRange(jobProfile.AudioTracks);
+            }
+            JobSub = new List<Info>();
+            if (jobProfile.SubtitleTracks != null)
+            {
+                JobSub.AddRange(jobProfile.SubtitleTracks);
+            }
         }
 
         private void StartEac(string arguments, bool asyncRead)
@@ -204,8 +214,17 @@ namespace OKEGui
 
         private void DetectFileTracks(string line)
         {
-            line.Trim();
+            line = line.Trim();
             if (string.IsNullOrEmpty(line)) return;
+            Debugger.Log(0, "", line + "\n");
+            if (Regex.IsMatch(line, @"\d*:\d*:\d*"))
+            {
+                string[] match = Regex.Split(line, @"(\d*):(\d*):(\d*)");
+                int hour = int.Parse(match[1]);
+                int minute = int.Parse(match[2]);
+                int second = int.Parse(match[3]);
+                length = hour * 3600 + minute * 60 + second;
+            }
 
             if (Regex.IsMatch(line, @"^\d*?: .*$"))
             {
@@ -225,6 +244,7 @@ namespace OKEGui
                     Index = Convert.ToInt32(match.Groups[1].Value),
                     Codec = EacOutputToTrackCodec(match.Groups[2].Value),
                     Information = match.Groups[3].Value.Trim(),
+                    Length = length,
                     RawOutput = line,
                     SourceFile = sourceFile,
                     Type = EacOutputToTrackType(match.Groups[2].Value),
@@ -258,12 +278,20 @@ namespace OKEGui
             var args = new List<string>();
             var extractResult = new List<TrackInfo>();
             List<TrackInfo> srcAudio = new List<TrackInfo>();
+            List<TrackInfo> srcSub = new List<TrackInfo>();
 
             foreach (TrackInfo track in tracks)
             {
-                if (track.Type == TrackType.Audio)
+                switch (track.Type)
                 {
-                    srcAudio.Add(track);
+                    case TrackType.Audio:
+                        srcAudio.Add(track);
+                        break;
+                    case TrackType.Subtitle:
+                        srcSub.Add(track);
+                        break;
+                    default:
+                        break;
                 }
             }
             if (srcAudio.Count != JobAudio.Count)
@@ -274,7 +302,15 @@ namespace OKEGui
                 ex.Data["DST_TRACK"] = JobAudio.Count;
                 throw ex;
             }
-            int audioId = 0;
+            if (srcSub.Count != JobSub.Count)
+            {
+                OKETaskException ex = new OKETaskException(Constants.subNumMismatchSmr);
+                ex.progress = 0.0;
+                ex.Data["SRC_TRACK"] = srcSub.Count;
+                ex.Data["DST_TRACK"] = JobSub.Count;
+                throw ex;
+            }
+            int audioId = 0, subId = 0;
             foreach (TrackInfo track in tracks)
             {
                 EacOutputTrackType trackType = s_eacOutputs.Find(val => val.Codec == track.Codec);
@@ -286,6 +322,14 @@ namespace OKEGui
                 {
                     AudioInfo jobAudioInfo = JobAudio[audioId++];
                     if (jobAudioInfo.MuxOption == MuxOption.Skip)
+                    {
+                        continue;
+                    }
+                }
+                if (track.Type == TrackType.Subtitle)
+                {
+                    Info jobSubInfo = JobSub[subId++];
+                    if (jobSubInfo.MuxOption == MuxOption.Skip)
                     {
                         continue;
                     }
@@ -308,15 +352,15 @@ namespace OKEGui
                 }
                 else
                 {
-                    track.fileSize = finfo.Length;
+                    track.FileSize = finfo.Length;
                 }
                 if (track.Type == TrackType.Audio)
                 {
                     FFmpegVolumeChecker checker = new FFmpegVolumeChecker(track.OutFileName);
                     checker.start();
                     checker.waitForFinish();
-                    track.maxVolume = checker.MaxVolume;
-                    track.meanVolume = checker.MeanVolume;
+                    track.MaxVolume = checker.MaxVolume;
+                    track.MeanVolume = checker.MeanVolume;
                 }
             }
 
@@ -348,30 +392,31 @@ namespace OKEGui
 
             MediaFile mf = new MediaFile();
             audioId = 0;
+            subId = 0;
             foreach (var item in extractResult)
             {
                 OKEFile file = new OKEFile(item.OutFileName);
-                if (item.Type == TrackType.Audio)
+                switch (item.Type)
                 {
-                    AudioInfo info = JobAudio[audioId++];
-                    info.DupOrEmpty = item.DupOrEmpty;
-                    mf.AddTrack(new AudioTrack(file, info));
-                }
-                else if (item.Type == TrackType.Subtitle)
-                {
-                    mf.AddTrack(new SubtitleTrack(file, new Info()));
-                }
-                else if (item.Type == TrackType.Chapter)
-                {
-                    mf.AddTrack(new ChapterTrack(file));
-                }
-                else if (item.Type == TrackType.Video)
-                {
-                    mf.AddTrack(new VideoTrack(file, new VideoInfo()));
-                }
-                else
-                {
-                    System.Windows.MessageBox.Show(item.OutFileName, "不认识的轨道呢");
+                    case TrackType.Audio:
+                        AudioInfo audioInfo = JobAudio[audioId++];
+                        audioInfo.DupOrEmpty = item.DupOrEmpty;
+                        mf.AddTrack(new AudioTrack(file, audioInfo));
+                        break;
+                    case TrackType.Subtitle:
+                        Info subInfo = JobSub[subId++];
+                        subInfo.DupOrEmpty = item.DupOrEmpty;
+                        mf.AddTrack(new SubtitleTrack(file, subInfo));
+                        break;
+                    case TrackType.Chapter:
+                        mf.AddTrack(new ChapterTrack(file));
+                        break;
+                    case TrackType.Video:
+                        mf.AddTrack(new VideoTrack(file, new VideoInfo()));
+                        break;
+                    default:
+                        System.Windows.MessageBox.Show(item.OutFileName, "不认识的轨道呢");
+                        break;
                 }
             }
 

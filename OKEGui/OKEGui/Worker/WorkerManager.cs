@@ -240,7 +240,7 @@ namespace OKEGui.Worker
                         ex.progress = 0.0;
                         throw ex;
                     }
-                    MediaFile srcTracks = new EACDemuxer(eacInfo.FullName, task.InputFile, profile.AudioTracks).Extract(
+                    MediaFile srcTracks = new EACDemuxer(eacInfo.FullName, task.InputFile, profile).Extract(
                         (double progress, EACProgressType type) =>
                         {
                             switch (type)
@@ -322,16 +322,24 @@ namespace OKEGui.Worker
                     task.JobQueue.Enqueue(videoJob);
 
                     // 添加字幕文件
-                    for (int id = 0; id < srcTracks.SubtitleTracks.Count; id++)
+                    foreach (SubtitleTrack track in srcTracks.SubtitleTracks)
                     {
-                        if (!profile.IncludeSub)
+                        OKEFile outputFile = track.File;
+                        Info info = track.Info;
+                        switch (info.MuxOption)
                         {
-                            continue;
+                            case MuxOption.Default:
+                                task.MediaOutFile.AddTrack(track);
+                                break;
+                            case MuxOption.Mka:
+                                task.MkaOutFile.AddTrack(track);
+                                break;
+                            case MuxOption.External:
+                                outputFile.AddCRC32();
+                                break;
+                            default:
+                                break;
                         }
-                        SubtitleTrack track = srcTracks.SubtitleTracks[id];
-                        track.Info.Language = profile.SubtitleLanguage;
-
-                        task.MediaOutFile.AddTrack(track);
                     }
 
                     while (task.JobQueue.Count != 0)
