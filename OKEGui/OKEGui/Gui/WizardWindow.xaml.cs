@@ -260,6 +260,25 @@ namespace OKEGui
                 System.Windows.MessageBox.Show("指定的vpy文件没有找到，检查下json文件和vpy文件是不是放一起了？", "vpy文件找不到", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
+            int fileCount = 0;
+            if (json.InputFiles != null)
+            {
+                foreach (string file in json.InputFiles)
+                {
+                    FileInfo input = new FileInfo(projDir.FullName + "\\" + file);
+                    if (input.Exists)
+                    {
+                        wizardInfo.InputFile.Add(input.FullName);
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("指定的文件(" + input.FullName + ")不存在啊，跟总监确认下json应该放哪？", "找不到输入文件啊", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return false;
+                    }
+                }
+                fileCount = json.InputFiles.Count;
+                SelectInputFile.CanFinish = fileCount > 0;
+            }
 
             // 预览
             wizardInfo.ProjectPreview = "项目名字: " + json.ProjectName;
@@ -270,6 +289,7 @@ namespace OKEGui
             wizardInfo.ProjectPreview += "\n视频编码: " + json.VideoFormat;
             wizardInfo.ProjectPreview += "\n视频帧率: " + String.Format("{0:0.000} fps", json.Fps);
             wizardInfo.ProjectPreview += "\n音频编码(主音轨): " + json.AudioFormat;
+            wizardInfo.ProjectPreview += "\n输入文件数量: " + fileCount;
 
             return true;
         }

@@ -18,5 +18,10 @@
     "Fps" : 23.976,
     "SubtitleTracks" : [{
         "MuxOption" : "Skip"
-    }]
+    }],
+    "InputFiles" : [
+        "00000.m2ts",
+        "00001.m2ts",
+        "00002.m2ts",
+    ]
 }

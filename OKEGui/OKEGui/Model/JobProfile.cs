@@ -26,6 +26,7 @@ namespace OKEGui.Model
         [ObsoleteAttribute("SubtitleLanguage is obsolete. Use SubtitleTracks instead.", false)]
         public string SubtitleLanguage;
         public List<Info> SubtitleTracks;
+        public List<string> InputFiles;
 
         public Object Clone()
         {

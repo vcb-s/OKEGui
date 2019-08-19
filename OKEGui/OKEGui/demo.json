@@ -16,5 +16,10 @@
     "Fps" : 23.976,
     "SubtitleTracks" : [{
         "Language" : "jpn"
-    }]
+    }],
+    "InputFiles" : [
+        "Main_Disc\\BDMV\\STREAM\\00000.m2ts",
+        "Main_Disc\\BDMV\\STREAM\\00001.m2ts",
+        "Main_Disc\\BDMV\\STREAM\\00002.m2ts",
+    ]
 }
