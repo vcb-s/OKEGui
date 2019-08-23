@@ -23,12 +23,14 @@ namespace OKEGui
         {
             if (line.Contains("mean_volume"))
             {
+                line = line.Replace(" (0.", " (-0.");
                 Regex rf = new Regex("mean_volume: (-[0-9]+.[0-9]+) dB");
                 string[] result = rf.Split(line);
                 MeanVolume = double.Parse(result[1]);
             }
             if (line.Contains("max_volume"))
             {
+                line = line.Replace(" (0.", " (-0.");
                 Regex rf = new Regex("max_volume: (-[0-9]+.[0-9]+) dB");
                 string[] result = rf.Split(line);
                 MaxVolume = double.Parse(result[1]);
