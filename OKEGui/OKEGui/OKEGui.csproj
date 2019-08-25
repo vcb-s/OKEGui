@@ -56,7 +56,7 @@
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>App.ico</ApplicationIcon>
+    <ApplicationIcon>Gui\App.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -95,13 +95,14 @@
     <Compile Include="Model\Info\AudioInfo.cs" />
     <Compile Include="Model\Info\Info.cs" />
     <Compile Include="Model\Info\VideoInfo.cs" />
-    <Compile Include="Model\JobProfile.cs" />
+    <Compile Include="Task\AddTaskService.cs" />
+    <Compile Include="Task\TaskProfile.cs" />
     <Compile Include="Model\Track\AudioTrack.cs" />
     <Compile Include="Model\Track\ChapterTrack.cs" />
     <Compile Include="Model\Track\Track.cs" />
     <Compile Include="Model\Track\SubtitleTrack.cs" />
     <Compile Include="Model\Track\VideoTrack.cs" />
-    <Compile Include="TaskManager.cs" />
+    <Compile Include="Task\TaskManager.cs" />
     <Compile Include="JobProcessor\Audio\QAACEncoder.cs" />
     <Compile Include="JobProcessor\Muxer\AutoMuxer.cs" />
     <Compile Include="JobProcessor\Demuxer\EACDemuxer.cs" />
@@ -110,7 +111,7 @@
     <Compile Include="Model\OKEFile.cs" />
     <Compile Include="Model\MediaFile.cs" />
     <Compile Include="Job\VideoJob\VideoInfoJob.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Gui\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Gui\WizardWindow.xaml.cs">
@@ -123,11 +124,13 @@
     <Compile Include="Job\Job.cs" />
     <Compile Include="Job\StatusUpdate.cs" />
     <Compile Include="Job\VideoJob\VideoJob.cs" />
-    <Compile Include="TaskDetail.cs" />
+    <Compile Include="Task\TaskDetail.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Worker\ExecuteTaskService.cs" />
+    <Compile Include="Task\TaskStatus.cs" />
     <Compile Include="Utils\Cleaner.cs" />
     <Compile Include="Utils\ConfigManager.cs" />
     <Compile Include="Utils\Constants.cs" />
@@ -158,7 +161,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="demo.json" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -182,7 +184,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Gui\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -192,7 +194,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="App.ico" />
+    <Resource Include="Gui\App.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,17 +4,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:OKEGui"
         mc:Ignorable="d"
         Title="OKEGui" Height="500" Width="950" WindowStartupLocation="CenterScreen" Icon="App.ico">
     <Window.Resources>
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <EventSetter Event="MouseDoubleClick" Handler="listView1_MouseDoubleClick" />
         </Style>
     </Window.Resources>
     <Grid>
-        <ListView x:Name="listView1" Margin="10,10,10,68" AllowDrop="True" PreviewDragOver="listView1_PreviewDragOver" PreviewDrop="listView1_PreviewDrop">
+        <ListView x:Name="listView1" Margin="10,10,10,68" AllowDrop="True">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="" Width="30">
@@ -99,9 +97,9 @@
 
         <Grid Margin="20, 0, 10, 10" VerticalAlignment="Bottom">
             <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Width="70" Margin="0,4,0,0"><Run Text="任务结束后:" /></TextBlock>
-            <ComboBox x:Name="comboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="70,0,0,0" SelectionChanged="comboBox_SelectionChanged">
+            <ComboBox x:Name="AfterFinish" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="70,0,0,0" SelectionChanged="AfterFinish_SelectionChanged">
                 <ComboBoxItem IsSelected="True" Content="什么也不干" />
-                <!--<ComboBoxItem Content="关机" />-->
+                <!--ComboBoxItem Content="关机" /-->
                 <!--<ComboBoxItem Content="运行程序" />-->
             </ComboBox>
 

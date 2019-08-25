@@ -68,7 +68,7 @@ namespace OKEGui
             new EacOutputTrackType(TrackCodec.Chapter,    "Chapters",         "txt",     true,  TrackType.Chapter),
         };
 
-        public EACDemuxer(string eacPath, string fileName, JobProfile jobProfile)
+        public EACDemuxer(string eacPath, string fileName, TaskProfile jobProfile)
         {
             _eacPath = eacPath;
             sourceFile = fileName;

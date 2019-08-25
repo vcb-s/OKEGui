@@ -9,7 +9,6 @@
         Title="新建任务向导" Height="450" Width="525" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="ListBoxItem">
-            <EventSetter Event="MouseDoubleClick" Handler="InputFile_MouseDoubleClick" />
         </Style>
     </Window.Resources>
     <Grid>
@@ -85,7 +84,6 @@
                         </Grid.RowDefinitions>
 
                         <Button x:Name="OpenInputFile" Click="OpenInputFile_Click" Grid.Column="0" Grid.Row="0" Height="23" Margin="0 0 5 0">打开文件</Button>
-                        <Button x:Name="OpenInputFolder" Click="OpenInputFolder_Click" Grid.Column="1" Grid.Row="0" Height="23" Margin="5 0 5 0">打开文件夹</Button>
                         <Button x:Name="DeleteInput" Click="DeleteInput_Click" Grid.Column="2" Grid.Row="0" Height="23" Margin="5 0 0 0">删除</Button>
                     </Grid>
                 </Grid>

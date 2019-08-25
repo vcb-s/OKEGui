@@ -25,20 +25,7 @@ namespace OKEGui.Utils
             }
             Config = ConfigManager.LoadConfig();
 
-            if (!CheckVspipe())
-            {
-                return false;
-            }
-            if (!CheckQAAC())
-            {
-                return false;
-            }
-            if (!CheckFfmpeg())
-            {
-                return false;
-            }
-
-            return true;
+            return CheckVspipe() && CheckQAAC() && CheckFfmpeg();
         }
 
         static Boolean CheckRootFolderWriteAccess()
