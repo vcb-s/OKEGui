@@ -16,7 +16,10 @@
             <xctk:WizardPage x:Name="SelectProjectFile" PageType="Interior"
                              Title="选择OKEGui项目文件"
                              NextPage="{Binding ElementName=SelectInputFile}"
-                             CanSelectNextPage="False">
+                             CanSelectNextPage="False"
+                             AllowDrop="True"
+                             Drop="SelectProjectFile_Drop"
+                             PreviewDragEnter="SelectProjectFile_PreviewDragEnter">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"></ColumnDefinition>

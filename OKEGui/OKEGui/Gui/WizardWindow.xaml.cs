@@ -105,6 +105,37 @@ namespace OKEGui
             return true;
         }
 
+        //拖拽输入
+        private void SelectProjectFile_Drop(object sender, System.Windows.DragEventArgs e)
+        {
+            string FileName = ((string[])e.Data.GetData(System.Windows.DataFormats.FileDrop))[0];
+
+            wizardInfo.ProjectFile = FileName;
+            if (LoadJsonProfile(wizardInfo.ProjectFile))
+            {
+                SelectProjectFile.CanSelectNextPage = true;
+            }
+            else
+            {
+                SelectProjectFile.CanSelectNextPage = false;
+            }
+            return;
+        }
+
+
+        private void SelectProjectFile_PreviewDragEnter(object sender, System.Windows.DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop) &&
+                Path.GetExtension(((string[])e.Data.GetData(System.Windows.DataFormats.FileDrop))[0])=="json")
+                //理论上只允许json文件拖拽输入，但是不知道为什么文件过滤并没有生效
+            {
+                e.Effects = System.Windows.DragDropEffects.Copy;
+                e.Handled = true;
+            }
+            return;
+        }
+
+        
         private void OpenProjectBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
