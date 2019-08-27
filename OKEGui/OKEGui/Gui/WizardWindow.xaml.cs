@@ -109,16 +109,15 @@ namespace OKEGui
         private void SelectProjectFile_Drop(object sender, System.Windows.DragEventArgs e)
         {
             string FileName = ((string[])e.Data.GetData(System.Windows.DataFormats.FileDrop))[0];
+            //临时修复json输入过滤器
+            if (Path.GetExtension(FileName).ToLower() != ".json")
+                return;
 
             wizardInfo.ProjectFile = FileName;
             if (LoadJsonProfile(wizardInfo.ProjectFile))
-            {
                 SelectProjectFile.CanSelectNextPage = true;
-            }
             else
-            {
                 SelectProjectFile.CanSelectNextPage = false;
-            }
             return;
         }
 
@@ -306,17 +305,6 @@ namespace OKEGui
             return;
         }
 
-        /*
-        private bool InputList_AllowDrop(string path)
-        {
-            if (!File.Exists(path))
-                return false;
-            string[] AllowExts = { ".mkv", ".m2ts", ".mp4" };
-            string InputExt = Path.GetExtension(path).ToLower();
-            
-
-            return true;
-        }
-        */
+        
     }
 }
