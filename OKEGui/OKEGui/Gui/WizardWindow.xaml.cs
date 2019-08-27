@@ -311,6 +311,45 @@ namespace OKEGui
             return;
         }
 
-        
+        private void InputList_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Delete)
+            {
+                var list = InputList.SelectedItems;
+
+                if (list.Count == 0)
+                {
+                    return;
+                }
+
+                MessageBoxResult result = System.Windows.MessageBox.Show("是否删除" + list.Count.ToString() + "个文件？", "新建任务向导", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.No)
+                {
+                    return;
+                }
+
+                List<string> selectList = new List<string>();
+                foreach (object item in list)
+                {
+                    selectList.Add(item as string);
+                }
+
+                for (int i = 0; i < selectList.Count; i++)
+                {
+                    foreach (string selected in selectList)
+                    {
+                        int index = wizardInfo.InputFile.IndexOf(selected);
+                        if (index != -1)
+                        {
+                            wizardInfo.InputFile.RemoveAt(index);
+                        }
+                    }
+                }
+
+                SelectInputFile.CanFinish = wizardInfo.InputFile.Count != 0;
+            }
+            
+            return;
+        }
     }
 }
