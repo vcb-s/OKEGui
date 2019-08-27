@@ -48,7 +48,7 @@ namespace OKEGui
             }
 
             // 输入文件
-            public ObservableCollection<string> InputFile = new ObservableCollection<string>();
+            public ObservableCollection<string> InputFile { get; } = new ObservableCollection<string>();
 
             public event PropertyChangedEventHandler PropertyChanged;
             public void OnPropertyChanged(PropertyChangedEventArgs e)
