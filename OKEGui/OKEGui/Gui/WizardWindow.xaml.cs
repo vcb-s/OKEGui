@@ -126,7 +126,7 @@ namespace OKEGui
         private void SelectProjectFile_PreviewDragEnter(object sender, System.Windows.DragEventArgs e)
         {
             if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop) &&
-                Path.GetExtension(((string[])e.Data.GetData(System.Windows.DataFormats.FileDrop))[0])==".json")
+                Path.GetExtension(((string[])e.Data.GetData(System.Windows.DataFormats.FileDrop))[0]).ToLower()==".json")
                 //理论上只允许json文件拖拽输入，但是不知道为什么文件过滤并没有生效
             {
                 e.Effects = System.Windows.DragDropEffects.Copy;
@@ -276,5 +276,47 @@ namespace OKEGui
 
             SelectInputFile.CanFinish = wizardInfo.InputFile.Count != 0;
         }
+
+        private void InputList_PreviewDragEnter(object sender, System.Windows.DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
+            {
+                e.Effects = System.Windows.DragDropEffects.Copy;
+                e.Handled = true;
+            }
+            return;
+        }
+
+        private void InputList_Drop(object sender, System.Windows.DragEventArgs e)
+        {
+            string[] InputPaths = (string[])e.Data.GetData(System.Windows.DataFormats.FileDrop);
+            string[] AllowExts = { ".mkv", ".m2ts", ".mp4" };
+
+            var InputFileList = from InputPath in InputPaths
+                                from AllowExt in AllowExts
+                                where (Path.GetExtension(InputPath)) == AllowExt
+                                select InputPath;
+
+            foreach(var InputFile in InputFileList)
+            {
+                if (!wizardInfo.InputFile.Contains(InputFile))
+                    wizardInfo.InputFile.Add(InputFile);
+            }
+
+            return;
+        }
+
+        /*
+        private bool InputList_AllowDrop(string path)
+        {
+            if (!File.Exists(path))
+                return false;
+            string[] AllowExts = { ".mkv", ".m2ts", ".mp4" };
+            string InputExt = Path.GetExtension(path).ToLower();
+            
+
+            return true;
+        }
+        */
     }
 }

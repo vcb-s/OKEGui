@@ -73,7 +73,8 @@
                         <Label>输入文件</Label>
                     </StackPanel>
 
-                    <ListBox Name="InputList" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Path=InputFile}" SelectionMode="Extended">
+                    <ListBox Name="InputList" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Path=InputFile}" SelectionMode="Extended"
+                             AllowDrop="True" PreviewDragEnter="InputList_PreviewDragEnter" Drop="InputList_Drop">
                     </ListBox>
 
                     <Grid Grid.Column="1" Grid.Row="1" Margin="2">
