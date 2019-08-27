@@ -111,13 +111,19 @@ namespace OKEGui
             string FileName = ((string[])e.Data.GetData(System.Windows.DataFormats.FileDrop))[0];
             //临时修复json输入过滤器
             if (Path.GetExtension(FileName).ToLower() != ".json")
+            {
                 return;
+            }
 
             wizardInfo.ProjectFile = FileName;
             if (LoadJsonProfile(wizardInfo.ProjectFile))
+            {
                 SelectProjectFile.CanSelectNextPage = true;
+            }
             else
+            {
                 SelectProjectFile.CanSelectNextPage = false;
+            }
             return;
         }
 
