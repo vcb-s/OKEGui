@@ -16,7 +16,10 @@
             <xctk:WizardPage x:Name="SelectProjectFile" PageType="Interior"
                              Title="选择OKEGui项目文件"
                              NextPage="{Binding ElementName=SelectInputFile}"
-                             CanSelectNextPage="False">
+                             CanSelectNextPage="False"
+                             AllowDrop="True"
+                             Drop="SelectProjectFile_Drop"
+                             PreviewDragEnter="SelectProjectFile_PreviewDragEnter">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"></ColumnDefinition>
@@ -70,7 +73,8 @@
                         <Label>输入文件</Label>
                     </StackPanel>
 
-                    <ListBox Name="InputList" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Path=InputFile}" SelectionMode="Extended">
+                    <ListBox Name="InputList" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Path=InputFile}" SelectionMode="Extended"
+                             AllowDrop="True" PreviewDragEnter="InputList_PreviewDragEnter" Drop="InputList_Drop" KeyDown="InputList_KeyDown">
                     </ListBox>
 
                     <Grid Grid.Column="1" Grid.Row="1" Margin="2">
