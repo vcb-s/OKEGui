@@ -245,41 +245,9 @@ namespace OKEGui
 
         private void DeleteInput_Click(object sender, RoutedEventArgs e)
         {
-            var list = InputList.SelectedItems;
+            DeleteInputVideoFiles();
 
-            if (list.Count == 0)
-            {
-                return;
-            }
-
-            if (list.Count > 1)
-            {
-                MessageBoxResult result = System.Windows.MessageBox.Show("是否删除" + list.Count.ToString() + "个文件？", "新建任务向导", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
-            }
-
-            List<string> selectList = new List<string>();
-            foreach (object item in list)
-            {
-                selectList.Add(item as string);
-            }
-
-            for (int i = 0; i < selectList.Count; i++)
-            {
-                foreach (string selected in selectList)
-                {
-                    int index = wizardInfo.InputFile.IndexOf(selected);
-                    if (index != -1)
-                    {
-                        wizardInfo.InputFile.RemoveAt(index);
-                    }
-                }
-            }
-
-            SelectInputFile.CanFinish = wizardInfo.InputFile.Count != 0;
+            return;
         }
 
         private void InputList_PreviewDragEnter(object sender, System.Windows.DragEventArgs e)
@@ -316,41 +284,49 @@ namespace OKEGui
         {
             if (e.Key == System.Windows.Input.Key.Delete)
             {
-                var list = InputList.SelectedItems;
+                DeleteInputVideoFiles();
+            }
+            
+            return;
+        }
 
-                if (list.Count == 0)
-                {
-                    return;
-                }
+        private void DeleteInputVideoFiles()
+        {
+            var list = InputList.SelectedItems;
 
+            if (list.Count == 0)
+            {
+                return;
+            }
+
+            if (list.Count > 1)
+            {
                 MessageBoxResult result = System.Windows.MessageBox.Show("是否删除" + list.Count.ToString() + "个文件？", "新建任务向导", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.No)
                 {
                     return;
                 }
+            }
 
-                List<string> selectList = new List<string>();
-                foreach (object item in list)
-                {
-                    selectList.Add(item as string);
-                }
+            List<string> selectList = new List<string>();
+            foreach (object item in list)
+            {
+                selectList.Add(item as string);
+            }
 
-                for (int i = 0; i < selectList.Count; i++)
+            for (int i = 0; i < selectList.Count; i++)
+            {
+                foreach (string selected in selectList)
                 {
-                    foreach (string selected in selectList)
+                    int index = wizardInfo.InputFile.IndexOf(selected);
+                    if (index != -1)
                     {
-                        int index = wizardInfo.InputFile.IndexOf(selected);
-                        if (index != -1)
-                        {
-                            wizardInfo.InputFile.RemoveAt(index);
-                        }
+                        wizardInfo.InputFile.RemoveAt(index);
                     }
                 }
-
-                SelectInputFile.CanFinish = wizardInfo.InputFile.Count != 0;
             }
-            
-            return;
+
+            SelectInputFile.CanFinish = wizardInfo.InputFile.Count != 0;
         }
     }
 }
