@@ -308,6 +308,7 @@ namespace OKEGui
                     wizardInfo.InputFile.Add(InputFile);
             }
 
+            SelectInputFile.CanFinish = wizardInfo.InputFile.Count > 0;
             return;
         }
 
