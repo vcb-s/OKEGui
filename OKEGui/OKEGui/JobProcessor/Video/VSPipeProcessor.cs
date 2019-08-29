@@ -40,6 +40,7 @@ namespace OKEGui
 
         public override void ProcessLine(string line, StreamType stream)
         {
+            base.ProcessLine(line, stream);
             Regex rWidth = new Regex("Width: ([0-9]+)");
             Regex rHeight = new Regex("Height: ([0-9]+)");
             Regex rFrames = new Regex("Frames: ([0-9]+)");

@@ -10,6 +10,8 @@ namespace OKEGui
 {
     public class AutoMuxer
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         private enum OutputType
         {
             Mkv,
@@ -67,7 +69,8 @@ namespace OKEGui
             List<string> subtitleLanguages/* = "jpn"*/
         )
         {
-            var episode = new Episode {
+            var episode = new Episode
+            {
                 AudioFiles = new List<string>(),
                 SubtitleFiles = new List<string>(),
                 VideoFps = videoFps,
@@ -76,25 +79,30 @@ namespace OKEGui
                 TotalFileSize = 0
             };
 
-            foreach (string file in inputFileNames) {
+            foreach (string file in inputFileNames)
+            {
                 FileInfo fileInfo = new FileInfo(file);
-                if (!fileInfo.Exists) {
+                if (!fileInfo.Exists)
+                {
                     continue;
                 }
 
                 var extension = Path.GetExtension(file).ToLower();
 
-                if (s_AudioFileExtensions.Contains(extension)) {
+                if (s_AudioFileExtensions.Contains(extension))
+                {
                     episode.AudioFiles.Add(file);
                     episode.TotalFileSize += fileInfo.Length;
                     continue;
                 }
-                if (s_VideoFileExtensions.Contains(extension)) {
+                if (s_VideoFileExtensions.Contains(extension))
+                {
                     episode.VideoFile = file;
                     episode.TotalFileSize += fileInfo.Length;
                     continue;
                 }
-                switch (extension) {
+                switch (extension)
+                {
                     case ".txt":
                         episode.ChapterFile = file;
                         break;
@@ -106,7 +114,8 @@ namespace OKEGui
             }
 
             episode.OutputFile = outputFileName;
-            switch (Path.GetExtension(outputFileName).ToLower()) {
+            switch (Path.GetExtension(outputFileName).ToLower())
+            {
                 case ".mkv":
                 case ".mka":
                     episode.OutputFileType = OutputType.Mkv;
@@ -140,14 +149,17 @@ namespace OKEGui
                 trackOrder.Add($"{fileID++}:0");
             }
 
-            for (int i = 0; i < episode.AudioFiles.Count; i++) {
+            for (int i = 0; i < episode.AudioFiles.Count; i++)
+            {
                 string audioFile = episode.AudioFiles[i];
                 parameters.Add(string.Format(trackTemplate, episode.AudioLanguages[i], audioFile));
                 trackOrder.Add($"{fileID++}:0");
             }
 
-            if (episode.SubtitleFiles != null) {
-                for (int i = 0; i < episode.SubtitleFiles.Count; i++) {
+            if (episode.SubtitleFiles != null)
+            {
+                for (int i = 0; i < episode.SubtitleFiles.Count; i++)
+                {
                     string subtitleFile = episode.SubtitleFiles[i];
                     parameters.Add(string.Format(trackTemplate, episode.SubtitleLanguages[i], subtitleFile));
                     trackOrder.Add($"{fileID++}:0");
@@ -170,10 +182,12 @@ namespace OKEGui
 
             parameters.Add($"-i \"{episode.VideoFile}\"?fps={episode.VideoFps}");
 
-            for (int i = 0; i < episode.AudioFiles.Count; i++) {
+            for (int i = 0; i < episode.AudioFiles.Count; i++)
+            {
                 string audioFile = episode.AudioFiles[i];
                 FileInfo ainfo = new FileInfo(audioFile);
-                if (ainfo.Extension.ToLower() == ".aac" || ainfo.Extension.ToLower() == ".m4a" || ainfo.Extension.ToLower() == ".ac3" || ainfo.Extension.ToLower() == ".dts") {
+                if (ainfo.Extension.ToLower() == ".aac" || ainfo.Extension.ToLower() == ".m4a" || ainfo.Extension.ToLower() == ".ac3" || ainfo.Extension.ToLower() == ".dts")
+                {
                     parameters.Add($"-i \"{audioFile}\"?language={episode.AudioLanguages[i]}");
                 }
             }
@@ -185,7 +199,8 @@ namespace OKEGui
 
         private void StartProcess(string filename, string arguments)
         {
-            var startInfo = new ProcessStartInfo {
+            var startInfo = new ProcessStartInfo
+            {
                 FileName = filename,
                 Arguments = arguments,
                 UseShellExecute = false,
@@ -196,15 +211,17 @@ namespace OKEGui
             };
 
             proc.StartInfo = startInfo;
-            Debugger.Log(0, "", filename + " " + arguments + "\n");
+            Logger.Info(filename + " " + arguments);
 
-            try {
+            try
+            {
                 proc.Start();
                 new Thread(new ThreadStart(readStdErr)).Start();
                 new Thread(new ThreadStart(readStdOut)).Start();
                 proc.WaitForExit();
                 mre.WaitOne();
-            } catch (Exception e) { throw e; }
+            }
+            catch (Exception e) { throw e; }
         }
 
         private void readStream(StreamReader sr)
@@ -212,49 +229,57 @@ namespace OKEGui
             string line;
             if (null == proc) return;
 
-            try {
-                while ((line = sr.ReadLine()) != null) {
-                    Debugger.Log(0, "ReadStream", line + "\n");
+            while ((line = sr.ReadLine()) != null)
+            {
+                Logger.Trace(line);
 
-                    Match progressMatch;
-                    double progress = -1;
+                Match progressMatch;
+                double progress = -1;
 
-                    switch (_episode.OutputFileType) {
-                        case OutputType.Mkv:
-                            if (line.Contains("Progress: ")) {
-                                progressMatch = Regex.Match(line, @"Progress: (\d*?)%", RegexOptions.Compiled);
-                                if (progressMatch.Groups.Count < 2) return;
-                                progress = double.Parse(progressMatch.Groups[1].Value);
-                            } else if (line.Contains("Muxing took") || line.Contains("Multiplexing took")) { //different versions of mkvmerge may return different wordings. Muxing took is the old way.
-                                mre.Set();
-                            }
-                            break;
+                switch (_episode.OutputFileType)
+                {
+                    case OutputType.Mkv:
+                        if (line.Contains("Progress: "))
+                        {
+                            progressMatch = Regex.Match(line, @"Progress: (\d*?)%", RegexOptions.Compiled);
+                            if (progressMatch.Groups.Count < 2) return;
+                            progress = double.Parse(progressMatch.Groups[1].Value);
+                        }
+                        else if (line.Contains("Muxing took") || line.Contains("Multiplexing took"))
+                        { //different versions of mkvmerge may return different wordings. Muxing took is the old way.
+                            mre.Set();
+                        }
+                        break;
 
-                        case OutputType.Mp4:
-                            if (line.Contains("Importing: ")) {
-                                progressMatch = Regex.Match(line, @"Importing: (\d*?) bytes", RegexOptions.Compiled);
-                                if (progressMatch.Groups.Count < 2) return;
-                                progress = Convert.ToDouble(double.Parse(progressMatch.Groups[1].Value) / _episode.TotalFileSize * 100d);
-                            } else if (line.Contains("Muxing completed")) {
-                                mre.Set();
-                            }
-                            break;
-                    }
-                    if (progress > -1 && ProgressChanged != null) {
-                        ProgressChanged(progress);
-                    }
+                    case OutputType.Mp4:
+                        if (line.Contains("Importing: "))
+                        {
+                            progressMatch = Regex.Match(line, @"Importing: (\d*?) bytes", RegexOptions.Compiled);
+                            if (progressMatch.Groups.Count < 2) return;
+                            progress = Convert.ToDouble(double.Parse(progressMatch.Groups[1].Value) / _episode.TotalFileSize * 100d);
+                        }
+                        else if (line.Contains("Muxing completed"))
+                        {
+                            mre.Set();
+                        }
+                        break;
                 }
-            } catch (Exception) {
-                throw;
+                if (progress > -1 && ProgressChanged != null)
+                {
+                    ProgressChanged(progress);
+                }
             }
         }
 
         private void readStdOut()
         {
             StreamReader sr = null;
-            try {
+            try
+            {
                 sr = proc.StandardOutput;
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Debugger.Log(0, "", "Exception getting IO reader for stdout" + e.ToString());
                 return;
             }
@@ -264,9 +289,12 @@ namespace OKEGui
         private void readStdErr()
         {
             StreamReader sr = null;
-            try {
+            try
+            {
                 sr = proc.StandardError;
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Debugger.Log(0, "", "Exception getting IO reader for stderr" + e.ToString());
                 return;
             }
@@ -284,7 +312,8 @@ namespace OKEGui
             _episode = GenerateEpisode(inputFileNames, outputFileName, videoFps, audioLanguages, subtitleLanguages);
             string mainProgram = string.Empty;
             string args = string.Empty;
-            switch (_episode.OutputFileType) {
+            switch (_episode.OutputFileType)
+            {
                 case OutputType.Mkv:
                     mainProgram = _mkvMergePath;
                     args = GenerateMkvMergeParameter(_episode);
@@ -305,8 +334,10 @@ namespace OKEGui
             List<string> audioLanguages = new List<string>();
             List<string> subtitleLanguages = new List<string>();
 
-            foreach (var track in mediaFile.Tracks) {
-                if (track.Info.MuxOption != MuxOption.Default && track.Info.MuxOption != MuxOption.Mka) {
+            foreach (var track in mediaFile.Tracks)
+            {
+                if (track.Info.MuxOption != MuxOption.Default && track.Info.MuxOption != MuxOption.Mka)
+                {
                     continue;
                 }
                 switch (track.TrackType)
@@ -325,7 +356,7 @@ namespace OKEGui
                         subtitleLanguages.Add(subtitleTrack.Info.Language);
                         break;
                 }
-                    
+
                 input.Add(track.File.GetFullPath());
             }
 

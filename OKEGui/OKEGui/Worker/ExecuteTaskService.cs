@@ -12,6 +12,8 @@ namespace OKEGui.Worker
     // TODO: 改写为更模块化的函数。
     public partial class WorkerManager
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         private void WorkerDoWork(object sender, DoWorkEventArgs e)
         {
             WorkerArgs args = (WorkerArgs)e.Argument;
@@ -268,6 +270,7 @@ namespace OKEGui.Worker
                 catch (OKETaskException ex)
                 {
                     ExceptionMsg msg = ExceptionParser.Parse(ex, task);
+                    Logger.Error(msg);
                     new System.Threading.Tasks.Task(() =>
                     System.Windows.MessageBox.Show(msg.errorMsg, msg.fileName)).Start();
                     task.IsRunning = false;
@@ -278,6 +281,7 @@ namespace OKEGui.Worker
                 catch (Exception ex)
                 {
                     FileInfo fileinfo = new FileInfo(task.InputFile);
+                    Logger.Error(ex.StackTrace);
                     new System.Threading.Tasks.Task(() =>
                             System.Windows.MessageBox.Show(ex.Message, fileinfo.Name)).Start();
                     task.IsRunning = false;

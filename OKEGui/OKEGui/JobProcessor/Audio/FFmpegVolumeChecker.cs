@@ -21,6 +21,7 @@ namespace OKEGui
 
         public override void ProcessLine(string line, StreamType stream)
         {
+            base.ProcessLine(line, stream);
             if (line.Contains("mean_volume"))
             {
                 line = line.Replace(": 0.", ": -0.");

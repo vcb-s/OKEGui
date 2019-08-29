@@ -19,6 +19,8 @@ namespace OKEGui
 
     public partial class EACDemuxer
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public enum ProcessState
         {
             FetchStream,
@@ -96,6 +98,7 @@ namespace OKEGui
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true,
             };
+            Logger.Info(startInfo.FileName + " " + startInfo.Arguments);
 
             proc.StartInfo = startInfo;
             try
@@ -132,6 +135,7 @@ namespace OKEGui
                         }
                         else if (state == ProcessState.ExtractStream)
                         {
+                            Logger.Trace(line);
                             Regex rAnalyze = new Regex("analyze: ([0-9]+)%");
                             Regex rProgress = new Regex("process: ([0-9]+)%");
 
@@ -216,7 +220,7 @@ namespace OKEGui
         {
             line = line.Trim();
             if (string.IsNullOrEmpty(line)) return;
-            Debugger.Log(0, "", line + "\n");
+            Logger.Info(line);
             if (Regex.IsMatch(line, @"\d*:\d*:\d*"))
             {
                 string[] match = Regex.Split(line, @"(\d*):(\d*):(\d*)");
@@ -374,6 +378,7 @@ namespace OKEGui
                 }
                 if (track.IsEmpty())
                 {
+                    Logger.Warn(track.OutFileName + "被检测为空轨道。");
                     removeList.Add(track.Index);
                     track.MarkSkipping();
                     continue;
@@ -384,6 +389,7 @@ namespace OKEGui
                     TrackInfo other = extractResult[j];
                     if (track.IsDuplicate(other))
                     {
+                        Logger.Warn(track.OutFileName + "被检测为与" + other.OutFileName + "重复。");
                         removeList.Add(other.Index);
                         other.MarkSkipping();
                     }

@@ -31,7 +31,7 @@ namespace OKEGui
 
         public override void ProcessLine(string line, StreamType stream)
         {
-            Debugger.Log(0, "QAACEncoder", line + "\n");
+            base.ProcessLine(line, stream);
             if (line.Contains(".done"))
             {
                 SetFinish();

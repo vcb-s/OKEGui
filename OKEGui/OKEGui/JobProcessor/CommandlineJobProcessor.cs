@@ -11,6 +11,7 @@ namespace OKEGui
     public abstract class CommandlineJobProcessor/*<TJob>*/ : IJobProcessor
     //where TJob : Job
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         #region variables
 
         // protected Job job;
@@ -36,35 +37,6 @@ namespace OKEGui
         //protected LogItem stderrLog;
 
         #endregion variables
-
-        #region temp file utils
-
-        protected void writeTempTextFile(string filePath, string text)
-        {
-            using (Stream temp = new FileStream(filePath, System.IO.FileMode.Create)) {
-                using (TextWriter avswr = new StreamWriter(temp, System.Text.Encoding.Default)) {
-                    avswr.WriteLine(text);
-                }
-            }
-            tempFiles.Add(filePath);
-        }
-
-        private void deleteTempFiles()
-        {
-            foreach (string filePath in tempFiles)
-                safeDelete(filePath);
-        }
-
-        private static void safeDelete(string filePath)
-        {
-            try {
-                File.Delete(filePath);
-            } catch {
-                // Do Nothing
-            }
-        }
-
-        #endregion temp file utils
 
         // returns true if the exit code yields a meaningful answer
         protected virtual bool checkExitCode
@@ -129,22 +101,17 @@ namespace OKEGui
             //proc.EnableRaisingEvents = true;
             //proc.Exited += new EventHandler(proc_Exited);
             bWaitForExit = false;
-            Debugger.Log(0, "Job command line", pstart.FileName + " " + pstart.Arguments + "\n");
+            Logger.Info(pstart.FileName + " " + pstart.Arguments);
 
             try {
                 bool started = proc.Start();
                 // startTime = DateTime.Now;
                 isProcessing = true;
-                Debugger.Log(0, "prestart","Process started\n");
-                Debugger.Log(0, "prestart", string.Format("[{0:G}] {1}", DateTime.Now, "Standard output stream\n"));
-                Debugger.Log(0, "prestart", string.Format("[{0:G}] {1}", DateTime.Now, "Standard error stream\n"));
+                Logger.Debug(executable + "开始运行");
                 readStdErr();
                 readStdOut();
-                // new System.Windows.Forms.MethodInvoker(this.RunStatusCycle).BeginInvoke(null, null);
-                // this.changePriority(MainForm.Instance.Settings.ProcessingPriority);
-                // this.changePriority(ProcessPriority.NORMAL);
             } catch (Exception e) {
-                Debugger.Log(0, "exception", e.Message);
+                Logger.Error(e.StackTrace);
                 throw e;
             }
         }
@@ -198,6 +165,7 @@ namespace OKEGui
 
         public void SetFinish()
         {
+            Logger.Debug("结束运行 " + executable);
             finishMre.Set();
         }
 
@@ -305,16 +273,7 @@ namespace OKEGui
 
         public virtual void ProcessLine(string line, StreamType stream)
         {
-            if (String.IsNullOrEmpty(line.Trim()))
-                return;
-
-            //if (stream == StreamType.Stdout)
-            //    stdoutLog.LogEvent(line, oType);
-            //if (stream == StreamType.Stderr)
-            //    stderrLog.LogEvent(line, oType);
-
-            //if (oType == ImageType.Error)
-            //    su.HasError = true;
+            Logger.Trace(line);
         }
 
         #endregion reading process output

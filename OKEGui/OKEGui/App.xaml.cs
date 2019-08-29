@@ -10,11 +10,15 @@ namespace OKEGui
     /// </summary>
     public partial class App : Application
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         static App()
         {
             if (EnvironmentChecker.CheckEnviornment())
             {
+                ConfigManager.ConfigLogger();
                 ConfigManager.WriteConfig();
+                Logger.Info("程序正常启动");
             }
             else
             {

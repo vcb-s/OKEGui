@@ -13,6 +13,18 @@ namespace OKEGui.JobProcessor
     {
         public string errorMsg;
         public string fileName;
+
+        public override string ToString()
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return errorMsg;
+            }
+            else
+            {
+                return fileName + " : " + errorMsg;
+            }
+        }
     }
 
     public class OKETaskException : OperationCanceledException
@@ -40,8 +52,11 @@ namespace OKEGui.JobProcessor
 
     static class ExceptionParser
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public static ExceptionMsg Parse(OKETaskException ex, TaskDetail task)
         {
+            Logger.Warn("收到异常" + ex.StackTrace);
             ExceptionMsg msg;
             if (task != null)
             {

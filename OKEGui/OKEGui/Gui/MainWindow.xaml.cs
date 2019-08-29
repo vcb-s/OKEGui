@@ -18,6 +18,8 @@ namespace OKEGui
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public int WorkerCount = 0;
         public TaskManager tm = new TaskManager();
         public WorkerManager wm;
@@ -51,10 +53,19 @@ namespace OKEGui
         private void BtnNew_Click(object sender, RoutedEventArgs e)
         {
             // 新建任务。具体实现请见Gui/wizardWindow
-            var wizard = new WizardWindow(ref tm);
-            wizard.ShowDialog();
-            BtnRun.IsEnabled = true;
-            tm.IsCanStart = true;
+            try
+            {
+                var wizard = new WizardWindow(ref tm);
+                wizard.ShowDialog();
+                BtnRun.IsEnabled = true;
+                tm.IsCanStart = true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Fatal(ex.StackTrace);
+                Environment.Exit(0);
+            }
+
         }
 
         private void BtnStop_Click(object sender, RoutedEventArgs e)
@@ -64,19 +75,27 @@ namespace OKEGui
 
         private void BtnRun_Click(object sender, RoutedEventArgs e)
         {
-            tm.IsCanStart = true;
-
-            if (!wm.Start())
+            try
             {
-                tm.IsCanStart = false;
-                MessageBox.Show("无法开始任务！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
+                tm.IsCanStart = true;
 
-                return;
+                if (!wm.Start())
+                {
+                    tm.IsCanStart = false;
+                    MessageBox.Show("无法开始任务！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                    return;
+                }
+
+                BtnDeleteWorker.IsEnabled = false;
+                BtnEmpty.IsEnabled = false;
+                BtnRun.IsEnabled = false;
             }
-
-            BtnDeleteWorker.IsEnabled = false;
-            BtnEmpty.IsEnabled = false;
-            BtnRun.IsEnabled = false;
+            catch (Exception ex)
+            {
+                Logger.Fatal(ex.StackTrace);
+                Environment.Exit(0);
+            }
         }
 
         private void BtnEdit_Click(object sender, RoutedEventArgs e)

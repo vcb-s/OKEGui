@@ -54,32 +54,6 @@ namespace OKEGui
             // su.ClipLength = TimeSpan.FromSeconds((double)numberOfFrames / fps);
         }
 
-        /// <summary>
-        /// compiles final bitrate statistics
-        /// </summary>
-        protected void compileFinalStats()
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(job.Output) && File.Exists(job.Output))
-                {
-                    FileInfo fi = new FileInfo(job.Output);
-                    long size = fi.Length; // size in bytes
-
-                    ulong framecount = 0;
-                    double framerate = 23.976;
-                    // JobUtil.getInputProperties(out framecount, out framerate, job.Input);
-
-                    double numberOfSeconds = (double)framecount / framerate;
-                    long bitrate = (long)((double)(size * 8.0) / (numberOfSeconds * 1000.0));
-                }
-            }
-            catch (Exception e)
-            {
-                Debugger.Log(0, "", "Exception compiling final stats" + e.ToString());
-            }
-        }
-
         #endregion helper methods
 
         protected bool setFrameNumber(string frameString, bool isUpdateSpeed = false)

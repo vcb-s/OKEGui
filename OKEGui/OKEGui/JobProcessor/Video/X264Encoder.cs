@@ -34,6 +34,8 @@ namespace OKEGui
 
         public override void ProcessLine(string line, StreamType stream)
         {
+            base.ProcessLine(line, stream);
+
             if (line.Contains("x264 [error]:"))
             {
                 OKETaskException ex = new OKETaskException(Constants.x264ErrorSmr);
@@ -86,8 +88,6 @@ namespace OKEGui
             {
                 return;
             }
-
-            base.ProcessLine(line, stream);
         }
 
         private string BuildCommandline(string extractParam, int numaNode)
