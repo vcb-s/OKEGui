@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using Newtonsoft.Json;
 
@@ -12,6 +8,7 @@ namespace OKEGui.Utils
     class OKEGuiConfig
     {
         public string vspipePath;
+        public string logLevel = "DEBUG";
     }
 
     static class ConfigManager
@@ -45,10 +42,12 @@ namespace OKEGui.Utils
             return Config;
         }
 
-        public static Boolean WriteConfig()
+        public static bool WriteConfig()
         {
-            JsonSerializer serializer = new JsonSerializer();
-            serializer.Formatting = Formatting.Indented;
+            JsonSerializer serializer = new JsonSerializer
+            {
+                Formatting = Formatting.Indented
+            };
             using (StreamWriter fileWriter = new StreamWriter(Constants.configFile))
             using (JsonTextWriter writer = new JsonTextWriter(fileWriter))
             {

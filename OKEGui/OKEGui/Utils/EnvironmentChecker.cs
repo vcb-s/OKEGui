@@ -1,13 +1,8 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Security;
 using System.Security.Permissions;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using OKEGui.JobProcessor;
 
@@ -16,7 +11,7 @@ namespace OKEGui.Utils
     static class EnvironmentChecker
     {
         static OKEGuiConfig Config;
-        public static Boolean CheckEnviornment()
+        public static bool CheckEnviornment()
         {
             if (!CheckRootFolderWriteAccess())
             {
@@ -28,7 +23,7 @@ namespace OKEGui.Utils
             return CheckVspipe() && CheckQAAC() && CheckFfmpeg();
         }
 
-        static Boolean CheckRootFolderWriteAccess()
+        static bool CheckRootFolderWriteAccess()
         {
             FileIOPermission f = new FileIOPermission(FileIOPermissionAccess.AllAccess, AppDomain.CurrentDomain.BaseDirectory);
             try
@@ -42,7 +37,7 @@ namespace OKEGui.Utils
             return true;
         }
 
-        static Boolean CheckVspipe()
+        static bool CheckVspipe()
         {
             string vspipePath = Config.vspipePath;
             FileInfo vspipeInfo;
@@ -113,7 +108,7 @@ namespace OKEGui.Utils
             }
         }
 
-        static Boolean CheckQAAC()
+        static bool CheckQAAC()
         {
             QAACEncoder e = new QAACEncoder("--check");
             try
@@ -128,7 +123,7 @@ namespace OKEGui.Utils
             return true;
         }
 
-        static Boolean CheckFfmpeg()
+        static bool CheckFfmpeg()
         {
             FileInfo ffmpegInfo = new FileInfo(Constants.ffmpegPath);
 

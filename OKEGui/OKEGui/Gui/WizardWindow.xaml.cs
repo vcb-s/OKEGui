@@ -126,7 +126,7 @@ namespace OKEGui
             }
         }
 
-        
+
         private void OpenProjectBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -146,7 +146,7 @@ namespace OKEGui
             using (var ofd = new OpenFileDialog
             {
                 Multiselect = true,
-                Filter = "视频文件 (*.m2ts, *.mkv, *.mp4)|*.m2ts;*.mkv;*.mp4"
+                Filter = "视频文件 (*.m2ts, *.mkv, *.mp4, *.m2v, *.vob)|*.m2ts;*.mkv;*.mp4;*.m2v;*.vob"
             })
             {
                 if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
@@ -234,11 +234,11 @@ namespace OKEGui
         private void InputList_Drop(object sender, System.Windows.DragEventArgs e)
         {
             string[] inputPaths = e.Data.GetData(System.Windows.DataFormats.FileDrop) as string[];
-            string[] allowedExts = { ".mkv", ".m2ts", ".mp4" };
+            string[] allowedExts = { ".mkv", ".m2ts", ".mp4", ".m2v", ".vob" };
 
-            string[] inputFileList = inputPaths.Where(i => allowedExts.Contains(Path.GetExtension(i))).ToArray();
+            string[] inputFileList = inputPaths.Where(i => allowedExts.Contains(Path.GetExtension(i).ToLower())).ToArray();
 
-            foreach(string inputFile in inputFileList)
+            foreach (string inputFile in inputFileList)
             {
                 if (!wizardInfo.InputFile.Contains(inputFile))
                 {
