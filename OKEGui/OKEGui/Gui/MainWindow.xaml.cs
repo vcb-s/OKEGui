@@ -55,7 +55,7 @@ namespace OKEGui
             // 新建任务。具体实现请见Gui/wizardWindow
             try
             {
-                var wizard = new WizardWindow(ref tm);
+                var wizard = new WizardWindow(wm);
                 wizard.ShowDialog();
                 BtnRun.IsEnabled = true;
                 tm.IsCanStart = true;

@@ -139,7 +139,7 @@
     <Compile Include="Worker\ExecuteTaskService.cs" />
     <Compile Include="Task\TaskStatus.cs" />
     <Compile Include="Utils\Cleaner.cs" />
-    <Compile Include="Utils\ConfigManager.cs" />
+    <Compile Include="Utils\Initializer.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Utils\CRC32.cs" />
     <Compile Include="Utils\EnvironmentChecker.cs" />

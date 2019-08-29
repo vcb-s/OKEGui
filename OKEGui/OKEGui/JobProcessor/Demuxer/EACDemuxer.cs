@@ -220,7 +220,7 @@ namespace OKEGui
         {
             line = line.Trim();
             if (string.IsNullOrEmpty(line)) return;
-            Logger.Info(line);
+            Logger.Trace(line);
             if (Regex.IsMatch(line, @"\d*:\d*:\d*"))
             {
                 string[] match = Regex.Split(line, @"(\d*):(\d*):(\d*)");
@@ -242,7 +242,7 @@ namespace OKEGui
                 {
                     return;
                 }
-
+                Logger.Debug(line);
                 var trackInfo = new TrackInfo
                 {
                     Index = Convert.ToInt32(match.Groups[1].Value),

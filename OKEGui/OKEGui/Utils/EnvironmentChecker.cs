@@ -18,7 +18,7 @@ namespace OKEGui.Utils
                 MessageBox.Show("没有权限控制OKEGui所在的文件夹，请保证当前用户获取了目录权限，或者以管理员模式运行。", "没有权限控制OKEGui所在的文件夹");
                 return false;
             }
-            Config = ConfigManager.LoadConfig();
+            Config = Initializer.LoadConfig();
 
             return CheckVspipe() && CheckQAAC() && CheckFfmpeg();
         }

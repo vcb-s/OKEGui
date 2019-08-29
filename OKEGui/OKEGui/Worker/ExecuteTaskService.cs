@@ -29,10 +29,10 @@ namespace OKEGui.Worker
                     lock (o)
                     {
                         bgworkerlist.TryRemove(args.Name, out BackgroundWorker v);
-                        workerType.TryRemove(args.Name, out WorkerType t);
 
-                        if (bgworkerlist.Count == 0 && workerType.Count == 0)
+                        if (bgworkerlist.Count == 0)
                         {
+                            isRunning = false;
                             Debugger.Log(0, "", "Ready to call the after finish process\n");
                             AfterFinish?.Invoke();
                         }

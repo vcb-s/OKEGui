@@ -15,7 +15,7 @@ namespace OKEGui.Utils
         public string logLevel = "DEBUG";
     }
 
-    static class ConfigManager
+    static class Initializer
     {
         public static OKEGuiConfig Config = new OKEGuiConfig();
 

@@ -27,7 +27,7 @@ namespace OKEGui
             }
 
             // 获取VSPipe路径
-            this.VspipePath = ConfigManager.Config.vspipePath;
+            this.VspipePath = Initializer.Config.vspipePath;
 
             commandLine = BuildCommandline(job.EncodeParam, job.NumaNode);
         }

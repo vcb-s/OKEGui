@@ -16,8 +16,8 @@ namespace OKEGui
         {
             if (EnvironmentChecker.CheckEnviornment())
             {
-                ConfigManager.ConfigLogger();
-                ConfigManager.WriteConfig();
+                Initializer.ConfigLogger();
+                Initializer.WriteConfig();
                 Logger.Info("程序正常启动");
             }
             else

@@ -27,12 +27,12 @@ namespace OKEGui.Worker
         public TaskManager tm;
 
         private List<string> workerList;
+        private ConcurrentDictionary<string, WorkerType> workerType;
 
         // dummy object for locking.
         private object o = new object();
 
         private ConcurrentDictionary<string, BackgroundWorker> bgworkerlist;
-        private ConcurrentDictionary<string, WorkerType> workerType;
         private int tempCounter;
         private bool isRunning;
 
@@ -50,6 +50,22 @@ namespace OKEGui.Worker
             tempCounter = 0;
         }
 
+        public void AddTask(TaskDetail detail)
+        {
+            tm.AddTask(detail);
+            if (isRunning)
+            {
+                foreach (string worker in workerList)
+                {
+                    if (!bgworkerlist.ContainsKey(worker))
+                    {
+                        CreateWorker(worker);
+                        StartWorker(worker);
+                    }
+                }
+            }
+        }
+
         public bool Start()
         {
             lock (o)
@@ -63,14 +79,11 @@ namespace OKEGui.Worker
 
                 foreach (string worker in workerList)
                 {
-                    if (bgworkerlist.ContainsKey(worker))
+                    if (!bgworkerlist.ContainsKey(worker))
                     {
-                        BackgroundWorker bg;
-                        bgworkerlist.TryRemove(worker, out bg);
+                        CreateWorker(worker);
+                        StartWorker(worker);
                     }
-
-                    CreateWorker(worker);
-                    StartWorker(worker);
                 }
 
                 return true;

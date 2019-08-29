@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
-using Newtonsoft.Json;
 using OKEGui.Utils;
 using OKEGui.Model;
+using OKEGui.Worker;
 
 namespace OKEGui
 {
@@ -58,11 +57,11 @@ namespace OKEGui
         }
 
         private readonly NewTask wizardInfo = new NewTask();
-        private readonly TaskManager taskManager;
+        private readonly WorkerManager workerManager;
         private TaskProfile json;
         private string vsScript;
 
-        public WizardWindow(ref TaskManager t)
+        public WizardWindow(WorkerManager w)
         {
             InitializeComponent();
             taskWizard.BackButtonContent = "上一步";
@@ -73,7 +72,7 @@ namespace OKEGui
             taskWizard.NextButtonContent = "下一步";
             DataContext = wizardInfo;
 
-            taskManager = t;
+            workerManager = w;
         }
 
         // 读入json文件，检查项目设置，并生成预览信息
@@ -217,7 +216,7 @@ namespace OKEGui
                 td.Taskfile.InputScript = fileName;
                 td.UpdateOutputFileName();
 
-                taskManager.AddTask(td);
+                workerManager.AddTask(td);
             }
         }
 

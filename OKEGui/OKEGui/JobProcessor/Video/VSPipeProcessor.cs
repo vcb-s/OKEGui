@@ -26,7 +26,7 @@ namespace OKEGui
         public VSPipeProcessor(VideoInfoJob j) : base()
         {
             // 获取VSPipe路径
-            this.executable = ConfigManager.Config.vspipePath;
+            this.executable = Initializer.Config.vspipePath;
             videoInfo = new VSVideoInfo();
 
             StringBuilder sb = new StringBuilder();
