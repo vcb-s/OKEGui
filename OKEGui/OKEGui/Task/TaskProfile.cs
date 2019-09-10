@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OKEGui.Task;
+using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -27,6 +28,7 @@ namespace OKEGui.Model
         public string SubtitleLanguage;
         public List<Info> SubtitleTracks;
         public List<string> InputFiles;
+        public EpisodeConfig Config;
 
         public Object Clone()
         {

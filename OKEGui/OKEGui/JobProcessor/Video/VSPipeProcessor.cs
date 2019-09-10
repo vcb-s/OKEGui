@@ -12,28 +12,24 @@ namespace OKEGui
 {
     public class VSPipeProcessor : CommandlineJobProcessor
     {
-        public static IJobProcessor NewVSPipeProcessor(Job j)
-        {
-            if (j is VideoInfoJob) {
-                return new VSPipeProcessor(j as VideoInfoJob);
-            }
-            return null;
-        }
-
         private VSVideoInfo videoInfo;
         private ManualResetEvent retrieved = new ManualResetEvent(false);
 
         public VSPipeProcessor(VideoInfoJob j) : base()
         {
             // 获取VSPipe路径
-            this.executable = Initializer.Config.vspipePath;
+            executable = Initializer.Config.vspipePath;
             videoInfo = new VSVideoInfo();
 
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("--info ");
-            sb.Append("\"" + j.Input + "\" ");
-            sb.Append("-");
+            sb.Append("--info");
+            foreach (string arg in j.Args)
+            {
+                sb.Append($" --arg \"{arg}\"");
+            }
+            sb.Append(" \"" + j.Input + "\"");
+            sb.Append(" -");
 
             commandLine = sb.ToString();
         }
@@ -49,7 +45,14 @@ namespace OKEGui
             Regex rColorFamily = new Regex("Color Family: ([a-zA-Z]+)");
             Regex rBits = new Regex("Bits: ([0-9]+)");
 
-            if (line.Contains("Width"))
+            if (line.Contains("Python exception: "))
+            {
+                OKETaskException ex = new OKETaskException(Constants.vpyErrorSmr);
+                ex.progress = 0.0;
+                ex.Data["VPY_ERROR"] = line.Substring(18);
+                throw ex;
+            }
+            else if (line.Contains("Width"))
             {
                 var s = rWidth.Split(line);
                 int w;
@@ -129,14 +132,7 @@ namespace OKEGui
             else if (line.Contains("SubSampling"))
             {
                 //目前还没有要处理subsampling的
-            }
-            else if (line.Contains("Python exception: "))
-            {
-                OKETaskException ex = new OKETaskException(Constants.vpyErrorSmr);
-                ex.progress = 0.0;
-                ex.Data["VPY_ERROR"] = line.Substring(18);
-                throw ex;
-            }
+            } 
         }
 
         public override void waitForFinish()

@@ -9,6 +9,8 @@ using System.Windows.Forms;
 using OKEGui.Utils;
 using OKEGui.Model;
 using OKEGui.Worker;
+using OKEGui.Task;
+using Newtonsoft.Json;
 
 namespace OKEGui
 {
@@ -19,6 +21,7 @@ namespace OKEGui
     /// </summary>
     public partial class WizardWindow : Window
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         // Wizard里需要显示的内容。
         private class NewTask : INotifyPropertyChanged
         {
@@ -196,6 +199,23 @@ namespace OKEGui
                 // 清理文件
                 cleaner.Clean(inputFile, new List<string> { json.InputScript });
 
+                EpisodeConfig config = null;
+                string cfgPath = inputFile + ".json";
+                FileInfo cfgFile = new FileInfo(cfgPath);
+                if (cfgFile.Exists)
+                {
+                    try
+                    {
+                        string configStr = File.ReadAllText(cfgPath);
+                        config = JsonConvert.DeserializeObject<EpisodeConfig>(configStr);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Windows.MessageBox.Show(ex.ToString(), cfgFile.Name + "文件写错了诶", MessageBoxButton.OK, MessageBoxImage.Error);
+                        continue;
+                    }
+                }
+
                 // 新建vpy文件（inputname.m2ts-mmddHHMM.vpy）
                 string vpy = inputTemplate[0] + inputTemplate[1] + "r'" +
                     inputFile + "'" + inputTemplate[3];
@@ -204,7 +224,7 @@ namespace OKEGui
                 string fileName = inputFile + "-" + time.ToString("MMddHHmm") + ".vpy";
                 File.WriteAllText(fileName, vpy);
 
-                var finfo = new FileInfo(inputFile);
+                FileInfo finfo = new FileInfo(inputFile);
                 TaskDetail td = new TaskDetail
                 {
                     TaskName = string.IsNullOrEmpty(json.ProjectName) ? finfo.Name : json.ProjectName + "-" + finfo.Name,
@@ -214,8 +234,11 @@ namespace OKEGui
 
                 // 更新输入脚本和输出文件拓展名
                 td.Taskfile.InputScript = fileName;
+                if (config != null)
+                {
+                    td.Taskfile.Config = config.Clone() as EpisodeConfig;
+                }
                 td.UpdateOutputFileName();
-
                 workerManager.AddTask(td);
             }
         }

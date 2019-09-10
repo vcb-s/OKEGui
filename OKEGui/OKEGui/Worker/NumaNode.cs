@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OKEGui.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -19,9 +20,17 @@ namespace OKEGui.Worker
 
         static NumaNode()
         {
-            GetNumaHighestNodeNumber(out uint temp);
-            CurrentNuma = (int)temp;
-            NumaCount = CurrentNuma + 1;
+            if (Initializer.Config.noNuma)
+            {
+                CurrentNuma = 0;
+                NumaCount = 1;
+            }
+            else
+            {
+                GetNumaHighestNodeNumber(out uint temp);
+                CurrentNuma = (int)temp;
+                NumaCount = CurrentNuma + 1;
+            }
             UsableCoreCount = Environment.ProcessorCount;
         }
 

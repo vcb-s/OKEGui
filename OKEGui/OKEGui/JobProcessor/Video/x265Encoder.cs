@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using OKEGui.Utils;
 using OKEGui.JobProcessor;
+using System.Collections.Generic;
 
 namespace OKEGui
 {
@@ -13,9 +14,9 @@ namespace OKEGui
         private readonly string X265Path = "";
         private readonly string vspipePath = "";
 
-        public X265Encoder(Job j) : base()
+        public X265Encoder(VideoJob job) : base()
         {
-            job = j as VideoJob;
+            this.job = job;
             getInputProperties(job);
 
             executable = Path.Combine(Environment.SystemDirectory, "cmd.exe");
@@ -28,7 +29,7 @@ namespace OKEGui
             // 获取VSPipe路径
             this.vspipePath = Initializer.Config.vspipePath;
 
-            commandLine = BuildCommandline(job.EncodeParam, job.NumaNode);
+            commandLine = BuildCommandline(job.EncodeParam, job.NumaNode, job.VspipeArgs);
         }
 
         public override void ProcessLine(string line, StreamType stream)
@@ -89,7 +90,7 @@ namespace OKEGui
             }
         }
 
-        private string BuildCommandline(string extractParam, int numaNode)
+        private string BuildCommandline(string extractParam, int numaNode, List<string> vspipeArgs)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -97,14 +98,18 @@ namespace OKEGui
             sb.Append(numaNode.ToString());
             // 构建vspipe参数
             sb.Append(" \"" + vspipePath + "\"");
-            sb.Append(" --y4m ");
-            sb.Append("\"" + job.Input + "\"");
-            sb.Append(" - | ");
+            sb.Append(" --y4m");
+            foreach (string arg in vspipeArgs)
+            {
+                sb.Append($" --arg \"{arg}\"");
+            }
+            sb.Append(" \"" + job.Input + "\"");
+            sb.Append(" - |");
 
             // 构建x265参数
-            sb.Append("\"" + X265Path + "\"");
-            sb.Append(" --y4m " + extractParam + " -o ");
-            sb.Append("\"" + job.Output + "\" -");
+            sb.Append(" \"" + X265Path + "\"");
+            sb.Append(" --y4m " + extractParam + " -o");
+            sb.Append(" \"" + job.Output + "\" -");
             sb.Append("\"");
 
             return sb.ToString();

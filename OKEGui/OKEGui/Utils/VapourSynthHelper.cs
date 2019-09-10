@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -214,15 +215,14 @@ namespace OKEGui
         private int height;
         private VSVideoInfo videoInfo;
 
-        public VSPipeInfo(string vsScriptPath)
+        public VSPipeInfo(string vsScriptPath, List<string> args)
         {
-            VideoInfoJob j = new VideoInfoJob(vsScriptPath);
+            VideoInfoJob j = new VideoInfoJob(vsScriptPath, args);
 
-            IJobProcessor processor = VSPipeProcessor.NewVSPipeProcessor(j);
+            VSPipeProcessor processor = new VSPipeProcessor(j);
             processor.start();
 
-            videoInfo = (processor as VSPipeProcessor).VideoInfo;
-
+            videoInfo = processor.VideoInfo;
             UpdateVideoInfo();
         }
 

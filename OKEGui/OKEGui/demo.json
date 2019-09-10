@@ -21,5 +21,11 @@
         "Main_Disc\\BDMV\\STREAM\\00000.m2ts",
         "Main_Disc\\BDMV\\STREAM\\00001.m2ts",
         "Main_Disc\\BDMV\\STREAM\\00002.m2ts",
-    ]
+    ],
+    "Config" : {
+        "VspipeArgs" : [
+            "op_start = 10000",
+            "op_end = 15000"
+        ]
+    }
 }

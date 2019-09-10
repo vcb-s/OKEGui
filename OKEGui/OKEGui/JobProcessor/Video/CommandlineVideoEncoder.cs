@@ -38,7 +38,7 @@ namespace OKEGui
         {
             //VapourSynthHelper vsHelper = new VapourSynthHelper();
             //vsHelper.LoadScriptFile(job.Input);
-            VSPipeInfo vsHelper = new VSPipeInfo(job.Input);
+            VSPipeInfo vsHelper = new VSPipeInfo(job.Input, job.VspipeArgs);
             fps_n = vsHelper.FpsNum;
             fps_d = vsHelper.FpsDen;
             numberOfFrames = (ulong)vsHelper.TotalFreams;

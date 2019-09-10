@@ -1,10 +1,14 @@
-﻿namespace OKEGui
+﻿using System.Collections.Generic;
+
+namespace OKEGui
 {
     public class VideoInfoJob : Job
     {
-        public VideoInfoJob(string input) : base()
+        public List<string> Args = new List<string>();
+        public VideoInfoJob(string input, List<string> args) : base()
         {
-            this.Input = input;
+            Input = input;
+            Args.AddRange(args);
         }
 
         public override JobType GetJobType()

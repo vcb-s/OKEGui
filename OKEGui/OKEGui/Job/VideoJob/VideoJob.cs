@@ -1,9 +1,12 @@
-﻿namespace OKEGui
+﻿using System.Collections.Generic;
+
+namespace OKEGui
 {
     public class VideoJob : Job
     {
         public string EncoderPath;
         public string EncodeParam;
+        public List<string> VspipeArgs = new List<string>();
         public double Fps;
         public uint FpsNum;
         public uint FpsDen;

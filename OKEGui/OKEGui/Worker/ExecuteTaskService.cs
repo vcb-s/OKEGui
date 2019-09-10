@@ -109,6 +109,10 @@ namespace OKEGui.Worker
                     videoJob.FpsNum = profile.FpsNum;
                     videoJob.FpsDen = profile.FpsDen;
                     videoJob.NumaNode = args.numaNode;
+                    if (profile.Config != null)
+                    {
+                        videoJob.VspipeArgs.AddRange(profile.Config.VspipeArgs);
+                    }
 
                     if (profile.VideoFormat == "HEVC")
                     {
@@ -196,23 +200,23 @@ namespace OKEGui.Worker
                         }
                         else if (job is VideoJob)
                         {
+                            videoJob = job as VideoJob;
                             CommandlineVideoEncoder processor;
                             task.CurrentStatus = "获取信息中";
                             task.IsUnKnowProgress = true;
                             if (job.CodecString == "HEVC")
                             {
-                                processor = new X265Encoder(job);
+                                processor = new X265Encoder(videoJob);
                             }
                             else
                             {
-                                processor = new X264Encoder(job);
+                                processor = new X264Encoder(videoJob);
                             }
                             task.CurrentStatus = "压制中";
                             task.ProgressValue = 0.0;
                             processor.start();
                             processor.waitForFinish();
 
-                            videoJob = job as VideoJob;
                             VideoInfo info = new VideoInfo(videoJob.FpsNum, videoJob.FpsDen);
 
                             task.MediaOutFile.AddTrack(new VideoTrack(new OKEFile(job.Output), info));
@@ -281,7 +285,7 @@ namespace OKEGui.Worker
                 catch (Exception ex)
                 {
                     FileInfo fileinfo = new FileInfo(task.InputFile);
-                    Logger.Error(ex.StackTrace);
+                    Logger.Error(ex.Message + ex.StackTrace);
                     new System.Threading.Tasks.Task(() =>
                             System.Windows.MessageBox.Show(ex.Message, fileinfo.Name)).Start();
                     task.IsRunning = false;
