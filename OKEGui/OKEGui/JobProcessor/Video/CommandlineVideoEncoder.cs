@@ -12,7 +12,7 @@ namespace OKEGui
     {
         #region variables
 
-        private ulong numberOfFrames;
+        public ulong NumberOfFrames { get; protected set; }
         private ulong currentFrameNumber;
         protected long fps_n = 0, fps_d = 0;
 
@@ -41,7 +41,7 @@ namespace OKEGui
             VSPipeInfo vsHelper = new VSPipeInfo(job.Input, job.VspipeArgs);
             fps_n = vsHelper.FpsNum;
             fps_d = vsHelper.FpsDen;
-            numberOfFrames = (ulong)vsHelper.TotalFreams;
+            NumberOfFrames = (ulong)vsHelper.TotalFreams;
             if (fps_n != job.FpsNum || fps_d != job.FpsDen)
             {
                 OKETaskException ex = new OKETaskException(Constants.fpsMismatchSmr);
@@ -128,11 +128,11 @@ namespace OKEGui
             }
             else
             {
-                job.TimeRemain = TimeSpan.FromSeconds((double)(numberOfFrames - currentFrameNumber) / speed);
+                job.TimeRemain = TimeSpan.FromSeconds((double)(NumberOfFrames - currentFrameNumber) / speed);
             }
 
             job.Speed = speed.ToString("0.00") + " fps";
-            job.Progress = (double)currentFrameNumber / (double)numberOfFrames * 100;
+            job.Progress = (double)currentFrameNumber / (double)NumberOfFrames * 100;
 
             if (bitrate == 0)
             {
@@ -162,7 +162,7 @@ namespace OKEGui
 
         protected void encodeFinish(ulong reportedFrames)
         {
-            if (reportedFrames < numberOfFrames)
+            if (reportedFrames < NumberOfFrames)
             {
                 OKETaskException ex = new OKETaskException(Constants.vsCrashSmr);
                 throw ex;

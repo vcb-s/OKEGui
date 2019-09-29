@@ -50,6 +50,11 @@ namespace OKEGui
             WorkerNumber.Text = "工作单元：" + WorkerCount.ToString();
         }
 
+        private void Checkbox_Changed(object sender, RoutedEventArgs e)
+        {
+            BtnRun.IsEnabled = tm.HasNextTask();
+        }
+
         private void BtnNew_Click(object sender, RoutedEventArgs e)
         {
             // 新建任务。具体实现请见Gui/wizardWindow
@@ -57,7 +62,7 @@ namespace OKEGui
             {
                 var wizard = new WizardWindow(wm);
                 wizard.ShowDialog();
-                BtnRun.IsEnabled = true;
+                BtnRun.IsEnabled = tm.HasNextTask();
                 tm.IsCanStart = true;
             }
             catch (Exception ex)
@@ -133,6 +138,7 @@ namespace OKEGui
                 MessageBox.Show("任务删除失败！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
+            BtnRun.IsEnabled = tm.HasNextTask();
             return;
         }
 
@@ -141,6 +147,7 @@ namespace OKEGui
             if (!tm.IsCanStart)
             {
                 tm.taskStatus.Clear();
+                BtnRun.IsEnabled = false;
             }
         }
 

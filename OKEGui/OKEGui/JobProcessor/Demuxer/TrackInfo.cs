@@ -84,7 +84,15 @@ namespace OKEGui
 
             public void MarkSkipping()
             {
-                File.Move(OutFileName, Path.ChangeExtension(OutFileName, ".bak") + FileExtension);
+                try
+                {
+                    File.Move(OutFileName, Path.ChangeExtension(OutFileName, ".bak") + FileExtension);
+                }
+                catch (Exception)
+                {
+                    Logger.Warn("无法备份文件，直接删除。如果是重启的任务，这很正常。");
+                    File.Delete(OutFileName);
+                }
                 DupOrEmpty = true;
             }
         }

@@ -18,7 +18,7 @@
                     <GridViewColumn Header="" Width="30">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <CheckBox IsChecked="{Binding Path=IsEnabled}"></CheckBox>
+                                <CheckBox IsChecked="{Binding Path=IsEnabled}" Checked="Checkbox_Changed" Unchecked="Checkbox_Changed"></CheckBox>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

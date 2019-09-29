@@ -96,6 +96,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="JobProcessor\Audio\FFmpegVolumeChecker.cs" />
+    <Compile Include="JobProcessor\Chapter\ChapterChecker.cs" />
     <Compile Include="JobProcessor\Demuxer\TrackInfo.cs" />
     <Compile Include="JobProcessor\ExceptionParser.cs" />
     <Compile Include="JobProcessor\Video\X264Encoder.cs" />

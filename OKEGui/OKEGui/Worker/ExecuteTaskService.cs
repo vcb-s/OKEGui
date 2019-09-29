@@ -46,6 +46,8 @@ namespace OKEGui.Worker
                     task.WorkerName = args.Name;
                     task.IsEnabled = false;
                     task.IsRunning = true;
+                    task.MediaOutFile = new MediaFile();
+                    task.MkaOutFile = new MediaFile();
 
                     // 抽取音轨
                     FileInfo eacInfo = new FileInfo(".\\tools\\eac3to\\eac3to.exe");
@@ -155,6 +157,8 @@ namespace OKEGui.Worker
                         }
                     }
 
+                    long lengthInMiliSec = 0;
+
                     while (task.JobQueue.Count != 0)
                     {
                         Job job = task.JobQueue.Dequeue();
@@ -212,6 +216,9 @@ namespace OKEGui.Worker
                             {
                                 processor = new X264Encoder(videoJob);
                             }
+
+                            lengthInMiliSec = (long)(processor.NumberOfFrames / videoJob.Fps * 1000 + 0.5);
+
                             task.CurrentStatus = "压制中";
                             task.ProgressValue = 0.0;
                             processor.start();
@@ -231,9 +238,19 @@ namespace OKEGui.Worker
                     FileInfo txtChapter = new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
                     if (txtChapter.Exists)
                     {
-                        task.MediaOutFile.AddTrack(new ChapterTrack(new OKEFile(txtChapter)));
-                    }
+                        OKEFile chapterFile = new OKEFile(txtChapter);
+                        ChapterChecker checker = new ChapterChecker(chapterFile, lengthInMiliSec);
+                        checker.RemoveUnnecessaryEnd();
 
+                        if (checker.IsEmpty())
+                        {
+                            Logger.Info(txtChapter.Name + "为空，跳过封装。");
+                        }
+                        else
+                        {
+                            task.MediaOutFile.AddTrack(new ChapterTrack(chapterFile));
+                        }
+                    }
 
                     // 封装
                     if (profile.ContainerFormat != "")

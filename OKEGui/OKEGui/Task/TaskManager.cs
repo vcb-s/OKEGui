@@ -111,5 +111,22 @@ namespace OKEGui
 
             return null;
         }
+
+        public bool HasNextTask()
+        {
+            lock (o)
+            {
+                // 找出下一个可用任务
+                foreach (var task in taskStatus)
+                {
+                    if (task.IsEnabled)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
     }
 }

@@ -415,7 +415,8 @@ namespace OKEGui
                         mf.AddTrack(new SubtitleTrack(file, subInfo));
                         break;
                     case TrackType.Chapter:
-                        mf.AddTrack(new ChapterTrack(file));
+                        //TODO: 暂时不加入原盘自带的章节，否则无法检测末端多余章节点。
+                        //mf.AddTrack(new ChapterTrack(file));
                         break;
                     case TrackType.Video:
                         mf.AddTrack(new VideoTrack(file, new VideoInfo()));
