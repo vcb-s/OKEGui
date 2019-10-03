@@ -10,8 +10,6 @@ namespace OKEGui.Model
     {
         public string OutputCodec;
         public int Bitrate;
-        [ObsoleteAttribute("SkipMuxing is obsolete. Use MuxOption instead.", false)]
-        public bool SkipMuxing;
 
         public AudioInfo() : base()
         {

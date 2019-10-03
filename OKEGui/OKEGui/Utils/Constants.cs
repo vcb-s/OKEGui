@@ -66,5 +66,8 @@ namespace OKEGui.Utils
         public static readonly Regex inputRegex = new Regex("# *OKE:INPUTFILE([\\s]+\\w+[ ]*=[ ]*)([r]*[\"'].*[\"'])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         public static readonly Regex debugRegex = new Regex("# *OKE:DEBUG([\\s]+\\w+[ ]*=[ ]*)(\\w+)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
+        //Deprecated option list
+        public static readonly List<string> deprecatedOptions = new List<string> { "SkipMuxing", "IncludeSub", "SubtitleLanguage" };
+
     }
 }

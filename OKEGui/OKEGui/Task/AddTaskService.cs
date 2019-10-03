@@ -15,6 +15,16 @@ namespace OKEGui
         public static TaskProfile LoadJsonAsProfile(string filePath, DirectoryInfo jsonDir)
         {
             string profileStr = File.ReadAllText(filePath);
+
+            foreach (string option in Constants.deprecatedOptions)
+            {
+                if (profileStr.IndexOf(option, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    MessageBox.Show(option + "已不再支持", "json文件版本太老了", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return null;
+                }
+            }
+
             TaskProfile json;
             try
             {
@@ -125,17 +135,6 @@ namespace OKEGui
                 }
             }
 
-            json.SubtitleLanguage = string.IsNullOrEmpty(json.SubtitleLanguage) ? Constants.language : json.SubtitleLanguage;
-            if (json.IncludeSub && json.SubtitleTracks == null)
-            {
-                MessageBox.Show("现在用SubtitleTracks指定字幕，指定了IncludeSub = true将视为有一条视频轨道", "IncludeSub不再使用", MessageBoxButton.OK, MessageBoxImage.Warning);
-                Info info = new Info
-                {
-                    Language = json.SubtitleLanguage
-                };
-                json.SubtitleTracks = new List<Info> { info };
-            }
-
             if (json.AudioTracks != null && json.AudioTracks.Count > 0)
             {
                 // 主音轨
@@ -159,11 +158,6 @@ namespace OKEGui
                     if (string.IsNullOrEmpty(track.Language))
                     {
                         track.Language = Constants.language;
-                    }
-                    if (track.MuxOption == MuxOption.Default && track.SkipMuxing)
-                    {
-                        MessageBox.Show("现在用MuxOption指定封装法则，指定了SkipMuxing = true的音轨将不被抽取。", "SkipMuxing不再使用", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        track.MuxOption = MuxOption.Skip;
                     }
                 }
             }

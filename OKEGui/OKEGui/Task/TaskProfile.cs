@@ -22,10 +22,6 @@ namespace OKEGui.Model
         public uint FpsDen;
         public List<AudioInfo> AudioTracks;
         public string InputScript;
-        [ObsoleteAttribute("IncludeSub is obsolete. Use SubtitleTracks instead.", false)]
-        public bool IncludeSub;
-        [ObsoleteAttribute("SubtitleLanguage is obsolete. Use SubtitleTracks instead.", false)]
-        public string SubtitleLanguage;
         public List<Info> SubtitleTracks;
         public List<string> InputFiles;
         public EpisodeConfig Config;
