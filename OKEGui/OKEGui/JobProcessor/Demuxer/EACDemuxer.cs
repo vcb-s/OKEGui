@@ -63,9 +63,13 @@ namespace OKEGui
             new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD/AC3",       "flac",    true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD",           "flac",    true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.AC3,        "AC3",              "ac3",     true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.FLAC,       "FLAC",             "flac",    true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.AAC,        "AAC",              "aac",     true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.AC3,        "AC3",              "ac3",     true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.DTS,        "DTS",              "dts",     true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.MPEG2,      "MPEG2",            "m2v",     false, TrackType.Video),
             new EacOutputTrackType(TrackCodec.H264_AVC,   "h264/AVC",         "h264",    false, TrackType.Video),
+            new EacOutputTrackType(TrackCodec.H265_HEVC,  "h265/HEVC",        "265",     false, TrackType.Video),
             new EacOutputTrackType(TrackCodec.PGS,        "Subtitle (PGS)",   "sup",     true,  TrackType.Subtitle),
             new EacOutputTrackType(TrackCodec.Chapter,    "Chapters",         "txt",     true,  TrackType.Chapter),
         };
@@ -415,8 +419,15 @@ namespace OKEGui
                         mf.AddTrack(new SubtitleTrack(file, subInfo));
                         break;
                     case TrackType.Chapter:
-                        //TODO: 暂时不加入原盘自带的章节，否则无法检测末端多余章节点。
-                        //mf.AddTrack(new ChapterTrack(file));
+                        FileInfo txtChapter = new FileInfo(Path.ChangeExtension(sourceFile, ".txt"));
+                        if (txtChapter.Exists)
+                        {
+                            Logger.Info("检测到单独准备的章节，不予添加");
+                        }
+                        else
+                        {
+                            file.Rename(txtChapter.FullName);
+                        }
                         break;
                     case TrackType.Video:
                         mf.AddTrack(new VideoTrack(file, new VideoInfo()));

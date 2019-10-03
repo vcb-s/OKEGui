@@ -217,7 +217,7 @@ namespace OKEGui.Worker
                                 processor = new X264Encoder(videoJob);
                             }
 
-                            lengthInMiliSec = (long)(processor.NumberOfFrames / videoJob.Fps * 1000 + 0.5);
+                            lengthInMiliSec = (long)((processor.NumberOfFrames - 1) / videoJob.Fps * 1000 + 0.5);
 
                             task.CurrentStatus = "压制中";
                             task.ProgressValue = 0.0;

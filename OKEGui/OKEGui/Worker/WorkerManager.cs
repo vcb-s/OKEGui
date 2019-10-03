@@ -61,6 +61,7 @@ namespace OKEGui.Worker
                     {
                         CreateWorker(worker);
                         StartWorker(worker);
+                        break;
                     }
                 }
             }
@@ -75,14 +76,20 @@ namespace OKEGui.Worker
                     return false;
                 }
 
+                int activeTaskCount = tm.GetActiveTaskCount();
                 isRunning = true;
 
                 foreach (string worker in workerList)
                 {
+                    if (activeTaskCount == 0)
+                    {
+                        break;
+                    }
                     if (!bgworkerlist.ContainsKey(worker))
                     {
                         CreateWorker(worker);
                         StartWorker(worker);
+                        activeTaskCount--;
                     }
                 }
 
@@ -117,6 +124,7 @@ namespace OKEGui.Worker
             args.taskManager = tm;
             args.bgWorker = worker;
             args.numaNode = NumaNode.NextNuma();
+            Logger.Trace(name + "所拥有的Numa Node编号是" + args.numaNode.ToString());
 
             worker.RunWorkerAsync(args);
             return true;

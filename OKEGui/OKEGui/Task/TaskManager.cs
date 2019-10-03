@@ -128,5 +128,23 @@ namespace OKEGui
 
             return false;
         }
+
+        public int GetActiveTaskCount()
+        {
+            lock (o)
+            {
+                int activeTaskCount = 0;
+
+                foreach (var task in taskStatus)
+                {
+                    if (task.IsEnabled)
+                    {
+                        activeTaskCount ++;
+                    }
+                }
+
+                return activeTaskCount;
+            }
+        }
     }
 }

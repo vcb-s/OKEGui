@@ -70,7 +70,7 @@ namespace OKEGui.JobProcessor
             foreach (KeyValuePair<string, string> chapter in Chapters)
             {
                 long timeInMiliSec = StrToMilisec(chapter.Key);
-                if (timeInMiliSec > LengthInMiliSec - 1000)
+                if (timeInMiliSec >= LengthInMiliSec - 1001)
                 {
                     Logger.Info(chapter.Value + ":" + chapter.Key + "的时间在文件结尾1秒内，删除。");
                     toRemove.Add(chapter.Key);

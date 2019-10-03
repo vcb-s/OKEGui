@@ -24,8 +24,8 @@
     ],
     "Config" : {
         "VspipeArgs" : [
-            "op_start = 10000",
-            "op_end = 15000"
+            "op_start=10000",
+            "op_end=15000"
         ]
     }
 }

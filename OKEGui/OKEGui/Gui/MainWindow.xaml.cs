@@ -35,6 +35,7 @@ namespace OKEGui
 
             wm = new WorkerManager(tm);
 
+            BtnRun.IsEnabled = false;
             BtnMoveDown.IsEnabled = false;
             BtnMoveup.IsEnabled = false;
             BtnStop.IsEnabled = false;
