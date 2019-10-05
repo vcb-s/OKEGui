@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OKEGui.Utils;
 
 namespace OKEGui.Model
 {
     public class AudioInfo : Info
     {
         public string OutputCodec;
-        public int Bitrate;
+        public int Bitrate = Constants.QAACBitrate;
 
         public AudioInfo() : base()
         {

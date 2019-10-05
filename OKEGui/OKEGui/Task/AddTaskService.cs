@@ -11,6 +11,8 @@ namespace OKEGui
 {
     public static class AddTaskService
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         // 读入Json文件，并转成TaskProfile对象。
         public static TaskProfile LoadJsonAsProfile(string filePath, DirectoryInfo jsonDir)
         {
@@ -147,19 +149,6 @@ namespace OKEGui
                 {
                     json.AudioFormat = json.AudioFormat.ToUpper();
                 }
-
-                // 添加音频参数到任务里面
-                foreach (var track in json.AudioTracks)
-                {
-                    if (track.Bitrate == 0)
-                    {
-                        track.Bitrate = Constants.QAACBitrate;
-                    }
-                    if (string.IsNullOrEmpty(track.Language))
-                    {
-                        track.Language = Constants.language;
-                    }
-                }
             }
             else
             {
@@ -178,6 +167,7 @@ namespace OKEGui
                 MessageBox.Show("MP4格式没法封FLAC", "音轨格式不支持", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
+
             return json;
         }
 

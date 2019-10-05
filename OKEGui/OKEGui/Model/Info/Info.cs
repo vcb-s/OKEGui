@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OKEGui.Utils;
+using System;
 
 namespace OKEGui.Model
 {
@@ -28,7 +25,7 @@ namespace OKEGui.Model
         public InfoType InfoType { get; protected set; } = InfoType.Default; 
         public int TrackId;
         public MuxOption MuxOption = MuxOption.Default;
-        public string Language;
+        public string Language = Constants.language;
         private bool _dupOrEmpty;
         public bool DupOrEmpty
         {
