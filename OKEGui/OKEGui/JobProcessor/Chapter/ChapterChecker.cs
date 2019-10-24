@@ -25,8 +25,11 @@ namespace OKEGui.JobProcessor
         {
             SortedDictionary<string, string> chapters = new SortedDictionary<string, string>();
             string fileContent = File.ReadAllText(file.GetFullPath());
-            string[] chapterLines = fileContent.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-            for (int i = 0; i < chapterLines.Length / 2; i++)
+            string[] chapterLinesArr = fileContent.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            List<string> chapterLines = new List<string>(chapterLinesArr);
+            chapterLines.RemoveAll(i => string.IsNullOrWhiteSpace(i));
+
+            for (int i = 0; i < chapterLines.Count / 2; i++)
             {
                 string strTime = chapterLines[i + i].Split(new char[] { '=' })[1];
                 string name = chapterLines[i + i + 1].Split(new char[] { '=' })[1];
