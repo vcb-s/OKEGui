@@ -52,6 +52,20 @@ namespace OKEGui
         }
 
         /// <summary>
+        /// 章节信息（Yes/No)
+        /// </summary>
+        private string chapterStatus;
+        public string ChapterStatus
+        {
+            get { return chapterStatus; }
+            set
+            {
+                chapterStatus = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("ChapterStatus"));
+            }
+        }
+
+        /// <summary>
         /// 输出文件
         /// </summary>
         private string outputFile;

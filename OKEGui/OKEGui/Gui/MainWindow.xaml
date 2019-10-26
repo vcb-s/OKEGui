@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="OKEGui" Height="500" Width="950" WindowStartupLocation="CenterScreen" Icon="App.ico">
+        Title="OKEGui" Height="600" Width="1000" WindowStartupLocation="CenterScreen" Icon="App.ico">
     <Window.Resources>
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -24,14 +24,14 @@
                     </GridViewColumn>
                     <GridViewColumn Header="任务名称" Width="95" DisplayMemberBinding="{Binding Path=TaskName}">
                     </GridViewColumn>
-                    <!--<GridViewColumn Header="ID" Width="30" DisplayMemberBinding="{Binding Path=Tid}">
-                    </GridViewColumn>-->
                     <GridViewColumn Header="输入文件" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock TextAlignment="Left" Text="{Binding Path=InputFile}"></TextBlock>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="章节" Width="50" DisplayMemberBinding="{Binding Path=ChapterStatus}">
                     </GridViewColumn>
                     <GridViewColumn Header="输出文件" Width="125">
                         <GridViewColumn.CellTemplate>
@@ -86,7 +86,7 @@
             <Button Height="23" Grid.Column="0" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnNew" VerticalAlignment="Top" Click="BtnNew_Click" Content="新建任务" />
             <Button Height="23" Grid.Column="1" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnRun" VerticalAlignment="Top" Click="BtnRun_Click" Content="运行" />
             <Button Height="23" Grid.Column="2" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnStop" VerticalAlignment="Top" Click="BtnStop_Click" Content="停止" />
-            <Button Height="23" Grid.Column="3" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnEdit" VerticalAlignment="Top" Click="BtnEdit_Click" Content="编辑" />
+            <Button Height="23" Grid.Column="3" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnChap" VerticalAlignment="Top" Click="BtnChap_Click" Content="检查章节" />
             <Button Height="23" Grid.Column="4" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveup" VerticalAlignment="Top" Click="BtnMoveup_Click" Content="上移" />
             <Button Height="23" Grid.Column="5" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveDown" VerticalAlignment="Top" Click="BtnMoveDown_Click" Content="下移" />
             <Button Height="23" Grid.Column="6" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnDelete" VerticalAlignment="Top" Click="BtnDelete_Click" Content="删除" />

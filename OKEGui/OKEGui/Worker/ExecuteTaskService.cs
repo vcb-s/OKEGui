@@ -157,8 +157,6 @@ namespace OKEGui.Worker
                         }
                     }
 
-                    long lengthInMiliSec = 0;
-
                     while (task.JobQueue.Count != 0)
                     {
                         Job job = task.JobQueue.Dequeue();
@@ -217,7 +215,7 @@ namespace OKEGui.Worker
                                 processor = new X264Encoder(videoJob);
                             }
 
-                            lengthInMiliSec = (long)((processor.NumberOfFrames - 1) / videoJob.Fps * 1000 + 0.5);
+                            task.lengthInMiliSec = (long)((processor.NumberOfFrames - 1) / videoJob.Fps * 1000 + 0.5);
 
                             task.CurrentStatus = "压制中";
                             task.ProgressValue = 0.0;
@@ -235,22 +233,7 @@ namespace OKEGui.Worker
                     }
 
                     // 添加章节文件
-                    FileInfo txtChapter = new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
-                    if (txtChapter.Exists)
-                    {
-                        OKEFile chapterFile = new OKEFile(txtChapter);
-                        ChapterChecker checker = new ChapterChecker(chapterFile, lengthInMiliSec);
-                        checker.RemoveUnnecessaryEnd();
-
-                        if (checker.IsEmpty())
-                        {
-                            Logger.Info(txtChapter.Name + "为空，跳过封装。");
-                        }
-                        else
-                        {
-                            task.MediaOutFile.AddTrack(new ChapterTrack(chapterFile));
-                        }
-                    }
+                    ChapterService.AddChapter(task);
 
                     // 封装
                     if (profile.ContainerFormat != "")

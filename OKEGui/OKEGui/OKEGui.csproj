@@ -104,6 +104,7 @@
     <Compile Include="Model\Info\Info.cs" />
     <Compile Include="Model\Info\VideoInfo.cs" />
     <Compile Include="Task\AddTaskService.cs" />
+    <Compile Include="Task\ChapterService.cs" />
     <Compile Include="Task\EpisodeProfile.cs" />
     <Compile Include="Task\TaskProfile.cs" />
     <Compile Include="Model\Track\AudioTrack.cs" />

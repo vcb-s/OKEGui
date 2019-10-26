@@ -21,6 +21,7 @@ namespace OKEGui
 
         public bool IsRunning;
         public string Tid;
+        public long lengthInMiliSec;
 
         // 自动生成输出文件名
         public void UpdateOutputFileName()

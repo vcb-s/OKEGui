@@ -146,5 +146,20 @@ namespace OKEGui
                 return activeTaskCount;
             }
         }
+
+        public void UpdateChapterStatus()
+        {
+            lock (o)
+            {
+                // 找出下一个可用任务
+                foreach (TaskDetail task in taskStatus)
+                {
+                    if (task.IsEnabled)
+                    {
+                        task.ChapterStatus = ChapterService.GetChapterStatus(task);
+                    }
+                }
+            }
+        }
     }
 }

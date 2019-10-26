@@ -39,7 +39,7 @@ namespace OKEGui
             BtnMoveDown.IsEnabled = false;
             BtnMoveup.IsEnabled = false;
             BtnStop.IsEnabled = false;
-            BtnEdit.IsEnabled = false;
+            BtnChap.IsEnabled = false;
 
             // 初始的worker数量等于Numa数量。
             int numaCount = NumaNode.NumaCount;
@@ -54,6 +54,7 @@ namespace OKEGui
         private void Checkbox_Changed(object sender, RoutedEventArgs e)
         {
             BtnRun.IsEnabled = tm.HasNextTask();
+            BtnChap.IsEnabled = BtnRun.IsEnabled;
         }
 
         private void BtnNew_Click(object sender, RoutedEventArgs e)
@@ -64,6 +65,7 @@ namespace OKEGui
                 var wizard = new WizardWindow(wm);
                 wizard.ShowDialog();
                 BtnRun.IsEnabled = tm.HasNextTask();
+                BtnChap.IsEnabled = BtnRun.IsEnabled;
                 tm.IsCanStart = true;
             }
             catch (Exception ex)
@@ -104,9 +106,11 @@ namespace OKEGui
             }
         }
 
-        private void BtnEdit_Click(object sender, RoutedEventArgs e)
+        private void BtnChap_Click(object sender, RoutedEventArgs e)
         {
-            // TODO
+            BtnChap.IsEnabled = false;
+            tm.UpdateChapterStatus();
+            BtnChap.IsEnabled = true;
         }
 
         private void BtnMoveup_Click(object sender, RoutedEventArgs e)

@@ -239,6 +239,9 @@ namespace OKEGui
                     td.Taskfile.Config = config.Clone() as EpisodeConfig;
                 }
                 td.UpdateOutputFileName();
+
+                // 寻找章节
+                td.ChapterStatus = ChapterService.GetChapterStatus(td);
                 workerManager.AddTask(td);
             }
         }

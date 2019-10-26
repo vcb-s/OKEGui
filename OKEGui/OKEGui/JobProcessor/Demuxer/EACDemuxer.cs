@@ -71,7 +71,7 @@ namespace OKEGui
             new EacOutputTrackType(TrackCodec.H264_AVC,   "h264/AVC",         "h264",    false, TrackType.Video),
             new EacOutputTrackType(TrackCodec.H265_HEVC,  "h265/HEVC",        "265",     false, TrackType.Video),
             new EacOutputTrackType(TrackCodec.PGS,        "Subtitle (PGS)",   "sup",     true,  TrackType.Subtitle),
-            new EacOutputTrackType(TrackCodec.Chapter,    "Chapters",         "txt",     true,  TrackType.Chapter),
+            new EacOutputTrackType(TrackCodec.Chapter,    "Chapters",         "txt",     false, TrackType.Chapter),
         };
 
         public EACDemuxer(string eacPath, string fileName, TaskProfile jobProfile)
