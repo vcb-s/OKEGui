@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
@@ -198,6 +199,24 @@ namespace OKEGui
                 default:
                     wm.AfterFinish = null;
                     break;
+            }
+        }
+
+        void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            if (wm.IsRunning)
+            {
+                string msg = "有任务正在运行，确定退出？如果确定退出，记得自己开任务管理器，清理在跑的任务；点击No取消。";
+                MessageBoxResult result =
+                  MessageBox.Show(
+                    msg,
+                    "没手滑吧？",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No)
+                {
+                    e.Cancel = true;
+                }
             }
         }
     }

@@ -34,7 +34,7 @@ namespace OKEGui.Worker
 
         private ConcurrentDictionary<string, BackgroundWorker> bgworkerlist;
         private int tempCounter;
-        private bool isRunning;
+        public bool IsRunning { get; protected set; }
 
         public delegate void Callback();
 
@@ -46,14 +46,14 @@ namespace OKEGui.Worker
             bgworkerlist = new ConcurrentDictionary<string, BackgroundWorker>();
             workerType = new ConcurrentDictionary<string, WorkerType>();
             tm = taskManager;
-            isRunning = false;
+            IsRunning = false;
             tempCounter = 0;
         }
 
         public void AddTask(TaskDetail detail)
         {
             tm.AddTask(detail);
-            if (isRunning)
+            if (IsRunning)
             {
                 foreach (string worker in workerList)
                 {
@@ -77,7 +77,7 @@ namespace OKEGui.Worker
                 }
 
                 int activeTaskCount = tm.GetActiveTaskCount();
-                isRunning = true;
+                IsRunning = true;
 
                 foreach (string worker in workerList)
                 {
@@ -150,7 +150,7 @@ namespace OKEGui.Worker
                 workerType.TryAdd(name, WorkerType.Temporary);
             }
 
-            if (isRunning)
+            if (IsRunning)
             {
                 CreateWorker(name);
                 StartWorker(name);
@@ -172,7 +172,7 @@ namespace OKEGui.Worker
                 workerType.TryAdd(name, WorkerType.Normal);
             }
 
-            if (isRunning)
+            if (IsRunning)
             {
                 CreateWorker(name);
                 StartWorker(name);
@@ -183,7 +183,7 @@ namespace OKEGui.Worker
 
         public bool DeleteWorker(string name)
         {
-            if (isRunning)
+            if (IsRunning)
             {
                 return false;
             }
@@ -199,7 +199,7 @@ namespace OKEGui.Worker
         public void StopWorker(string name)
         {
             // TODO
-            isRunning = false;
+            IsRunning = false;
 
             if (bgworkerlist.ContainsKey(name))
             {

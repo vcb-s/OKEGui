@@ -18,7 +18,7 @@ namespace OKEGui.Worker
         {
             WorkerArgs args = (WorkerArgs)e.Argument;
 
-            while (isRunning)
+            while (IsRunning)
             {
                 TaskDetail task = args.taskManager.GetNextTask();
 
@@ -32,7 +32,7 @@ namespace OKEGui.Worker
 
                         if (bgworkerlist.Count == 0)
                         {
-                            isRunning = false;
+                            IsRunning = false;
                             Debugger.Log(0, "", "Ready to call the after finish process\n");
                             AfterFinish?.Invoke();
                         }
