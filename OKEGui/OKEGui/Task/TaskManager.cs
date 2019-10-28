@@ -156,7 +156,7 @@ namespace OKEGui
                 {
                     if (task.IsEnabled)
                     {
-                        task.ChapterStatus = ChapterService.GetChapterStatus(task);
+                        task.ChapterStatus = ChapterService.UpdateChapterStatus(task);
                     }
                 }
             }

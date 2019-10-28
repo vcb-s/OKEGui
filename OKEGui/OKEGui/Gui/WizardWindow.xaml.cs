@@ -241,7 +241,7 @@ namespace OKEGui
                 td.UpdateOutputFileName();
 
                 // 寻找章节
-                td.ChapterStatus = ChapterService.GetChapterStatus(td);
+                td.ChapterStatus = ChapterService.UpdateChapterStatus(td);
                 workerManager.AddTask(td);
             }
         }

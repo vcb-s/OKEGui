@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29411.108
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OKEGui", "OKEGui\OKEGui.csproj", "{BD980C51-9FCF-483E-BB88-B903952FDDDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TChapter", "..\..\TChapter\TChapter\TChapter.csproj", "{D3EFF606-0562-45E4-8E0B-1DF967220A9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,12 @@ Global
 		{BD980C51-9FCF-483E-BB88-B903952FDDDD}.Release|x64.Build.0 = Release|Any CPU
 		{BD980C51-9FCF-483E-BB88-B903952FDDDD}.Release|x86.ActiveCfg = Release|Any CPU
 		{BD980C51-9FCF-483E-BB88-B903952FDDDD}.Release|x86.Build.0 = Release|Any CPU
+		{D3EFF606-0562-45E4-8E0B-1DF967220A9B}.Debug|x64.ActiveCfg = Debug|x64
+		{D3EFF606-0562-45E4-8E0B-1DF967220A9B}.Debug|x64.Build.0 = Debug|x64
+		{D3EFF606-0562-45E4-8E0B-1DF967220A9B}.Debug|x86.ActiveCfg = Debug|x64
+		{D3EFF606-0562-45E4-8E0B-1DF967220A9B}.Release|x64.ActiveCfg = Release|x64
+		{D3EFF606-0562-45E4-8E0B-1DF967220A9B}.Release|x64.Build.0 = Release|x64
+		{D3EFF606-0562-45E4-8E0B-1DF967220A9B}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

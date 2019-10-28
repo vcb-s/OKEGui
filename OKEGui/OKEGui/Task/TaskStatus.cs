@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using static OKEGui.ChapterService;
 
 namespace OKEGui
 {
@@ -52,15 +53,15 @@ namespace OKEGui
         }
 
         /// <summary>
-        /// 章节信息（Yes/No)
+        /// 章节信息
         /// </summary>
-        private string chapterStatus;
+        private ChapterStatus chapterStatus;
         public string ChapterStatus
         {
-            get { return chapterStatus; }
+            get { return chapterStatus.ToString(); }
             set
             {
-                chapterStatus = value;
+                chapterStatus = (ChapterStatus) Enum.Parse(typeof(ChapterStatus), value);
                 OnPropertyChanged(new PropertyChangedEventArgs("ChapterStatus"));
             }
         }
