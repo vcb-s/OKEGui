@@ -17,6 +17,36 @@ namespace OKEGui
 
         public enum ChapterStatus { No, Yes, Added };
 
+        public static SortedDictionary<string, string> ReadChapters(OKEFile file)
+        {
+            SortedDictionary<string, string> chapters = new SortedDictionary<string, string>();
+            string fileContent = File.ReadAllText(file.GetFullPath());
+            string[] chapterLinesArr = fileContent.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            List<string> chapterLines = new List<string>(chapterLinesArr);
+            chapterLines.RemoveAll(i => string.IsNullOrWhiteSpace(i));
+
+            for (int i = 0; i < chapterLines.Count / 2; i++)
+            {
+                string strTime = chapterLines[i + i].Split(new char[] { '=' })[1];
+                string name = chapterLines[i + i + 1].Split(new char[] { '=' })[1];
+                chapters.Add(strTime, name);
+            }
+            return chapters;
+        }
+
+        public static long StrToMilisec(string str)
+        {
+            string[] hms = str.Split(new char[] { ':' });
+            if (hms.Length != 3)
+            {
+                throw new ArgumentException(str + "无法识别为时间！");
+            }
+            long h = long.Parse(hms[0]);
+            long m = long.Parse(hms[1]);
+            double s = double.Parse(hms[2]);
+            return h * 3600000 + m * 60000 + (long)(s * 1000 + 0.5);
+        }
+
         public static string UpdateChapterStatus(TaskDetail task)
         {
             bool hasChapter = HasChapterFile(task);
@@ -41,7 +71,7 @@ namespace OKEGui
             return txtChapter.Exists;
         }
 
-        public static TaskDetail AddChapter(TaskDetail task)
+        public static OKEFile AddChapter(TaskDetail task)
         {
             FileInfo txtChapter = new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
             if (txtChapter.Exists)
@@ -53,13 +83,16 @@ namespace OKEGui
                 if (checker.IsEmpty())
                 {
                     Logger.Info(txtChapter.Name + "为空，跳过封装。");
+                    return null;
                 }
                 else
                 {
                     task.MediaOutFile.AddTrack(new ChapterTrack(chapterFile));
+                    return chapterFile;
                 }
             }
-            return task;
+
+            return null;
         }
 
         public static bool GetChapterFromMPLS(TaskDetail task)
@@ -108,6 +141,21 @@ namespace OKEGui
             }
 
             return false;
+        }
+
+        public static string GenerateQpFile(OKEFile chapterFile, double fps)
+        {
+            string qpFile = "";
+
+            SortedDictionary<string, string> chapters = ReadChapters(chapterFile);
+            foreach (string strTimeStamp in chapters.Keys)
+            {
+                long miliSec = StrToMilisec(strTimeStamp);
+                int frameNo = (int)(miliSec / 1000.0 * fps + 0.5);
+                qpFile += frameNo.ToString() + " I" + Environment.NewLine;
+            }
+
+            return qpFile;
         }
     }
 }

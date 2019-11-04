@@ -178,5 +178,11 @@ namespace OKEGui
 
             base.SetFinish();
         }
+
+        public void AppendParameter(string param)
+        {
+            int pos = commandLine.Length - 2;
+            commandLine = commandLine.Insert(pos, param + " ");
+        }
     }
 }

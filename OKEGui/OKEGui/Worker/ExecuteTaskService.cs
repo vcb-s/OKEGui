@@ -5,6 +5,7 @@ using OKEGui.Utils;
 using OKEGui.Model;
 using OKEGui.JobProcessor;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace OKEGui.Worker
 {
@@ -217,6 +218,18 @@ namespace OKEGui.Worker
 
                             task.lengthInMiliSec = (long)((processor.NumberOfFrames - 1) / videoJob.Fps * 1000 + 0.5);
 
+                            // 添加章节文件
+                            OKEFile chapterFile = ChapterService.AddChapter(task);
+                            if (chapterFile != null)
+                            {
+                                // 用章节文件生成qpfile
+                                string qpFileName = Path.ChangeExtension(task.InputFile, ".qpf");
+                                string qpFile = ChapterService.GenerateQpFile(chapterFile, videoJob.Fps);
+                                File.WriteAllText(qpFileName, qpFile);
+                                processor.AppendParameter($"--qpfile \"{qpFileName}\"");
+                            }
+
+                            // 开始压制
                             task.CurrentStatus = "压制中";
                             task.ProgressValue = 0.0;
                             processor.start();
@@ -231,9 +244,6 @@ namespace OKEGui.Worker
                             // 不支持的工作
                         }
                     }
-
-                    // 添加章节文件
-                    ChapterService.AddChapter(task);
 
                     // 封装
                     if (profile.ContainerFormat != "")
