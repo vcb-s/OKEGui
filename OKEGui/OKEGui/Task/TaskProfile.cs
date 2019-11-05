@@ -25,6 +25,7 @@ namespace OKEGui.Model
         public List<Info> SubtitleTracks;
         public List<string> InputFiles;
         public EpisodeConfig Config;
+        public bool ExtractVideo;
 
         public Object Clone()
         {

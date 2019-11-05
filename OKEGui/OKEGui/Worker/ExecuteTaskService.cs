@@ -51,6 +51,7 @@ namespace OKEGui.Worker
                     task.MkaOutFile = new MediaFile();
 
                     // 抽取音轨
+                    profile.ExtractVideo = VideoService.ForceExtractVideo(task.InputFile);
                     FileInfo eacInfo = new FileInfo(".\\tools\\eac3to\\eac3to.exe");
                     MediaFile srcTracks = new EACDemuxer(eacInfo.FullName, task.InputFile, profile).Extract(
                         (double progress, EACProgressType type) =>
@@ -100,6 +101,13 @@ namespace OKEGui.Worker
                                 break;
                         }
                     }
+
+                    // 如果必须抽取视频轨道，这里需要修改输入的vpy文件
+                    if (profile.ExtractVideo)
+                    {
+                        VideoService.ReplaceVpyInputFile(profile.InputScript, task.InputFile, srcTracks.VideoTrack.File.GetFullPath());
+                    }
+
 
                     // 新建视频处理工作
                     VideoJob videoJob = new VideoJob(profile.VideoFormat);

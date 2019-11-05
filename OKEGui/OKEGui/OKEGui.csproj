@@ -139,6 +139,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Task\VideoService.cs" />
     <Compile Include="Worker\ExecuteTaskService.cs" />
     <Compile Include="Task\TaskStatus.cs" />
     <Compile Include="Utils\Cleaner.cs" />

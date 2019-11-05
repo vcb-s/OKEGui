@@ -56,6 +56,7 @@ namespace OKEGui
         private List<AudioInfo> JobAudio;
         private List<Info> JobSub;
         private int length;
+        private bool extractVideo;
 
         private static List<EacOutputTrackType> s_eacOutputs = new List<EacOutputTrackType> {
             new EacOutputTrackType(TrackCodec.RAW_PCM,    "RAW/PCM",          "flac",    true,  TrackType.Audio),
@@ -68,7 +69,7 @@ namespace OKEGui
             new EacOutputTrackType(TrackCodec.AC3,        "AC3",              "ac3",     true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.DTS,        "DTS",              "dts",     true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.MPEG2,      "MPEG2",            "m2v",     false, TrackType.Video),
-            new EacOutputTrackType(TrackCodec.H264_AVC,   "h264/AVC",         "h264",    false, TrackType.Video),
+            new EacOutputTrackType(TrackCodec.H264_AVC,   "h264/AVC",         "264",    false, TrackType.Video),
             new EacOutputTrackType(TrackCodec.H265_HEVC,  "h265/HEVC",        "265",     false, TrackType.Video),
             new EacOutputTrackType(TrackCodec.PGS,        "Subtitle (PGS)",   "sup",     true,  TrackType.Subtitle),
             new EacOutputTrackType(TrackCodec.Chapter,    "Chapters",         "txt",     false, TrackType.Chapter),
@@ -88,6 +89,7 @@ namespace OKEGui
             {
                 JobSub.AddRange(jobProfile.SubtitleTracks);
             }
+            extractVideo = jobProfile.ExtractVideo;
         }
 
         private void StartEac(string arguments, bool asyncRead)
@@ -322,7 +324,7 @@ namespace OKEGui
             foreach (TrackInfo track in tracks)
             {
                 EacOutputTrackType trackType = s_eacOutputs.Find(val => val.Codec == track.Codec);
-                if (!trackType.Extract)
+                if (!(trackType.Extract || trackType.Type == TrackType.Video && extractVideo))
                 {
                     continue;
                 };
@@ -347,6 +349,7 @@ namespace OKEGui
                 extractResult.Add(track);
             }
             JobAudio.RemoveAll(info => info.MuxOption == MuxOption.Skip);
+            JobSub.RemoveAll(info => info.MuxOption == MuxOption.Skip);
 
             state = ProcessState.ExtractStream;
             StartEac($"\"{sourceFile}\" {string.Join(" ", args)}", true);
