@@ -69,7 +69,7 @@ namespace OKEGui
                 base.encodeFinish(reportedFrames);
             }
 
-            Regex r = new Regex("([0-9]+) frames: ([0-9]+.[0-9]+) fps, ([0-9]+.[0-9]+) kb/s", RegexOptions.IgnoreCase);
+            Regex r = new Regex("([0-9]+) frames. ([0-9]+.[0-9]+) fps, ([0-9]+.[0-9]+) kb/s", RegexOptions.IgnoreCase);
 
             var status = r.Split(line);
             if (status.Length < 3)
