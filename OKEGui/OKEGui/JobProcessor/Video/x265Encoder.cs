@@ -69,10 +69,20 @@ namespace OKEGui
                 base.encodeFinish(reportedFrames);
             }
 
-            Regex r = new Regex("([0-9]+) frames. ([0-9]+.[0-9]+) fps, ([0-9]+.[0-9]+) kb/s", RegexOptions.IgnoreCase);
+            Regex r = new Regex("([0-9]+) frames: ([0-9]+.[0-9]+) fps, ([0-9]+.[0-9]+) kb/s", RegexOptions.IgnoreCase);
+            Regex r_asuna = new Regex("([0-9]+)/[0-9]+ frames, ([0-9]+.[0-9]+) fps, ([0-9]+.[0-9]+) kb/s", RegexOptions.IgnoreCase);
 
-            var status = r.Split(line);
-            if (status.Length < 3)
+            string[] status;
+
+            if (r.Split(line).Length >= 3)
+            {
+                status = r.Split(line);
+            }
+            else if (r_asuna.Split(line).Length >= 3)
+            {
+                status = r_asuna.Split(line);
+            }
+            else
             {
                 return;
             }
