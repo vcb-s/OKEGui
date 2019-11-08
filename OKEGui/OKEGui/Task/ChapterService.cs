@@ -102,7 +102,7 @@ namespace OKEGui
                 Logger.Warn($"{ task.InputFile }不是蓝光原盘文件。");
                 return false;
             }
-            
+
             FileInfo inputFile = new FileInfo(task.InputFile);
             string folder = inputFile.DirectoryName;
 
@@ -121,7 +121,7 @@ namespace OKEGui
                 return false;
             }
 
-            FileInfo[] allPlaylists = playlist.GetFiles();
+            FileInfo[] allPlaylists = playlist.GetFiles("*.mpls");
             MPLSParser parser = new MPLSParser();
 
             foreach (FileInfo mplsFile in allPlaylists)

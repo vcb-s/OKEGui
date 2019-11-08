@@ -207,6 +207,11 @@ namespace OKEGui
                 foreach (string file in json.InputFiles)
                 {
                     FileInfo input = new FileInfo(jsonDir.FullName + "\\" + file);
+                    if (inputFile.Contains(input.FullName))
+                    {
+                        MessageBox.Show("指定的文件(" + input.FullName + ")重复了，请总监复查下输入文件列表？", "输入文件有重复", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return 0;
+                    }
                     if (input.Exists)
                     {
                         inputFile.Add(input.FullName);

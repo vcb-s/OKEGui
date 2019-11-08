@@ -161,5 +161,18 @@ namespace OKEGui
                 }
             }
         }
+
+        public bool HasInputFile(string inputFile)
+        {
+            foreach (TaskDetail i in taskStatus)
+            {
+                if (i.InputFile == inputFile)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

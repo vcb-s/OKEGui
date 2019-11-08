@@ -196,6 +196,12 @@ namespace OKEGui
             Cleaner cleaner = new Cleaner();
             foreach (var inputFile in wizardInfo.InputFile)
             {
+                if (workerManager.tm.HasInputFile(inputFile))
+                {
+                    System.Windows.MessageBox.Show($"{inputFile}已经在任务列表里，将跳过处理。", $"{inputFile}已经在任务列表里", MessageBoxButton.OK, MessageBoxImage.Error);
+                    continue;
+                }
+
                 // 清理文件
                 cleaner.Clean(inputFile, new List<string> { json.InputScript });
 
