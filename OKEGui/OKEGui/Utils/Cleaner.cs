@@ -8,6 +8,8 @@ namespace OKEGui.Utils
 {
     class Cleaner
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         private List<string> sfxRemove, sfxRename;
         private const string TIME_FMT = "ddHHmm";
 
@@ -59,8 +61,17 @@ namespace OKEGui.Utils
                 rawName = Path.GetFileNameWithoutExtension(oldFile);
                 string extension = Path.GetExtension(oldFile);
                 string newFile = directory + @"\" + rawName + "_b_" + time.ToString(TIME_FMT) + extension;
-                File.Move(oldFile, newFile);
-                files[i] = newFile;
+                try
+                {
+                    File.Move(oldFile, newFile);
+                    files[i] = newFile;
+                }
+                catch (Exception e)
+                {
+                    Logger.Error($"无法备份{oldFile}，直接删除。");
+                    File.Delete(oldFile);
+                }
+
             }
             return files;
         }
