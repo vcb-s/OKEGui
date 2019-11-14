@@ -24,6 +24,7 @@ namespace OKEGui.Worker
     // Worker执行Task的具体实现，见ExecuteTaskService里的WorkerDoWork()
     public partial class WorkerManager
     {
+        public MainWindow MainWindow;
         public TaskManager tm;
 
         private List<string> workerList;
@@ -40,11 +41,12 @@ namespace OKEGui.Worker
 
         public Callback AfterFinish = null;
 
-        public WorkerManager(TaskManager taskManager)
+        public WorkerManager(MainWindow mainWindow, TaskManager taskManager)
         {
             workerList = new List<string>();
             bgworkerlist = new ConcurrentDictionary<string, BackgroundWorker>();
             workerType = new ConcurrentDictionary<string, WorkerType>();
+            MainWindow = mainWindow;
             tm = taskManager;
             IsRunning = false;
             tempCounter = 0;

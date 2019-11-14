@@ -66,7 +66,7 @@ namespace OKEGui.Utils
                     File.Move(oldFile, newFile);
                     files[i] = newFile;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     Logger.Error($"无法备份{oldFile}，直接删除。");
                     File.Delete(oldFile);

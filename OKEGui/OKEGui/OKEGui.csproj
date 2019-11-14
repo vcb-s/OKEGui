@@ -70,6 +70,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
@@ -106,6 +107,7 @@
     <Compile Include="Task\AddTaskService.cs" />
     <Compile Include="Task\ChapterService.cs" />
     <Compile Include="Task\EpisodeProfile.cs" />
+    <Compile Include="Task\PauseResumeService.cs" />
     <Compile Include="Task\TaskProfile.cs" />
     <Compile Include="Model\Track\AudioTrack.cs" />
     <Compile Include="Model\Track\ChapterTrack.cs" />

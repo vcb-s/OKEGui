@@ -15,6 +15,12 @@ namespace OKEGui.Worker
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
+        private void DisableButtonsAfterFinish(MainWindow window)
+        {
+            window.BtnPause.IsEnabled = false;
+            window.BtnResume.IsEnabled = false;
+        }
+
         private void WorkerDoWork(object sender, DoWorkEventArgs e)
         {
             WorkerArgs args = (WorkerArgs)e.Argument;
@@ -26,15 +32,16 @@ namespace OKEGui.Worker
                 // 检查是否已经完成全部任务
                 if (task == null)
                 {
-                    // 全部工作完成
+                    Logger.Debug("所有任务已经完成");
+                    Action<MainWindow> disableButtonsAction = new Action<MainWindow>(DisableButtonsAfterFinish);
+                    MainWindow.Dispatcher.BeginInvoke(disableButtonsAction, MainWindow);
                     lock (o)
                     {
                         bgworkerlist.TryRemove(args.Name, out BackgroundWorker v);
-
                         if (bgworkerlist.Count == 0)
                         {
                             IsRunning = false;
-                            Debugger.Log(0, "", "Ready to call the after finish process\n");
+                            Logger.Info("Ready to call the after finish process");
                             AfterFinish?.Invoke();
                         }
                     }

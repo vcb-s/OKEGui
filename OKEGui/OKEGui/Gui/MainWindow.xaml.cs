@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using OKEGui.Task;
 using OKEGui.Worker;
 
 namespace OKEGui
@@ -34,12 +35,13 @@ namespace OKEGui
 
             listView1.ItemsSource = tm.taskStatus;
 
-            wm = new WorkerManager(tm);
+            wm = new WorkerManager(this, tm);
 
             BtnRun.IsEnabled = false;
             BtnMoveDown.IsEnabled = false;
             BtnMoveup.IsEnabled = false;
-            BtnStop.IsEnabled = false;
+            BtnPause.IsEnabled = false;
+            BtnResume.IsEnabled = false;
             BtnChap.IsEnabled = false;
 
             // 初始的worker数量等于Numa数量。
@@ -54,8 +56,11 @@ namespace OKEGui
 
         private void Checkbox_Changed(object sender, RoutedEventArgs e)
         {
-            BtnRun.IsEnabled = tm.HasNextTask();
-            BtnChap.IsEnabled = BtnRun.IsEnabled;
+            if (!wm.IsRunning)
+            {
+                BtnRun.IsEnabled = tm.HasNextTask();
+                BtnChap.IsEnabled = BtnRun.IsEnabled;
+            }
         }
 
         private void BtnNew_Click(object sender, RoutedEventArgs e)
@@ -77,9 +82,17 @@ namespace OKEGui
 
         }
 
-        private void BtnStop_Click(object sender, RoutedEventArgs e)
+        private void BtnPause_Click(object sender, RoutedEventArgs e)
         {
-            // TODO
+            BtnPause.IsEnabled = false;
+            PauseResumeService.PauseAll();
+            BtnResume.IsEnabled = true;
+        }
+        private void BtnResume_Click(object sender, RoutedEventArgs e)
+        {
+            BtnResume.IsEnabled = false;
+            PauseResumeService.ResumeAll();
+            BtnPause.IsEnabled = true;
         }
 
         private void BtnRun_Click(object sender, RoutedEventArgs e)
@@ -99,6 +112,7 @@ namespace OKEGui
                 BtnDeleteWorker.IsEnabled = false;
                 BtnEmpty.IsEnabled = false;
                 BtnRun.IsEnabled = false;
+                BtnPause.IsEnabled = true;
             }
             catch (Exception ex)
             {
