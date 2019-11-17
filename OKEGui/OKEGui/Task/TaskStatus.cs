@@ -10,6 +10,7 @@ namespace OKEGui
     /// </summary>
     public class TaskStatus : INotifyPropertyChanged
     {
+        public static string FinishedStatus = "完成";
         /// <summary>
         /// 任务是否启用
         /// </summary>

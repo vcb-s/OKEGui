@@ -43,6 +43,7 @@ namespace OKEGui
             BtnPause.IsEnabled = false;
             BtnResume.IsEnabled = false;
             BtnChap.IsEnabled = false;
+            BtnCancelShutdown.IsEnabled = false;
 
             // 初始的worker数量等于Numa数量。
             int numaCount = NumaNode.NumaCount;
@@ -85,13 +86,13 @@ namespace OKEGui
         private void BtnPause_Click(object sender, RoutedEventArgs e)
         {
             BtnPause.IsEnabled = false;
-            PauseResumeService.PauseAll();
+            SubProcessService.PauseAll();
             BtnResume.IsEnabled = true;
         }
         private void BtnResume_Click(object sender, RoutedEventArgs e)
         {
             BtnResume.IsEnabled = false;
-            PauseResumeService.ResumeAll();
+            SubProcessService.ResumeAll();
             BtnPause.IsEnabled = true;
         }
 
@@ -207,7 +208,11 @@ namespace OKEGui
             switch (cmd)
             {
                 case "关机":
-                    wm.AfterFinish = () => Process.Start("cmd.exe", "/c shutdown -s -t 300");
+                    wm.AfterFinish = (MainWindow mainWindow) =>
+                    {
+                        Process.Start("cmd.exe", "/c shutdown -s -t 300");
+                        mainWindow.BtnCancelShutdown.IsEnabled = true;
+                    };
                     break;
 
                 default:
@@ -220,7 +225,7 @@ namespace OKEGui
         {
             if (wm.IsRunning)
             {
-                string msg = "有任务正在运行，确定退出？如果确定退出，记得自己开任务管理器，清理在跑的任务；点击No取消。";
+                string msg = "有任务正在运行，确定退出？点击No取消。";
                 MessageBoxResult result =
                   MessageBox.Show(
                     msg,
@@ -231,7 +236,17 @@ namespace OKEGui
                 {
                     e.Cancel = true;
                 }
+                else
+                {
+                    SubProcessService.KillAll();
+                }
             }
+        }
+
+        private void BtnCancelShutdown_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("cmd.exe", "/c shutdown -a");
+            BtnCancelShutdown.IsEnabled = false;
         }
     }
 }

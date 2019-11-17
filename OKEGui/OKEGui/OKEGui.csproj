@@ -107,7 +107,7 @@
     <Compile Include="Task\AddTaskService.cs" />
     <Compile Include="Task\ChapterService.cs" />
     <Compile Include="Task\EpisodeProfile.cs" />
-    <Compile Include="Task\PauseResumeService.cs" />
+    <Compile Include="Task\SubProcessService.cs" />
     <Compile Include="Task\TaskProfile.cs" />
     <Compile Include="Model\Track\AudioTrack.cs" />
     <Compile Include="Model\Track\ChapterTrack.cs" />

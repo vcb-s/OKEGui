@@ -174,5 +174,23 @@ namespace OKEGui
 
             return false;
         }
+
+        public bool AllSuccess()
+        {
+            if (taskStatus.Count == 0)
+            {
+                return false;
+            }
+
+            foreach (TaskDetail i in taskStatus)
+            {
+                if (i.CurrentStatus != TaskStatus.FinishedStatus)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

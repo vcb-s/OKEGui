@@ -37,7 +37,7 @@ namespace OKEGui.Worker
         private int tempCounter;
         public bool IsRunning { get; protected set; }
 
-        public delegate void Callback();
+        public delegate void Callback(MainWindow window);
 
         public Callback AfterFinish = null;
 

@@ -41,8 +41,23 @@ namespace OKEGui.Worker
                         if (bgworkerlist.Count == 0)
                         {
                             IsRunning = false;
-                            Logger.Info("Ready to call the after finish process");
-                            AfterFinish?.Invoke();
+
+                            if (args.taskManager.AllSuccess())
+                            {
+                                if (AfterFinish != null)
+                                {
+                                    Logger.Info("全部任务正常结束；准备执行完结命令。");
+                                    MainWindow.Dispatcher.BeginInvoke(AfterFinish, MainWindow);
+                                }
+                                else
+                                {
+                                    Logger.Info("全部任务正常结束；没有完结命令。");
+                                }
+                            }
+                            else
+                            {
+                                Logger.Info("有些任务未正常结束，不执行完结命令。");
+                            }
                         }
                     }
                     return;
@@ -293,7 +308,7 @@ namespace OKEGui.Worker
                         muxer.StartMuxing(mkaOutputFile, task.MkaOutFile);
                     }
 
-                    task.CurrentStatus = "完成";
+                    task.CurrentStatus = TaskStatus.FinishedStatus;
                     task.ProgressValue = 100;
                 }
                 catch (OKETaskException ex)

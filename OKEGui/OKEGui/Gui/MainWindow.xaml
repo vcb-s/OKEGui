@@ -102,9 +102,10 @@
             <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Width="70" Margin="0,4,0,0"><Run Text="任务结束后:" /></TextBlock>
             <ComboBox x:Name="AfterFinish" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="70,0,0,0" SelectionChanged="AfterFinish_SelectionChanged">
                 <ComboBoxItem IsSelected="True" Content="什么也不干" />
-                <!--ComboBoxItem Content="关机" /-->
+                <ComboBoxItem Content="关机" />
                 <!--<ComboBoxItem Content="运行程序" />-->
             </ComboBox>
+            <Button Height="23" Margin="200,0,0,0" x:Name="BtnCancelShutdown" VerticalAlignment="Top" HorizontalAlignment="Left" Click="BtnCancelShutdown_Click" Content="点这里取消关机" Width="100" />
 
             <Button Height="23" Margin="0,0,0,0" x:Name="BtnDeleteWorker" VerticalAlignment="Top" HorizontalAlignment="Right" Click="BtnDeleteWorker_Click" Content="删除工作单元" Width="100" />
         </Grid>

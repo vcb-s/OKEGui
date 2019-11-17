@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OKEGui.Task
 {
-    public class PauseResumeService
+    public class SubProcessService
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
@@ -113,6 +113,15 @@ namespace OKEGui.Task
             foreach (Process i in allProcesses)
             {
                 ResumeProcess(i);
+            }
+        }
+
+        public static void KillAll()
+        {
+            List<Process> allProcesses = getChildProcesses(Process.GetCurrentProcess());
+            foreach (Process i in allProcesses)
+            {
+                i.Kill();
             }
         }
     }
