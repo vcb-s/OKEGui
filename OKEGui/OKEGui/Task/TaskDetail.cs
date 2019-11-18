@@ -19,7 +19,6 @@ namespace OKEGui
         public MediaFile MediaOutFile;
         public MediaFile MkaOutFile;
 
-        public bool IsRunning;
         public string Tid;
         public long lengthInMiliSec;
 

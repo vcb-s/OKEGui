@@ -14,11 +14,14 @@ namespace OKEGui
         {
             NotifyCollectionChangedEventHandler CollectionChanged = this.CollectionChanged;
             if (CollectionChanged != null)
-                foreach (NotifyCollectionChangedEventHandler nh in CollectionChanged.GetInvocationList()) {
+                foreach (NotifyCollectionChangedEventHandler nh in CollectionChanged.GetInvocationList())
+                {
                     DispatcherObject dispObj = nh.Target as DispatcherObject;
-                    if (dispObj != null) {
+                    if (dispObj != null)
+                    {
                         Dispatcher dispatcher = dispObj.Dispatcher;
-                        if (dispatcher != null && !dispatcher.CheckAccess()) {
+                        if (dispatcher != null && !dispatcher.CheckAccess())
+                        {
                             dispatcher.BeginInvoke(
                                 (Action)(() => nh.Invoke(this,
                                     new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset))),
@@ -33,77 +36,104 @@ namespace OKEGui
 
     public class TaskManager
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         public MTObservableCollection<TaskDetail> taskStatus = new MTObservableCollection<TaskDetail>();
 
-        private int newTaskCount = 0;
         private int tidCount = 0;
 
-        public bool IsCanStart = false;
         private readonly object o = new object(); // dummy object used for locking threads.
 
         public int AddTask(TaskDetail detail)
         {
-            TaskDetail td = detail;
-            newTaskCount++;
-            tidCount++;
+            lock (o)
+            {
+                TaskDetail td = detail;
+                tidCount++;
 
-            if (td.TaskName == "") {
-                td.TaskName = "新建任务 - " + newTaskCount.ToString();
+                if (td.TaskName == "")
+                {
+                    td.TaskName = "新建任务 - " + tidCount.ToString();
+                }
+
+                // 初始化任务参数
+                td.IsEnabled = true;
+                td.Tid = tidCount.ToString();
+                td.CurrentStatus = "等待中";
+                td.Progress = TaskStatus.TaskProgress.WAITING;
+                td.ProgressValue = 0.0;
+                td.Speed = "0.0 fps";
+                td.TimeRemain = TimeSpan.FromDays(30);
+                td.WorkerName = "";
+
+                taskStatus.Add(td);
+                return taskStatus.Count;
             }
-
-            // 初始化任务参数
-            td.IsEnabled = true;
-            td.Tid = tidCount.ToString();
-            td.CurrentStatus = "等待中";
-            td.ProgressValue = 0.0;
-            td.Speed = "0.0 fps";
-            td.TimeRemain = TimeSpan.FromDays(30);
-            td.WorkerName = "";
-
-            taskStatus.Add(td);
-            return taskStatus.Count;
         }
 
         public bool DeleteTask(TaskDetail detail)
         {
-            return DeleteTask(detail.Tid);
+            lock (o)
+            {
+                if (detail.Progress == TaskStatus.TaskProgress.RUNNING)
+                {
+                    return false;
+                }
+                else
+                {
+                    return taskStatus.Remove(detail);
+                }
+            }
         }
 
-        public bool DeleteTask(string tid)
+        private bool SwapTasksByIndex(int idx1, int idx2)
         {
-            if (int.Parse(tid) < 1) {
+            if (idx1 == idx2)
+            {
                 return false;
             }
-
-            try {
-                foreach (var item in taskStatus) {
-                    if (item.Tid == tid) {
-                        if (item.IsRunning) {
-                            return false;
-                        }
-                        taskStatus.Remove(item);
-                        return true;
-                    }
-                }
-            } catch (ArgumentOutOfRangeException) {
+            if (idx1 < 0 || idx1 >= taskStatus.Count || taskStatus[idx1].Progress != TaskStatus.TaskProgress.WAITING)
+            {
                 return false;
             }
+            if (idx2 < 0 || idx2 >= taskStatus.Count || taskStatus[idx2].Progress != TaskStatus.TaskProgress.WAITING)
+            {
+                return false;
+            }
+            TaskDetail temp = taskStatus[idx1];
+            taskStatus[idx1] = taskStatus[idx2];
+            taskStatus[idx2] = temp;
+            return true;
+        }
 
-            return false;
+        public bool MoveTaskUp(TaskDetail td)
+        {
+            lock (o)
+            {
+                int idx1 = taskStatus.IndexOf(td);
+                int idx2 = idx1 - 1;
+                return SwapTasksByIndex(idx1, idx2);
+            }
+        }
+
+        public bool MoveTaskDown(TaskDetail td)
+        {
+            lock (o)
+            {
+                int idx1 = taskStatus.IndexOf(td);
+                int idx2 = idx1 + 1;
+                return SwapTasksByIndex(idx1, idx2);
+            }
         }
 
         public TaskDetail GetNextTask()
         {
-            if (!IsCanStart) {
-                return null;
-            }
-
-            lock (o) {
+            lock (o)
+            {
                 // 找出下一个可用任务
-                foreach (var task in taskStatus) {
-                    if (task.IsEnabled) {
-                        task.IsEnabled = false;
-                        task.IsRunning = true;
+                foreach (var task in taskStatus)
+                {
+                    if (task.IsEnabled)
+                    {
                         return task;
                     }
                 }
@@ -114,19 +144,7 @@ namespace OKEGui
 
         public bool HasNextTask()
         {
-            lock (o)
-            {
-                // 找出下一个可用任务
-                foreach (var task in taskStatus)
-                {
-                    if (task.IsEnabled)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            return GetNextTask() != null;
         }
 
         public int GetActiveTaskCount()
@@ -139,7 +157,7 @@ namespace OKEGui
                 {
                     if (task.IsEnabled)
                     {
-                        activeTaskCount ++;
+                        activeTaskCount++;
                     }
                 }
 
@@ -162,35 +180,41 @@ namespace OKEGui
             }
         }
 
-        public bool HasInputFile(string inputFile)
+        public TaskDetail GetTaskByInputFile(string inputFile)
         {
-            foreach (TaskDetail i in taskStatus)
+            lock (o)
             {
-                if (i.InputFile == inputFile)
+                foreach (TaskDetail i in taskStatus)
                 {
-                    return true;
+                    if (i.InputFile == inputFile)
+                    {
+                        return i;
+                    }
                 }
             }
 
-            return false;
+            return null;
         }
 
         public bool AllSuccess()
         {
-            if (taskStatus.Count == 0)
+            lock (o)
             {
-                return false;
-            }
-
-            foreach (TaskDetail i in taskStatus)
-            {
-                if (i.CurrentStatus != TaskStatus.FinishedStatus)
+                if (taskStatus.Count == 0)
                 {
                     return false;
                 }
-            }
 
-            return true;
+                foreach (TaskDetail i in taskStatus)
+                {
+                    if (i.Progress != TaskStatus.TaskProgress.FINISHED)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
         }
     }
 }

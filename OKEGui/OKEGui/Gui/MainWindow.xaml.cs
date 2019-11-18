@@ -33,16 +33,18 @@ namespace OKEGui
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             Title += " v" + version;
 
-            listView1.ItemsSource = tm.taskStatus;
+            TaskList.ItemsSource = tm.taskStatus;
 
             wm = new WorkerManager(this, tm);
 
             BtnRun.IsEnabled = false;
             BtnMoveDown.IsEnabled = false;
-            BtnMoveup.IsEnabled = false;
+            BtnMoveUp.IsEnabled = false;
             BtnPause.IsEnabled = false;
             BtnResume.IsEnabled = false;
             BtnChap.IsEnabled = false;
+            BtnDelete.IsEnabled = false;
+            BtnEmpty.IsEnabled = false;
             BtnCancelShutdown.IsEnabled = false;
 
             // 初始的worker数量等于Numa数量。
@@ -71,9 +73,13 @@ namespace OKEGui
             {
                 var wizard = new WizardWindow(wm);
                 wizard.ShowDialog();
-                BtnRun.IsEnabled = tm.HasNextTask();
-                BtnChap.IsEnabled = BtnRun.IsEnabled;
-                tm.IsCanStart = true;
+                int activeTaskCount = tm.GetActiveTaskCount();
+                BtnRun.IsEnabled = activeTaskCount > 0;
+                BtnDelete.IsEnabled = activeTaskCount > 0;
+                BtnEmpty.IsEnabled = activeTaskCount > 0;
+                BtnMoveDown.IsEnabled = activeTaskCount > 1;
+                BtnMoveUp.IsEnabled = activeTaskCount > 1;
+                BtnChap.IsEnabled = activeTaskCount > 0;
             }
             catch (Exception ex)
             {
@@ -100,16 +106,7 @@ namespace OKEGui
         {
             try
             {
-                tm.IsCanStart = true;
-
-                if (!wm.Start())
-                {
-                    tm.IsCanStart = false;
-                    MessageBox.Show("无法开始任务！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
-
-                    return;
-                }
-
+                wm.Start();
                 BtnDeleteWorker.IsEnabled = false;
                 BtnEmpty.IsEnabled = false;
                 BtnRun.IsEnabled = false;
@@ -118,7 +115,7 @@ namespace OKEGui
             catch (Exception ex)
             {
                 Logger.Fatal(ex.StackTrace);
-                Environment.Exit(0);
+                MessageBox.Show("无法开始任务！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -129,47 +126,71 @@ namespace OKEGui
             BtnChap.IsEnabled = true;
         }
 
-        private void BtnMoveup_Click(object sender, RoutedEventArgs e)
+        private void BtnMoveUp_Click(object sender, RoutedEventArgs e)
         {
-            // TODO
+            TaskDetail item = TaskList.SelectedItem as TaskDetail;
+
+            if (item == null)
+            {
+                MessageBox.Show("请点击一个任务开始操作", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (!tm.MoveTaskUp(item))
+            {
+                MessageBox.Show("无法上移任务！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void BtnMoveDown_Click(object sender, RoutedEventArgs e)
         {
-            // TODO
+            TaskDetail item = TaskList.SelectedItem as TaskDetail;
+
+            if (item == null)
+            {
+                MessageBox.Show("请点击一个任务开始操作", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (!tm.MoveTaskDown(item))
+            {
+                MessageBox.Show("无法下移任务！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
-            object o = listView1.SelectedItem;
-            if (o == null)
-            {
-                return;
-            }
+            TaskDetail item = TaskList.SelectedItem as TaskDetail;
 
-            TaskDetail item = o as TaskDetail;
-            if (item.IsRunning)
+            if (item == null)
             {
-                MessageBox.Show("无法删除该任务！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("请点击一个任务开始操作", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
             if (!tm.DeleteTask(item))
             {
-                MessageBox.Show("任务删除失败！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("无法删除任务！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            BtnRun.IsEnabled = tm.HasNextTask();
-            return;
+            int activeTaskCount = tm.GetActiveTaskCount();
+            BtnRun.IsEnabled = activeTaskCount > 0;
+            BtnDelete.IsEnabled = activeTaskCount > 0;
+            BtnEmpty.IsEnabled = activeTaskCount > 0;
+            BtnMoveDown.IsEnabled = activeTaskCount > 1;
+            BtnMoveUp.IsEnabled = activeTaskCount > 1;
+            BtnChap.IsEnabled = activeTaskCount > 0;
         }
 
         private void BtnEmpty_Click(object sender, RoutedEventArgs e)
         {
-            if (!tm.IsCanStart)
-            {
-                tm.taskStatus.Clear();
-                BtnRun.IsEnabled = false;
-            }
+            tm.taskStatus.Clear();
+            BtnRun.IsEnabled = false;
+            BtnDelete.IsEnabled = false;
+            BtnEmpty.IsEnabled = false;
+            BtnMoveDown.IsEnabled = false;
+            BtnMoveUp.IsEnabled = false;
+            BtnChap.IsEnabled = false;
         }
 
         private void BtnNewWorker_Click(object sender, RoutedEventArgs e)

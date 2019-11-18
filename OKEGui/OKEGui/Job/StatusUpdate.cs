@@ -17,7 +17,6 @@ namespace OKEGui
         private ulong? filesize, audioFileSize, projectedFileSize;
         private string processingspeed;
         private decimal percentage;
-        private JobStatus jobStatus;
 
         internal StatusUpdate(string name)
         {
@@ -38,7 +37,6 @@ namespace OKEGui
             timeElapsed = TimeSpan.Zero;
             processingspeed = null;
             filesize = null;
-            jobStatus = JobStatus.PROCESSING;
 
             for (int i = 0; i < UpdatesPerEstimate; ++i) {
                 previousUpdates[i] = TimeSpan.Zero;
@@ -53,15 +51,6 @@ namespace OKEGui
         {
             get { return status; }
             set { status = value; }
-        }
-
-        /// <summary>
-        /// Job Status currently processing
-        /// </summary>
-        public JobStatus JobStatus
-        {
-            get { return jobStatus; }
-            set { jobStatus = value; }
         }
 
         /// <summary>

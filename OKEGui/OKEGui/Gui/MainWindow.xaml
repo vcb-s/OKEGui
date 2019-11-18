@@ -13,7 +13,7 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <ListView x:Name="listView1" Margin="10,10,10,68" AllowDrop="True">
+        <ListView x:Name="TaskList" Margin="10,10,10,68" AllowDrop="True">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="" Width="30">
@@ -90,7 +90,7 @@
             <Button Height="23" Grid.Column="2" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnPause" VerticalAlignment="Top" Click="BtnPause_Click" Content="暂停" />
             <Button Height="23" Grid.Column="3" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnResume" VerticalAlignment="Top" Click="BtnResume_Click" Content="恢复" />
             <Button Height="23" Grid.Column="4" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnChap" VerticalAlignment="Top" Click="BtnChap_Click" Content="检查章节" />
-            <Button Height="23" Grid.Column="5" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveup" VerticalAlignment="Top" Click="BtnMoveup_Click" Content="上移" />
+            <Button Height="23" Grid.Column="5" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveUp" VerticalAlignment="Top" Click="BtnMoveUp_Click" Content="上移" />
             <Button Height="23" Grid.Column="6" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveDown" VerticalAlignment="Top" Click="BtnMoveDown_Click" Content="下移" />
             <Button Height="23" Grid.Column="7" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnDelete" VerticalAlignment="Top" Click="BtnDelete_Click" Content="删除" />
             <Button Height="23" Grid.Column="8" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnEmpty" VerticalAlignment="Top" Click="BtnEmpty_Click" Content="清空" />

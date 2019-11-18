@@ -5,8 +5,6 @@ namespace OKEGui
 {
     public enum ProcessPriority : int { IDLE = 0, BELOW_NORMAL, NORMAL, ABOVE_NORMAL, HIGH, PARALLEL };
 
-    public enum JobStatus : int { WAITING = 0, PROCESSING, POSTPONED, ERROR, ABORTED, DONE, SKIP, ABORTING };
-
     public enum JobType
     {
         Video,
@@ -14,8 +12,6 @@ namespace OKEGui
         VideoInfo,
         Mux
     }
-
-    // status of job, 0: waiting, 1: processing, 2: postponed, 3: error, 4: aborted, 5: done, 6: skip, 7: aborting
 
     /// <summary>
     /// 任务信息

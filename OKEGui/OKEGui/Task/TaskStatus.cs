@@ -10,7 +10,6 @@ namespace OKEGui
     /// </summary>
     public class TaskStatus : INotifyPropertyChanged
     {
-        public static string FinishedStatus = "完成";
         /// <summary>
         /// 任务是否启用
         /// </summary>
@@ -62,7 +61,7 @@ namespace OKEGui
             get { return chapterStatus.ToString(); }
             set
             {
-                chapterStatus = (ChapterStatus) Enum.Parse(typeof(ChapterStatus), value);
+                chapterStatus = (ChapterStatus)Enum.Parse(typeof(ChapterStatus), value);
                 OnPropertyChanged(new PropertyChangedEventArgs("ChapterStatus"));
             }
         }
@@ -80,6 +79,14 @@ namespace OKEGui
                 OnPropertyChanged(new PropertyChangedEventArgs("OutputFile"));
             }
         }
+
+        /// <summary>
+        /// 任务总体进度
+        /// </summary>
+
+        public enum TaskProgress : int { WAITING = 0, RUNNING, ERROR, FINISHED }
+        public TaskProgress Progress;
+
 
         /// <summary>
         /// 任务执行状态

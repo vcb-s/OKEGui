@@ -19,6 +19,9 @@ namespace OKEGui.Worker
         {
             window.BtnPause.IsEnabled = false;
             window.BtnResume.IsEnabled = false;
+            window.BtnEmpty.IsEnabled = true;
+            window.BtnMoveDown.IsEnabled = false;
+            window.BtnMoveUp.IsEnabled = false;
         }
 
         private void WorkerDoWork(object sender, DoWorkEventArgs e)
@@ -68,7 +71,7 @@ namespace OKEGui.Worker
                 {
                     task.WorkerName = args.Name;
                     task.IsEnabled = false;
-                    task.IsRunning = true;
+                    task.Progress = TaskStatus.TaskProgress.RUNNING;
                     task.MediaOutFile = new MediaFile();
                     task.MkaOutFile = new MediaFile();
 
@@ -308,7 +311,8 @@ namespace OKEGui.Worker
                         muxer.StartMuxing(mkaOutputFile, task.MkaOutFile);
                     }
 
-                    task.CurrentStatus = TaskStatus.FinishedStatus;
+                    task.CurrentStatus = "完成";
+                    task.Progress = TaskStatus.TaskProgress.FINISHED;
                     task.ProgressValue = 100;
                 }
                 catch (OKETaskException ex)
@@ -317,7 +321,7 @@ namespace OKEGui.Worker
                     Logger.Error(msg);
                     new System.Threading.Tasks.Task(() =>
                     System.Windows.MessageBox.Show(msg.errorMsg, msg.fileName)).Start();
-                    task.IsRunning = false;
+                    task.Progress = TaskStatus.TaskProgress.ERROR;
                     task.CurrentStatus = ex.summary;
                     task.ProgressValue = ex.progress.GetValueOrDefault(task.ProgressValue);
                     continue;
@@ -328,7 +332,7 @@ namespace OKEGui.Worker
                     Logger.Error(ex.Message + ex.StackTrace);
                     new System.Threading.Tasks.Task(() =>
                             System.Windows.MessageBox.Show(ex.Message, fileinfo.Name)).Start();
-                    task.IsRunning = false;
+                    task.Progress = TaskStatus.TaskProgress.ERROR;
                     task.CurrentStatus = "未知错误";
                     continue;
                 }
