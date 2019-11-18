@@ -196,8 +196,10 @@ namespace OKEGui
             Cleaner cleaner = new Cleaner();
             foreach (string inputFile in wizardInfo.InputFile)
             {
-                TaskDetail existing = workerManager.tm.GetTaskByInputFile(inputFile);
-                if (existing != null && (existing.Progress == TaskStatus.TaskProgress.RUNNING || existing.Progress == TaskStatus.TaskProgress.WAITING))
+                List<TaskDetail> existing = workerManager.tm.GetTasksByInputFile(inputFile);
+                bool skip = existing.Any(i => i.Progress == TaskStatus.TaskProgress.RUNNING || i.Progress == TaskStatus.TaskProgress.WAITING);
+
+                if (skip)
                 {
                     System.Windows.MessageBox.Show($"{inputFile}已经在任务列表里，将跳过处理。", $"{inputFile}已经在任务列表里", MessageBoxButton.OK, MessageBoxImage.Error);
                     continue;

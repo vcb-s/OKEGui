@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Windows.Threading;
@@ -180,20 +181,20 @@ namespace OKEGui
             }
         }
 
-        public TaskDetail GetTaskByInputFile(string inputFile)
+        public List<TaskDetail> GetTasksByInputFile(string inputFile)
         {
             lock (o)
             {
+                List<TaskDetail> res = new List<TaskDetail>();
                 foreach (TaskDetail i in taskStatus)
                 {
                     if (i.InputFile == inputFile)
                     {
-                        return i;
+                        res.Add(i);
                     }
                 }
+                return res;
             }
-
-            return null;
         }
 
         public bool AllSuccess()
