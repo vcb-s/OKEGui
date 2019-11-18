@@ -194,9 +194,10 @@ namespace OKEGui
             // 2、新建脚本文件
             // 3、新建任务参数
             Cleaner cleaner = new Cleaner();
-            foreach (var inputFile in wizardInfo.InputFile)
+            foreach (string inputFile in wizardInfo.InputFile)
             {
-                if (workerManager.tm.HasInputFile(inputFile))
+                TaskDetail existing = workerManager.tm.GetTaskByInputFile(inputFile);
+                if (existing != null && (existing.Progress == TaskStatus.TaskProgress.RUNNING || existing.Progress == TaskStatus.TaskProgress.WAITING))
                 {
                     System.Windows.MessageBox.Show($"{inputFile}已经在任务列表里，将跳过处理。", $"{inputFile}已经在任务列表里", MessageBoxButton.OK, MessageBoxImage.Error);
                     continue;
