@@ -42,6 +42,7 @@ namespace OKEGui
             fps_n = vsHelper.FpsNum;
             fps_d = vsHelper.FpsDen;
             NumberOfFrames = (ulong)vsHelper.TotalFreams;
+            job.NumberOfFrames = NumberOfFrames;
             if (fps_n != job.FpsNum || fps_d != job.FpsDen)
             {
                 OKETaskException ex = new OKETaskException(Constants.fpsMismatchSmr);

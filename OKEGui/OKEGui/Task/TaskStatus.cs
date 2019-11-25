@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using static OKEGui.ChapterService;
+using static OKEGui.RpChecker;
 
 namespace OKEGui
 {
@@ -224,6 +225,19 @@ namespace OKEGui
             }
         }
 
+        /// <summary>
+        /// 花屏检测信息
+        /// </summary>
+        private RpcStatus rpcStatus;
+        public string RpcStatus
+        {
+            get { return rpcStatus.ToString(); }
+            set
+            {
+                rpcStatus = (RpcStatus)Enum.Parse(typeof(RpcStatus), value);
+                OnPropertyChanged(new PropertyChangedEventArgs("RpcStatus"));
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(PropertyChangedEventArgs e)

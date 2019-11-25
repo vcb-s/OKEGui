@@ -59,6 +59,9 @@ namespace OKEGui.Utils
         public const string audioFormatMistachMsg = "无法将{0}格式的音轨转为{1}格式。该文件{2}将跳过处理。请转告技术总监复查。";
         public const string audioFormatMistachSmr = "音轨格式不匹配";
 
+        public const string rpcErrorMsg = "RPC出错:{0}。请手动检查{1}，并请转告技术总监复查。";
+        public const string rpcErrorSmr = "RPC出错";
+
         //Application configuration file
         public const string configFile = "OKEGuiConfig.json";
 

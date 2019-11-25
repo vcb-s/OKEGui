@@ -9,14 +9,13 @@ namespace OKEGui.Model
 {
     public class TaskProfile : ICloneable
     {
+        // 在json里会使用的参数
         public int Version;
         public string ProjectName;
         public string EncoderType;
         public string Encoder;
         public string EncoderParam;
         public string ContainerFormat;
-        public string VideoFormat;
-        public string AudioFormat;
         public double Fps;
         public uint FpsNum;
         public uint FpsDen;
@@ -25,7 +24,12 @@ namespace OKEGui.Model
         public List<Info> SubtitleTracks;
         public List<string> InputFiles;
         public EpisodeConfig Config;
+        public bool Rpc;
+
+        //后续任务中填写的参数
         public bool ExtractVideo;
+        public string VideoFormat;
+        public string AudioFormat;
 
         public Object Clone()
         {
@@ -41,7 +45,7 @@ namespace OKEGui.Model
             if (SubtitleTracks != null)
             {
                 clone.SubtitleTracks = new List<Info>();
-                foreach(Info info in SubtitleTracks)
+                foreach (Info info in SubtitleTracks)
                 {
                     clone.SubtitleTracks.Add(info.Clone() as Info);
                 }

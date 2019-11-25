@@ -10,7 +10,8 @@ namespace OKEGui
         Video,
         Audio,
         VideoInfo,
-        Mux
+        Mux,
+        RpCheck
     }
 
     /// <summary>
@@ -83,7 +84,7 @@ namespace OKEGui
             }
         }
 
-        private TaskStatus ts;
+        protected TaskStatus ts;
 
         public void SetUpdate(TaskStatus taskStatus)
         {

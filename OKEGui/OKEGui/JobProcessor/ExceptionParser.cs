@@ -117,6 +117,10 @@ namespace OKEGui.JobProcessor
                     msg.errorMsg = string.Format(Constants.audioFormatMistachMsg, ex.Data["SRC_FMT"], ex.Data["DST_FMT"], task.InputFile);
                     break;
 
+                case Constants.rpcErrorSmr:
+                    msg.errorMsg = string.Format(Constants.rpcErrorMsg, ex.Data["RPC_ERROR"], task.InputFile);
+                    break;
+
                 case Constants.unknownErrorSmr:
                 default:
                     msg.errorMsg = string.Format(Constants.unknownErrorMsg, task.InputFile);

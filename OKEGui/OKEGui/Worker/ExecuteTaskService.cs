@@ -6,6 +6,7 @@ using OKEGui.Model;
 using OKEGui.JobProcessor;
 using System.Diagnostics;
 using System.Collections.Generic;
+using static OKEGui.RpChecker;
 
 namespace OKEGui.Worker
 {
@@ -309,6 +310,22 @@ namespace OKEGui.Worker
                         string mkaOutputFile = task.InputFile + ".mka";
 
                         muxer.StartMuxing(mkaOutputFile, task.MkaOutFile);
+                    }
+
+                    //RP check
+                    if (profile.Rpc)
+                    {
+                        task.CurrentStatus = "RPC中";
+                        RpcJob rpcJob = new RpcJob(profile.InputScript, videoJob.Output, videoJob.NumberOfFrames);
+                        rpcJob.SetUpdate(task);
+
+                        RpChecker checker = new RpChecker(rpcJob);
+                        checker.start();
+                        checker.waitForFinish();
+                    }
+                    else
+                    {
+                        task.RpcStatus = RpcStatus.跳过.ToString();
                     }
 
                     task.CurrentStatus = "完成";

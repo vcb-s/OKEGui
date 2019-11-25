@@ -14,7 +14,7 @@ namespace OKEGui.Utils
         private const string TIME_FMT = "ddHHmm";
 
         public Cleaner() : this(
-            new List<string> { "flac", "alac", "aac", "ac3", "dts", "sup", "Log.txt", "vpy", "qpf", ".264" },
+            new List<string> { "flac", "alac", "aac", "ac3", "dts", "sup", "Log.txt", "vpy", "qpf", ".264", "lwi", "rpc", "pyc" },
             new List<string> { "hevc", "mkv", "mp4", "mka", "h264" })
         {
         }
@@ -40,7 +40,7 @@ namespace OKEGui.Utils
         {
             string directory = Path.GetDirectoryName(inputFile);
             string rawName = Path.GetFileNameWithoutExtension(inputFile);
-            List<string> files = new List<string>(Directory.GetFiles(directory, rawName + "*.*", SearchOption.TopDirectoryOnly)
+            List<string> files = new List<string>(Directory.GetFiles(directory, rawName + "*.*", SearchOption.AllDirectories)
             .Where(s => !whiteList.Contains(s) && sfxRemove.Any(x => s.EndsWith(x))));
             foreach (string file in files) {
                 File.Delete(file);

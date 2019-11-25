@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Closing="MainWindow_Closing"
-        Title="OKEGui" Height="600" Width="1000" WindowStartupLocation="CenterScreen" Icon="App.ico">
+        Title="OKEGui" Height="700" Width="1100" WindowStartupLocation="CenterScreen" Icon="App.ico">
     <Window.Resources>
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -62,6 +62,8 @@
                     <GridViewColumn Header="剩余时间" Width="75" DisplayMemberBinding="{Binding Path=TimeRemainStr}">
                     </GridViewColumn>
                     <GridViewColumn Header="工作单元" Width="75" DisplayMemberBinding="{Binding Path=WorkerName}">
+                    </GridViewColumn>
+                    <GridViewColumn Header="花屏检查" Width="75" DisplayMemberBinding="{Binding Path=RpcStatus}">
                     </GridViewColumn>
                 </GridView>
             </ListView.View>

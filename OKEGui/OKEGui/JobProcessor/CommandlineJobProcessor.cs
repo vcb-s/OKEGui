@@ -238,7 +238,7 @@ namespace OKEGui
                 {
                     mre.WaitOne();
 
-                    Debugger.Log(0, "readStream", "readstream: " + line + "\n");
+                    Debugger.Log(0, "readstream", str.ToString() + line + "\n");
                     ProcessLine(line, str);
                 }
                 rEvent.Set();

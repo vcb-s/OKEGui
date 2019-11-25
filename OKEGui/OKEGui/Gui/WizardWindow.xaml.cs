@@ -206,7 +206,7 @@ namespace OKEGui
                 }
 
                 // 清理文件
-                cleaner.Clean(inputFile, new List<string> { json.InputScript });
+                cleaner.Clean(inputFile, new List<string> { json.InputScript, inputFile + ".lwi" });
 
                 EpisodeConfig config = null;
                 string cfgPath = inputFile + ".json";
