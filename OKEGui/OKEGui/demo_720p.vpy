@@ -32,3 +32,4 @@ dark = mvf.Depth(dbed,8,dither=0,ampo=1.5)
 res = core.std.MaskedMerge(dark, bright, core.std.Binarize(bright, 128, planes=0), first_plane=True)
 
 res.set_output(0)
+src8.set_output(1)
