@@ -71,7 +71,6 @@ namespace OKEGui.Worker
                 try
                 {
                     task.WorkerName = args.Name;
-                    task.IsEnabled = false;
                     task.Progress = TaskStatus.TaskProgress.RUNNING;
                     task.MediaOutFile = new MediaFile();
                     task.MkaOutFile = new MediaFile();
