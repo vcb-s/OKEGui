@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using OKEGui.Task;
+using OKEGui.Utils;
 using OKEGui.Worker;
 
 namespace OKEGui
@@ -63,6 +64,16 @@ namespace OKEGui
             {
                 BtnRun.IsEnabled = tm.HasNextTask();
                 BtnChap.IsEnabled = BtnRun.IsEnabled;
+            }
+        }
+
+        private void BtnRpc_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            string rpcOutput = btn.Tag?.ToString();
+            if (!string.IsNullOrEmpty(rpcOutput))
+            {
+                Process.Start(Initializer.Config.rpCheckerPath, $"-r \"{rpcOutput}\"");
             }
         }
 

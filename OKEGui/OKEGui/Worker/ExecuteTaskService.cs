@@ -321,6 +321,7 @@ namespace OKEGui.Worker
                         RpChecker checker = new RpChecker(rpcJob);
                         checker.start();
                         checker.waitForFinish();
+                        task.RpcOutput = rpcJob.Output;
                     }
                     else
                     {

@@ -236,7 +236,24 @@ namespace OKEGui
             {
                 rpcStatus = (RpcStatus)Enum.Parse(typeof(RpcStatus), value);
                 OnPropertyChanged(new PropertyChangedEventArgs("RpcStatus"));
+                OnPropertyChanged(new PropertyChangedEventArgs("RpcButtonEnabled"));
             }
+        }
+
+        private string rpcOutput;
+        public string RpcOutput
+        {
+            get { return rpcOutput; }
+            set
+            {
+                rpcOutput = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("RpcOutput"));
+            }
+        }
+
+        public bool RpcButtonEnabled
+        {
+            get { return rpcStatus == RpChecker.RpcStatus.未通过 || rpcStatus == RpChecker.RpcStatus.通过; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

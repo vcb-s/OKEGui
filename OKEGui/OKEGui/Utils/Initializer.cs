@@ -14,6 +14,7 @@ namespace OKEGui.Utils
         public string vspipePath;
         public string logLevel = "DEBUG";
         public bool noNuma = false;
+        public string rpCheckerPath;
     }
 
     static class Initializer

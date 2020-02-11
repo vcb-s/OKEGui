@@ -20,7 +20,7 @@ namespace OKEGui.Utils
             }
             Config = Initializer.LoadConfig();
 
-            return CheckVspipe() && CheckQAAC() && CheckFfmpeg();
+            return CheckVspipe() && CheckQAAC() && CheckFfmpeg() && CheckRPChecker();
         }
 
         static bool CheckRootFolderWriteAccess()
@@ -47,7 +47,6 @@ namespace OKEGui.Utils
                 vspipeInfo = new FileInfo(vspipePath);
                 if (vspipeInfo.Exists)
                 {
-                    Config.vspipePath = vspipePath;
                     return true;
                 }
             }
@@ -134,6 +133,51 @@ namespace OKEGui.Utils
             else
             {
                 MessageBox.Show("请更新tools工具包。", "无法找到ffmpeg");
+                return false;
+            }
+        }
+
+        static bool CheckRPChecker()
+        {
+            string rpCheckerPath = Config.rpCheckerPath;
+            FileInfo rpCheckerInfo;
+
+            if (!string.IsNullOrWhiteSpace(rpCheckerPath))
+            {
+                rpCheckerInfo = new FileInfo(rpCheckerPath);
+                if (rpCheckerInfo.Exists)
+                {
+                    return true;
+                }
+            }
+
+            MessageBox.Show(
+                        "无法找到RPChecker.exe。请手动指定其位置，否则程序将退出。",
+                        "无法找到RPChecker.exe",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+
+            OpenFileDialog ofd = new OpenFileDialog
+            {
+                Multiselect = false,
+                Filter = "RPChecker.exe (RPChecker*.exe)|RPChecker*.exe"
+            };
+            bool result = ofd.ShowDialog().GetValueOrDefault(false);
+            if (!result)
+            {
+                return false;
+            }
+            rpCheckerPath = ofd.FileName;
+            rpCheckerInfo = new FileInfo(rpCheckerPath);
+
+            if (rpCheckerInfo.Exists)
+            {
+                Config.rpCheckerPath = rpCheckerPath;
+                return true;
+            }
+            else
+            {
+                MessageBox.Show("请准备RPChecker最新版，程序将退出。", "此文件无法读取");
                 return false;
             }
         }
