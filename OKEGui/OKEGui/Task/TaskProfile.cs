@@ -25,6 +25,7 @@ namespace OKEGui.Model
         public List<string> InputFiles;
         public EpisodeConfig Config;
         public bool Rpc;
+        public bool TimeCode;
 
         //后续任务中填写的参数
         public bool ExtractVideo;

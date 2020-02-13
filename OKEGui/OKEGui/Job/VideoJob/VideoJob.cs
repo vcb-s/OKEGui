@@ -12,6 +12,7 @@ namespace OKEGui
         public uint FpsDen;
         public int NumaNode;
         public ulong NumberOfFrames;
+        public string TimeCodeFile;
 
         public VideoJob(string codec) : base(codec)
         {

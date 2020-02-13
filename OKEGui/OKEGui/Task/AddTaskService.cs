@@ -88,11 +88,24 @@ namespace OKEGui
                 return null;
             }
 
-            // 设置视频帧率
+            // 如果是MP4则暂不支持指定时间码
+            if (json.ContainerFormat == "MP4" && json.TimeCode)
+            {
+                MessageBox.Show("MP4暂不支持VFR封装，请联系技术总监。", "MP4暂不支持VFR封装", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+
             if (json.Fps <= 0 && (json.FpsNum <= 0 || json.FpsDen <= 0))
             {
-                MessageBox.Show("现在json文件中需要指定帧率，哪怕 Fps : 23.976", "帧率没有指定诶", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
+                if (json.TimeCode)
+                {
+                    json.Fps = 1;
+                }
+                else
+                {
+                    MessageBox.Show("现在json文件中需要指定帧率，哪怕 Fps : 23.976", "帧率没有指定诶", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return null;
+                }
             }
 
             if (json.FpsNum > 0 && json.FpsDen > 0)

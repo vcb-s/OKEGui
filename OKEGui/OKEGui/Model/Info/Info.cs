@@ -23,9 +23,9 @@ namespace OKEGui.Model
     {
         // base class of all info object
         public InfoType InfoType { get; protected set; } = InfoType.Default; 
-        public int TrackId;
         public MuxOption MuxOption = MuxOption.Default;
         public string Language = Constants.language;
+        public string Name = "";
         private bool _dupOrEmpty;
         public bool DupOrEmpty
         {

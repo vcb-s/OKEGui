@@ -236,7 +236,15 @@ namespace OKEGui.Worker
                         }
                         else if (job is VideoJob)
                         {
+                            // 时间码文件
+                            string timeCodeFile = null;
+                            if (task.Taskfile.TimeCode)
+                            {
+                                timeCodeFile = task.InputFile + ".tcfile";
+                            }
+
                             videoJob = job as VideoJob;
+                            videoJob.TimeCodeFile = timeCodeFile;
                             CommandlineVideoEncoder processor;
                             task.CurrentStatus = "获取信息中";
                             task.IsUnKnowProgress = true;
@@ -268,7 +276,7 @@ namespace OKEGui.Worker
                             processor.start();
                             processor.waitForFinish();
 
-                            VideoInfo info = new VideoInfo(videoJob.FpsNum, videoJob.FpsDen);
+                            VideoInfo info = new VideoInfo(videoJob.FpsNum, videoJob.FpsDen, timeCodeFile);
 
                             task.MediaOutFile.AddTrack(new VideoTrack(new OKEFile(job.Output), info));
                         }
