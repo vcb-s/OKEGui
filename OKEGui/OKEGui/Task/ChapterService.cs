@@ -1,161 +1,141 @@
-﻿using OKEGui.JobProcessor;
-using OKEGui.Model;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using OKEGui.Utils;
 using TChapter.Chapters;
 using TChapter.Parsing;
 
 namespace OKEGui
 {
+    public enum ChapterStatus
+    {
+        No,
+        Yes,
+        Added,
+        Maybe
+    };
+
     public class ChapterService
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public enum ChapterStatus { No, Yes, Added };
-
-        public static SortedDictionary<string, string> ReadChapters(OKEFile file)
+        public static ChapterStatus UpdateChapterStatus(TaskDetail task)
         {
-            SortedDictionary<string, string> chapters = new SortedDictionary<string, string>();
-            string fileContent = File.ReadAllText(file.GetFullPath());
-            string[] chapterLinesArr = fileContent.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-            List<string> chapterLines = new List<string>(chapterLinesArr);
-            chapterLines.RemoveAll(i => string.IsNullOrWhiteSpace(i));
-
-            for (int i = 0; i < chapterLines.Count / 2; i++)
-            {
-                string strTime = chapterLines[i + i].Split(new char[] { '=' })[1];
-                string name = chapterLines[i + i + 1].Split(new char[] { '=' })[1];
-                chapters.Add(strTime, name);
-            }
-            return chapters;
+            return HasChapterFile(task) ? ChapterStatus.Yes :
+                HasBlurayStructure(task) ? ChapterStatus.Maybe : ChapterStatus.No;
         }
 
-        public static long StrToMilisec(string str)
-        {
-            string[] hms = str.Split(new char[] { ':' });
-            if (hms.Length != 3)
-            {
-                throw new ArgumentException(str + "无法识别为时间！");
-            }
-            long h = long.Parse(hms[0]);
-            long m = long.Parse(hms[1]);
-            double s = double.Parse(hms[2]);
-            return h * 3600000 + m * 60000 + (long)(s * 1000 + 0.5);
-        }
-
-        public static string UpdateChapterStatus(TaskDetail task)
-        {
-            bool hasChapter = HasChapterFile(task);
-            if (hasChapter)
-            {
-                return ChapterStatus.Yes.ToString();
-            }
-
-            hasChapter = GetChapterFromMPLS(task);
-            if (hasChapter)
-            {
-                return ChapterStatus.Added.ToString();
-            }
-            else
-            {
-                return ChapterStatus.No.ToString();
-            }
-        }
-        public static bool HasChapterFile(TaskDetail task)
+        private static bool HasChapterFile(TaskDetail task)
         {
             FileInfo txtChapter = new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
             return txtChapter.Exists;
         }
 
-        public static OKEFile AddChapter(TaskDetail task)
+        private static bool HasBlurayStructure(TaskDetail task)
         {
-            FileInfo txtChapter = new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
-            if (txtChapter.Exists)
+            FileInfo inputFile = new FileInfo(task.InputFile);
+            if (inputFile.Extension != ".m2ts")
             {
-                OKEFile chapterFile = new OKEFile(txtChapter);
-                ChapterChecker checker = new ChapterChecker(chapterFile, task.lengthInMiliSec);
-                checker.RemoveUnnecessaryEnd();
+                Logger.Warn($"{task.InputFile}不是蓝光原盘文件。");
+                return false;
+            }
 
-                if (checker.IsEmpty())
+            if (inputFile.Directory.Name != "STREAM")
+            {
+                Logger.Warn($"{task.InputFile}不在BDMV文件夹结构内。");
+                return false;
+            }
+
+            DirectoryInfo playlist = new DirectoryInfo(Path.Combine(inputFile.Directory.Parent.FullName, "PLAYLIST"));
+            if (!playlist.Exists)
+            {
+                Logger.Warn($"{task.InputFile}没有上级的PLAYLIST文件夹");
+                return false;
+            }
+
+            return playlist.GetFiles("*.mpls").Length > 0;
+        }
+
+        public static ChapterInfo LoadChapter(TaskDetail task)
+        {
+            FileInfo inputFile = new FileInfo(task.InputFile);
+            ChapterInfo chapterInfo;
+            switch (task.ChapterStatus)
+            {
+                case ChapterStatus.Yes:
                 {
-                    Logger.Info(txtChapter.Name + "为空，跳过封装。");
-                    return null;
+                    FileInfo txtChapter = new FileInfo(Path.ChangeExtension(inputFile.FullName, ".txt"));
+                    if (!txtChapter.Exists) return null;
+                    chapterInfo = new OGMParser().Parse(txtChapter.FullName)[0];
+                    break;
                 }
-                else
+                case ChapterStatus.Maybe:
                 {
-                    task.MediaOutFile.AddTrack(new ChapterTrack(chapterFile));
-                    return chapterFile;
+                    DirectoryInfo playlistDirectory =
+                        new DirectoryInfo(Path.Combine(inputFile.Directory.Parent.FullName, "PLAYLIST"));
+                    chapterInfo = GetChapterFromMPLS(playlistDirectory.GetFiles("*.m2ts"), inputFile);
+                    break;
+                }
+                default:
+                    return null;
+            }
+
+            chapterInfo.Chapters.Sort((a, b) => (int) (a.Time - b.Time).Ticks);
+            chapterInfo.Chapters = chapterInfo.Chapters
+                .Where(x => task.LengthInMiliSec - x.Time.TotalMilliseconds > 1001).ToList();
+            if (chapterInfo.Chapters.Count > 1 ||
+                chapterInfo.Chapters.Count == 1 && chapterInfo.Chapters[0].Time.Ticks > 0)
+            {
+                return chapterInfo;
+            }
+
+            Logger.Info(inputFile.Name + "对应章节为空，跳过封装。");
+            return null;
+        }
+
+        private static ChapterInfo GetChapterFromMPLS(IEnumerable<FileInfo> playlists, FileInfo inputFile)
+        {
+            MPLSParser parser = new MPLSParser();
+            foreach (FileInfo playlistFile in playlists)
+            {
+                IChapterData allChapters = parser.Parse(playlistFile.FullName);
+                foreach (ChapterInfo chapter in allChapters)
+                {
+                    if (chapter.SourceName + ".m2ts" == inputFile.Name)
+                    {
+                        return chapter;
+                    }
                 }
             }
 
             return null;
         }
 
-        public static bool GetChapterFromMPLS(TaskDetail task)
+        public static string GenerateQpFile(ChapterInfo chapterInfo, double fps)
         {
-            if (!task.InputFile.EndsWith(".m2ts"))
+            StringBuilder qpFile = new StringBuilder();
+
+            foreach (var chapter in chapterInfo.Chapters)
             {
-                Logger.Warn($"{ task.InputFile }不是蓝光原盘文件。");
-                return false;
+                long miliSec = (long) chapter.Time.TotalMilliseconds;
+                int frameNo = (int) (miliSec / 1000.0 * fps + 0.5);
+                qpFile.AppendLine($"{frameNo} I");
             }
 
-            FileInfo inputFile = new FileInfo(task.InputFile);
-            string folder = inputFile.DirectoryName;
-
-            if (!folder.EndsWith(@"\BDMV\STREAM"))
-            {
-                Logger.Warn($"{ task.InputFile }不在BDMV文件夹结构内。");
-                return false;
-            }
-            folder = folder.Remove(folder.Length - 6);
-            folder += "PLAYLIST";
-            DirectoryInfo playlist = new DirectoryInfo(folder);
-
-            if (!playlist.Exists)
-            {
-                Logger.Warn($"{ task.InputFile }没有上级的PLAYLIST文件夹");
-                return false;
-            }
-
-            FileInfo[] allPlaylists = playlist.GetFiles("*.mpls");
-            MPLSParser parser = new MPLSParser();
-
-            foreach (FileInfo mplsFile in allPlaylists)
-            {
-                IChapterData allChapters = parser.Parse(mplsFile.FullName);
-                for (int i = 0; i < allChapters.Count; i++)
-                {
-                    ChapterInfo chapter = allChapters[i];
-                    if (chapter.SourceName + ".m2ts" == inputFile.Name)
-                    {
-                        //save chapter file
-                        string chapterFileName = Path.ChangeExtension(task.InputFile, ".txt");
-                        allChapters.Save(ChapterTypeEnum.OGM, chapterFileName, i);
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            return qpFile.ToString();
         }
 
-        public static string GenerateQpFile(OKEFile chapterFile, double fps)
+        public static string GenerateQpFile(ChapterInfo chapterInfo, Timecode timecode)
         {
-            string qpFile = "";
+            StringBuilder qpFile = new StringBuilder();
 
-            SortedDictionary<string, string> chapters = ReadChapters(chapterFile);
-            foreach (string strTimeStamp in chapters.Keys)
+            foreach (var chapter in chapterInfo.Chapters)
             {
-                long miliSec = StrToMilisec(strTimeStamp);
-                int frameNo = (int)(miliSec / 1000.0 * fps + 0.5);
-                qpFile += frameNo.ToString() + " I" + Environment.NewLine;
+                qpFile.AppendLine($"{timecode.GetFrameNumberFromTimeSpan(chapter.Time)} I");
             }
 
-            return qpFile;
+            return qpFile.ToString();
         }
     }
 }
