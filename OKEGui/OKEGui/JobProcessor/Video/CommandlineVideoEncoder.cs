@@ -43,23 +43,19 @@ namespace OKEGui
             fps_d = vsHelper.FpsDen;
             NumberOfFrames = (ulong)vsHelper.TotalFreams;
             job.NumberOfFrames = NumberOfFrames;
-            if (fps_n != job.FpsNum || fps_d != job.FpsDen)
+            if (fps_n == job.FpsNum && fps_d == job.FpsDen) return;
+            if (job.Vfr)
             {
-                if (string.IsNullOrEmpty(job.TimeCodeFile))
-                {
-                    OKETaskException ex = new OKETaskException(Constants.fpsMismatchSmr);
-                    ex.progress = 0.0;
-                    ex.Data["SRC_FPS"] = ((double)job.FpsNum / job.FpsDen).ToString("F3");
-                    ex.Data["DST_FPS"] = ((double)fps_n / fps_d).ToString("F3");
-                    throw ex;
-                }
-                else
-                {
-                    job.FpsNum = (uint)fps_n;
-                    job.FpsDen = (uint)fps_d;
-                    job.Fps = (fps_n + 0.0) / fps_d;
-                }
+                job.FpsNum = (uint)fps_n;
+                job.FpsDen = (uint)fps_d;
+                job.Fps = (fps_n + 0.0) / fps_d;
+                return;
             }
+            OKETaskException ex = new OKETaskException(Constants.fpsMismatchSmr);
+            ex.progress = 0.0;
+            ex.Data["SRC_FPS"] = ((double)job.FpsNum / job.FpsDen).ToString("F3");
+            ex.Data["DST_FPS"] = ((double)fps_n / fps_d).ToString("F3");
+            throw ex;
         }
 
         #endregion helper methods

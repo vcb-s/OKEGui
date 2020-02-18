@@ -16,23 +16,24 @@ namespace OKEGui
         public FFmpegVolumeChecker(string inputFile)
         {
             executable = Constants.ffmpegPath;
-            commandLine = "-i \"" + inputFile + "\" -af volumedetect -f null /dev/null";
+            commandLine = "-i \"" + inputFile + "\" -af astats=measure_perchannel=none -f null /dev/null";
         }
 
         public override void ProcessLine(string line, StreamType stream)
         {
             base.ProcessLine(line, stream);
-            if (line.Contains("mean_volume"))
+
+            if (line.Contains("RMS level dB"))
             {
-                line = line.Replace(": 0.", ": -0.");
-                Regex rf = new Regex("mean_volume: (-[0-9]+.[0-9]+) dB");
+                Regex rf = new Regex(@"RMS level dB: (-?\d+.\d+)");
                 string[] result = rf.Split(line);
                 MeanVolume = double.Parse(result[1]);
+                return;
             }
-            if (line.Contains("max_volume"))
+
+            if (line.Contains("Peak level dB"))
             {
-                line = line.Replace(": 0.", ": -0.");
-                Regex rf = new Regex("max_volume: (-[0-9]+.[0-9]+) dB");
+                Regex rf = new Regex(@"Peak level dB: (-?\d+.\d+)");
                 string[] result = rf.Split(line);
                 MaxVolume = double.Parse(result[1]);
                 SetFinish();

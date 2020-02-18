@@ -7,6 +7,7 @@ using OKEGui.JobProcessor;
 using System.Diagnostics;
 using System.Collections.Generic;
 using static OKEGui.RpChecker;
+using TChapter.Chapters;
 
 namespace OKEGui.Worker
 {
@@ -141,6 +142,7 @@ namespace OKEGui.Worker
                     videoJob.Input = profile.InputScript;
                     videoJob.EncoderPath = profile.Encoder;
                     videoJob.EncodeParam = profile.EncoderParam;
+                    videoJob.Vfr = profile.TimeCode;
                     videoJob.Fps = profile.Fps;
                     videoJob.FpsNum = profile.FpsNum;
                     videoJob.FpsDen = profile.FpsDen;
@@ -195,94 +197,134 @@ namespace OKEGui.Worker
                     {
                         Job job = task.JobQueue.Dequeue();
 
-                        if (job is AudioJob)
+                        switch (job)
                         {
-                            AudioJob audioJob = job as AudioJob;
-                            AudioInfo info = audioJob.Info as AudioInfo;
-                            string srcFmt = Path.GetExtension(audioJob.Input).ToUpper().Remove(0, 1);
-                            if (srcFmt == "FLAC" && audioJob.CodecString == "AAC")
+                            case AudioJob aJob:
                             {
-                                task.CurrentStatus = "音频转码中";
+                                AudioInfo info = aJob.Info;
+                                string srcFmt = Path.GetExtension(aJob.Input).ToUpper().Remove(0, 1);
+                                if (srcFmt == "FLAC" && aJob.CodecString == "AAC")
+                                {
+                                    task.CurrentStatus = "音频转码中";
+                                    task.IsUnKnowProgress = true;
+
+                                    QAACEncoder qaac = new QAACEncoder(aJob, info.Bitrate);
+
+                                    qaac.start();
+                                    qaac.waitForFinish();
+                                }
+                                else if (srcFmt != aJob.CodecString)
+                                {
+                                    OKETaskException ex = new OKETaskException(Constants.audioFormatMistachSmr);
+                                    ex.Data["SRC_FMT"] = srcFmt;
+                                    ex.Data["DST_FMT"] = aJob.CodecString;
+                                    throw ex;
+                                }
+
+                                OKEFile outputFile = new OKEFile(aJob.Output);
+                                switch (info.MuxOption)
+                                {
+                                    case MuxOption.Default:
+                                        task.MediaOutFile.AddTrack(new AudioTrack(outputFile, info));
+                                        break;
+                                    case MuxOption.Mka:
+                                        task.MkaOutFile.AddTrack(new AudioTrack(outputFile, info));
+                                        break;
+                                    case MuxOption.External:
+                                        outputFile.AddCRC32();
+                                        break;
+                                    default:
+                                        break;
+                                }
+
+                                break;
+                            }
+                            case VideoJob vJob:
+                            {
+                                CommandlineVideoEncoder processor;
+                                task.CurrentStatus = "获取信息中";
                                 task.IsUnKnowProgress = true;
+                                if (vJob.CodecString == "HEVC")
+                                {
+                                    processor = new X265Encoder(vJob);
+                                }
+                                else
+                                {
+                                    processor = new X264Encoder(vJob);
+                                }
 
-                                QAACEncoder qaac = new QAACEncoder(audioJob, info.Bitrate);
+                                // 时间码文件
+                                Timecode timecode = null;
+                                string timeCodeFile = null;
+                                if (vJob.Vfr)
+                                {
+                                    timecode = new Timecode(Path.ChangeExtension(task.InputFile, ".tcfile"),
+                                        (int) processor.NumberOfFrames);
+                                    timeCodeFile = Path.ChangeExtension(task.InputFile, ".v2.tcfile");
+                                    try
+                                    {
+                                        timecode.SaveTimecode(timeCodeFile);
+                                    }
+                                    catch (IOException ex)
+                                    {
+                                        Logger.Info($"无法写入修正后timecode，将使用原文件\n{ex.Message}");
+                                        timeCodeFile = Path.ChangeExtension(task.InputFile, ".tcfile");
+                                    }
 
-                                qaac.start();
-                                qaac.waitForFinish();
+                                    task.LengthInMiliSec = (long) (timecode.TotalLength.Ticks / 1e4 + 0.5);
+                                }
+                                else
+                                {
+                                    task.LengthInMiliSec =
+                                        (long) ((processor.NumberOfFrames - 1) / vJob.Fps * 1000 + 0.5);
+                                }
+
+                                // 添加章节文件
+                                ChapterInfo chapterInfo = ChapterService.LoadChapter(task);
+                                if (task.ChapterStatus == ChapterStatus.Maybe)
+                                {
+                                    task.ChapterStatus = chapterInfo == null ? ChapterStatus.No : ChapterStatus.Added;
+                                }
+
+                                if (chapterInfo != null)
+                                {
+                                    FileInfo outputChapterFile = new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
+                                    if (outputChapterFile.Exists)
+                                    {
+                                        File.Move(outputChapterFile.FullName, outputChapterFile.FullName + ".bak");
+                                    }
+
+                                    chapterInfo.Save(ChapterTypeEnum.OGM, outputChapterFile.FullName);
+                                    outputChapterFile.Refresh();
+                                    OKEFile chapterFile = new OKEFile(outputChapterFile);
+                                    task.MediaOutFile.AddTrack(new ChapterTrack(chapterFile));
+                                }
+
+                                if (chapterInfo != null)
+                                {
+                                    // 用章节文件生成qpfile
+                                    string qpFileName = Path.ChangeExtension(task.InputFile, ".qpf");
+                                    string qpFile = vJob.Vfr
+                                        ? ChapterService.GenerateQpFile(chapterInfo, timecode)
+                                        : ChapterService.GenerateQpFile(chapterInfo, vJob.Fps);
+                                    File.WriteAllText(qpFileName, qpFile);
+                                    processor.AppendParameter($"--qpfile \"{qpFileName}\"");
+                                }
+
+                                // 开始压制
+                                task.CurrentStatus = "压制中";
+                                task.ProgressValue = 0.0;
+                                processor.start();
+                                processor.waitForFinish();
+
+                                VideoInfo info = new VideoInfo(vJob.FpsNum, vJob.FpsDen, timeCodeFile);
+
+                                task.MediaOutFile.AddTrack(new VideoTrack(new OKEFile(vJob.Output), info));
+                                break;
                             }
-                            else if (srcFmt != audioJob.CodecString)
-                            {
-                                OKETaskException ex = new OKETaskException(Constants.audioFormatMistachSmr);
-                                ex.Data["SRC_FMT"] = srcFmt;
-                                ex.Data["DST_FMT"] = audioJob.CodecString;
-                                throw ex;
-                            }
-
-                            OKEFile outputFile = new OKEFile(job.Output);
-                            switch (info.MuxOption)
-                            {
-                                case MuxOption.Default:
-                                    task.MediaOutFile.AddTrack(new AudioTrack(outputFile, info));
-                                    break;
-                                case MuxOption.Mka:
-                                    task.MkaOutFile.AddTrack(new AudioTrack(outputFile, info));
-                                    break;
-                                case MuxOption.External:
-                                    outputFile.AddCRC32();
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                        else if (job is VideoJob)
-                        {
-                            // 时间码文件
-                            string timeCodeFile = null;
-                            if (task.Taskfile.TimeCode)
-                            {
-                                timeCodeFile = task.InputFile + ".tcfile";
-                            }
-
-                            videoJob = job as VideoJob;
-                            videoJob.TimeCodeFile = timeCodeFile;
-                            CommandlineVideoEncoder processor;
-                            task.CurrentStatus = "获取信息中";
-                            task.IsUnKnowProgress = true;
-                            if (job.CodecString == "HEVC")
-                            {
-                                processor = new X265Encoder(videoJob);
-                            }
-                            else
-                            {
-                                processor = new X264Encoder(videoJob);
-                            }
-
-                            task.lengthInMiliSec = (long)((processor.NumberOfFrames - 1) / videoJob.Fps * 1000 + 0.5);
-
-                            // 添加章节文件
-                            OKEFile chapterFile = ChapterService.AddChapter(task);
-                            if (chapterFile != null)
-                            {
-                                // 用章节文件生成qpfile
-                                string qpFileName = Path.ChangeExtension(task.InputFile, ".qpf");
-                                string qpFile = ChapterService.GenerateQpFile(chapterFile, videoJob.Fps);
-                                File.WriteAllText(qpFileName, qpFile);
-                                processor.AppendParameter($"--qpfile \"{qpFileName}\"");
-                            }
-
-                            // 开始压制
-                            task.CurrentStatus = "压制中";
-                            task.ProgressValue = 0.0;
-                            processor.start();
-                            processor.waitForFinish();
-
-                            VideoInfo info = new VideoInfo(videoJob.FpsNum, videoJob.FpsDen, timeCodeFile);
-
-                            task.MediaOutFile.AddTrack(new VideoTrack(new OKEFile(job.Output), info));
-                        }
-                        else
-                        {
-                            // 不支持的工作
+                            default:
+                                // 不支持的工作
+                                break;
                         }
                     }
 

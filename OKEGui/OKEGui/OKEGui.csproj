@@ -100,7 +100,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="JobProcessor\Audio\FFmpegVolumeChecker.cs" />
-    <Compile Include="JobProcessor\Chapter\ChapterChecker.cs" />
     <Compile Include="JobProcessor\Demuxer\TrackInfo.cs" />
     <Compile Include="JobProcessor\ExceptionParser.cs" />
     <Compile Include="JobProcessor\RpChecker\RpChecker.cs" />
@@ -147,6 +146,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Task\VideoService.cs" />
+    <Compile Include="Utils\TChapterExtension.cs" />
+    <Compile Include="Utils\Timecode.cs" />
     <Compile Include="Worker\ExecuteTaskService.cs" />
     <Compile Include="Task\TaskStatus.cs" />
     <Compile Include="Utils\Cleaner.cs" />
@@ -215,7 +216,7 @@
     <Resource Include="Gui\App.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\TChapter\TChapter\TChapter.csproj">
+    <ProjectReference Include="..\..\TChapter\TChapter\TChapter.csproj">
       <Project>{d3eff606-0562-45e4-8e0b-1df967220a9b}</Project>
       <Name>TChapter</Name>
     </ProjectReference>

@@ -20,7 +20,7 @@ namespace OKEGui
         public MediaFile MkaOutFile;
 
         public string Tid;
-        public long lengthInMiliSec;
+        public long LengthInMiliSec;
 
         // 自动生成输出文件名
         public void UpdateOutputFileName()
