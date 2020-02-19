@@ -67,21 +67,23 @@ namespace OKEGui
                 {
                     FileInfo txtChapter = new FileInfo(Path.ChangeExtension(inputFile.FullName, ".txt"));
                     if (!txtChapter.Exists) return null;
-                    chapterInfo = new OGMParser().Parse(txtChapter.FullName)[0];
+                    chapterInfo = new OGMParser().Parse(txtChapter.FullName).FirstOrDefault();
                     break;
                 }
                 case ChapterStatus.Maybe:
                 {
                     DirectoryInfo playlistDirectory =
                         new DirectoryInfo(Path.Combine(inputFile.Directory.Parent.FullName, "PLAYLIST"));
-                    chapterInfo = GetChapterFromMPLS(playlistDirectory.GetFiles("*.m2ts"), inputFile);
+                    chapterInfo = GetChapterFromMPLS(playlistDirectory.GetFiles("*.mpls"), inputFile);
                     break;
                 }
                 default:
                     return null;
             }
 
-            chapterInfo.Chapters.Sort((a, b) => (int) (a.Time - b.Time).Ticks);
+            if (chapterInfo == null) return null;
+
+            chapterInfo.Chapters.Sort((a, b) => a.Time.CompareTo(b.Time));
             chapterInfo.Chapters = chapterInfo.Chapters
                 .Where(x => task.LengthInMiliSec - x.Time.TotalMilliseconds > 1001).ToList();
             if (chapterInfo.Chapters.Count > 1 ||

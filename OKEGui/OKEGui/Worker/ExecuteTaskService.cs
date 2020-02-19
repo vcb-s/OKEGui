@@ -281,14 +281,15 @@ namespace OKEGui.Worker
 
                                 // 添加章节文件
                                 ChapterInfo chapterInfo = ChapterService.LoadChapter(task);
-                                if (task.ChapterStatus == ChapterStatus.Maybe)
-                                {
-                                    task.ChapterStatus = chapterInfo == null ? ChapterStatus.No : ChapterStatus.Added;
-                                }
-
                                 if (chapterInfo != null)
                                 {
-                                    FileInfo outputChapterFile = new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
+                                    if (task.ChapterStatus == ChapterStatus.Maybe)
+                                    {
+                                        task.ChapterStatus = ChapterStatus.Added;
+                                    }
+
+                                    FileInfo outputChapterFile =
+                                        new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
                                     if (outputChapterFile.Exists)
                                     {
                                         File.Move(outputChapterFile.FullName, outputChapterFile.FullName + ".bak");
@@ -298,10 +299,7 @@ namespace OKEGui.Worker
                                     outputChapterFile.Refresh();
                                     OKEFile chapterFile = new OKEFile(outputChapterFile);
                                     task.MediaOutFile.AddTrack(new ChapterTrack(chapterFile));
-                                }
 
-                                if (chapterInfo != null)
-                                {
                                     // 用章节文件生成qpfile
                                     string qpFileName = Path.ChangeExtension(task.InputFile, ".qpf");
                                     string qpFile = vJob.Vfr
@@ -309,6 +307,10 @@ namespace OKEGui.Worker
                                         : ChapterService.GenerateQpFile(chapterInfo, vJob.Fps);
                                     File.WriteAllText(qpFileName, qpFile);
                                     processor.AppendParameter($"--qpfile \"{qpFileName}\"");
+                                }
+                                else
+                                {
+                                    task.ChapterStatus = ChapterStatus.No;
                                 }
 
                                 // 开始压制
