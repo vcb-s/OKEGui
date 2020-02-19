@@ -12,7 +12,7 @@ namespace OKEGui
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        App()
+        private void AppStartup(object sender, StartupEventArgs e)
         {
             if (EnvironmentChecker.CheckEnviornment())
             {
