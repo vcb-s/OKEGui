@@ -72,10 +72,16 @@ namespace OKEGui
 
         public string GetRpcScript(RpcJob job)
         {
+            string argsClauses = "";
+            foreach (KeyValuePair<string, string> itr in job.Args)
+            {
+                argsClauses += $"setattr(mod, '{itr.Key}', b'{itr.Value}')" + Environment.NewLine;
+            }
             string scriptContent = File.ReadAllText(TemplateFile);
             scriptContent = scriptContent
-                .Replace("SOURCE_SCRIPT_PLACEHOLDER", job.Input)
-                .Replace("VIDEO_FILE_PLACEHOLDER", job.RippedFile);
+                .Replace("OKE:SOURCE_SCRIPT", job.Input)
+                .Replace("OKE:VIDEO_FILE", job.RippedFile)
+                .Replace("OKE:VSPIPE_ARGS", argsClauses);
             string fileName = job.RippedFile.Replace(Path.GetExtension(job.RippedFile), "_rpc.vpy");
             File.WriteAllText(fileName, scriptContent);
 

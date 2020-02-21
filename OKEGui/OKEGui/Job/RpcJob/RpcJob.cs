@@ -12,6 +12,7 @@ namespace OKEGui
     {
         public readonly string RippedFile;
         public readonly ulong TotalFrame;
+        public readonly Dictionary<string, string> Args = new Dictionary<string, string>();
         public RpcStatus RpcStatus
         {
             set
@@ -22,12 +23,19 @@ namespace OKEGui
                 }
             }
         }
-        public RpcJob(string sourceFile, string rippedFile, ulong totalFrame)
+        public RpcJob(string sourceFile, VideoJob videoJob)
         {
             Input = sourceFile;
             Output = Path.ChangeExtension(sourceFile, "rpc");
-            RippedFile = rippedFile;
-            TotalFrame = totalFrame;
+            RippedFile = videoJob.Output;
+            TotalFrame = videoJob.NumberOfFrames;
+            foreach (string arg in videoJob.VspipeArgs)
+            {
+                int pos = arg.IndexOf('=');
+                string variable = arg.Substring(0, pos);
+                string value = arg.Substring(pos + 1);
+                Args[variable] = value;
+            }
         }
         public override JobType GetJobType()
         {

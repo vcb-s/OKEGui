@@ -367,7 +367,7 @@ namespace OKEGui.Worker
                     if (profile.Rpc)
                     {
                         task.CurrentStatus = "RPC中";
-                        RpcJob rpcJob = new RpcJob(profile.InputScript, videoJob.Output, videoJob.NumberOfFrames);
+                        RpcJob rpcJob = new RpcJob(profile.InputScript, videoJob);
                         rpcJob.SetUpdate(task);
 
                         RpChecker checker = new RpChecker(rpcJob);
