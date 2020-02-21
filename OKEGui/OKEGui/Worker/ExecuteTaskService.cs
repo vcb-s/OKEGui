@@ -4,8 +4,6 @@ using System.IO;
 using OKEGui.Utils;
 using OKEGui.Model;
 using OKEGui.JobProcessor;
-using System.Diagnostics;
-using System.Collections.Generic;
 using static OKEGui.RpChecker;
 using TChapter.Chapters;
 
