@@ -1,6 +1,5 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.ComponentModel;
 using System.IO;
 using System.Security;
 using System.Security.Permissions;
@@ -110,6 +109,12 @@ namespace OKEGui.Utils
 
         static bool CheckQAAC()
         {
+            FileInfo qaacInfo = new FileInfo(Constants.QAACPath);
+            if (!qaacInfo.Exists)
+            {
+                MessageBox.Show("请更新tools工具包。", "无法找到qaac");
+                return false;
+            }
             QAACEncoder e = new QAACEncoder("--check");
             try
             {
@@ -121,9 +126,9 @@ namespace OKEGui.Utils
                 MessageBox.Show(msg.errorMsg, ex.Message);
                 return false;
             }
-            catch (Win32Exception ex)
+            catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "QAAC检查失败");
+                MessageBox.Show(ex.Message, "qaac检查失败");
                 return false;
             }
             return true;
