@@ -118,6 +118,10 @@ namespace OKEGui
 
             // 构建x265参数
             sb.Append(" \"" + X265Path + "\"");
+            if (Initializer.Config.avx512 && !extractParam.ToLower().Contains("--asm"))
+            {
+                sb.Append(" --asm avx512");
+            }
             sb.Append(" --y4m " + extractParam + " -o");
             sb.Append(" \"" + job.Output + "\" -");
             sb.Append("\"");
