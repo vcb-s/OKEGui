@@ -59,20 +59,21 @@ namespace OKEGui
         private bool extractVideo;
 
         private static List<EacOutputTrackType> s_eacOutputs = new List<EacOutputTrackType> {
-            new EacOutputTrackType(TrackCodec.RAW_PCM,    "RAW/PCM",          "flac",    true,  TrackType.Audio),
-            new EacOutputTrackType(TrackCodec.DTSMA,      "DTS Master Audio", "flac",    true,  TrackType.Audio),
-            new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD/AC3",       "flac",    true,  TrackType.Audio),
-            new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD",           "flac",    true,  TrackType.Audio),
-            new EacOutputTrackType(TrackCodec.AC3,        "AC3",              "ac3",     true,  TrackType.Audio),
-            new EacOutputTrackType(TrackCodec.FLAC,       "FLAC",             "flac",    true,  TrackType.Audio),
-            new EacOutputTrackType(TrackCodec.AAC,        "AAC",              "aac",     true,  TrackType.Audio),
-            new EacOutputTrackType(TrackCodec.AC3,        "AC3",              "ac3",     true,  TrackType.Audio),
-            new EacOutputTrackType(TrackCodec.DTS,        "DTS",              "dts",     true,  TrackType.Audio),
-            new EacOutputTrackType(TrackCodec.MPEG2,      "MPEG2",            "m2v",     false, TrackType.Video),
-            new EacOutputTrackType(TrackCodec.H264_AVC,   "h264/AVC",         "264",    false, TrackType.Video),
-            new EacOutputTrackType(TrackCodec.H265_HEVC,  "h265/HEVC",        "265",     false, TrackType.Video),
-            new EacOutputTrackType(TrackCodec.PGS,        "Subtitle (PGS)",   "sup",     true,  TrackType.Subtitle),
-            new EacOutputTrackType(TrackCodec.Chapter,    "Chapters",         "txt",     false, TrackType.Chapter),
+            new EacOutputTrackType(TrackCodec.RAW_PCM,    "RAW/PCM",            "flac",    true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.DTSMA,      "DTS Master Audio",   "flac",    true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD/AC3",         "flac",    true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD",             "flac",    true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.AC3,        "AC3",                "ac3",     true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.FLAC,       "FLAC",               "flac",    true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.AAC,        "AAC",                "aac",     true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.AC3,        "AC3",                "ac3",     true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.DTS,        "DTS",                "dts",     true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.MPEG2,      "MPEG2",              "m2v",     false, TrackType.Video),
+            new EacOutputTrackType(TrackCodec.H264_AVC,   "h264/AVC",           "264",     false, TrackType.Video),
+            new EacOutputTrackType(TrackCodec.H265_HEVC,  "h265/HEVC",          "265",     false, TrackType.Video),
+            new EacOutputTrackType(TrackCodec.PGS,        "Subtitle (PGS)",     "sup",     true,  TrackType.Subtitle),
+            new EacOutputTrackType(TrackCodec.Chapter,    "Chapters",           "txt",     false, TrackType.Chapter),
+            new EacOutputTrackType(TrackCodec.VobSub,     "Subtitle (VobSub)",  "sub",     false, TrackType.Subtitle) //vobsub is not supported by eac3to
         };
 
         public EACDemuxer(string eacPath, string fileName, TaskProfile jobProfile)
