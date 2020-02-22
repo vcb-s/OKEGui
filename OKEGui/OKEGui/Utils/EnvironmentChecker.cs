@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Security;
 using System.Security.Permissions;
@@ -113,10 +114,16 @@ namespace OKEGui.Utils
             try
             {
                 e.start();
-            } catch (OKETaskException ex)
+            }
+            catch (OKETaskException ex)
             {
                 ExceptionMsg msg = ExceptionParser.Parse(ex, null);
                 MessageBox.Show(msg.errorMsg, ex.Message);
+                return false;
+            }
+            catch (Win32Exception ex)
+            {
+                MessageBox.Show(ex.Message, "QAAC检查失败");
                 return false;
             }
             return true;
