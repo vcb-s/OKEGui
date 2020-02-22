@@ -99,6 +99,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Gui\ConfigPanel.xaml.cs">
+      <DependentUpon>ConfigPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="JobProcessor\Audio\FFmpegVolumeChecker.cs" />
     <Compile Include="JobProcessor\Demuxer\TrackInfo.cs" />
     <Compile Include="JobProcessor\ExceptionParser.cs" />
@@ -203,6 +206,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Gui\ConfigPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Gui\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

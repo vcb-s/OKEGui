@@ -280,5 +280,11 @@ namespace OKEGui
             Process.Start("cmd.exe", "/c shutdown -a");
             BtnCancelShutdown.IsEnabled = false;
         }
+
+        private void BtnConfig_Click(object sender, RoutedEventArgs e)
+        {
+            Window config = new ConfigPanel();
+            config.ShowDialog();
+        }
     }
 }
