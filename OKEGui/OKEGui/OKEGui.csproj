@@ -149,8 +149,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Task\VideoService.cs" />
+    <Compile Include="Utils\RegistryStorage.cs" />
+    <Compile Include="Utils\SystemMenu.cs" />
     <Compile Include="Utils\TChapterExtension.cs" />
     <Compile Include="Utils\Timecode.cs" />
+    <Compile Include="Utils\Updater.cs" />
     <Compile Include="Worker\ExecuteTaskService.cs" />
     <Compile Include="Task\TaskStatus.cs" />
     <Compile Include="Utils\Cleaner.cs" />
@@ -183,6 +186,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
