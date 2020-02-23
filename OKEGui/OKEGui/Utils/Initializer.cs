@@ -166,6 +166,10 @@ namespace OKEGui.Utils
 
         public static void CheckUpdate()
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            Updater.SoftwareName = "OKEGui";
+            Updater.CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            Updater.RepoName = "vcb-s/OKEGui";
             try
             {
                 var reg = RegistryStorage.Load(null, "LastCheck");
@@ -176,12 +180,8 @@ namespace OKEGui.Utils
                 }
 
                 var lastCheckTime = DateTime.Parse(reg);
-                if (DateTime.Now - lastCheckTime > new TimeSpan(7, 0, 0, 0) || true)
+                if (DateTime.Now - lastCheckTime > new TimeSpan(7, 0, 0, 0))
                 {
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                    Updater.SoftwareName = "OKEGui";
-                    Updater.CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-                    Updater.RepoName = "vcb-s/OKEGui";
                     Updater.CheckUpdate();
                     RegistryStorage.Save(DateTime.Now.ToString(CultureInfo.InvariantCulture), null, "LastCheck");
                 }

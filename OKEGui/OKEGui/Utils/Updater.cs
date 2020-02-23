@@ -17,7 +17,7 @@ namespace OKEGui.Utils
     static class Updater
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
+        private static readonly string Title = "OKEGui Updater";
 
         private static string _softwareName;
         public static string SoftwareName
@@ -62,7 +62,7 @@ namespace OKEGui.Utils
         }
 
 
-        public static async void CheckUpdate()
+        public static async void CheckUpdate(bool interactive=false)
         {
             if (!IsConnectInternet()) return;
             try
@@ -78,7 +78,7 @@ namespace OKEGui.Utils
                 if (httpResponseMessage.StatusCode != HttpStatusCode.OK)
                 {
                     var body = await httpResponseMessage.Content.ReadAsStringAsync();
-                    Logger.Error($"[{httpResponseMessage.StatusCode}]请求发送失败，错误信息:\n{body}");
+                    Show($"[{httpResponseMessage.StatusCode}]请求发送失败，错误信息:\n{body}", Logger.Error);
                     return;
                 }
 
@@ -89,9 +89,10 @@ namespace OKEGui.Utils
                 }
 
                 var remoteVersion = Version.Parse(Convert.ToString(result.tag_name));
+                Logger.Info($"本地版本: v{CurrentVersion}, 远端版本: v{remoteVersion}");
                 if (remoteVersion <= CurrentVersion)
                 {
-                    Logger.Info($"{CurrentVersion}已为最新版");
+                    Show($"{CurrentVersion}已为最新版", Logger.Info);
                     return;
                 }
 
@@ -100,8 +101,8 @@ namespace OKEGui.Utils
                     asset.content_type == "application/x-zip-compressed");
                 if (validAsset != null)
                 {
-                    Logger.Info($"发现新版本v{remoteVersion}, 下载地址: ${validAsset.browser_download_url}");
-                    var dialogResult = MessageBox.Show(caption: "OKEGui Updater",
+                    Logger.Info($"发现新版本v{remoteVersion}, 下载地址: {validAsset.browser_download_url}");
+                    var dialogResult = MessageBox.Show(caption: Title,
                         text: $"发现新版本v{remoteVersion}，是否现在下载",
                         buttons: MessageBoxButtons.YesNo, icon: MessageBoxIcon.Asterisk);
                     if (dialogResult != DialogResult.Yes) return;
@@ -110,18 +111,31 @@ namespace OKEGui.Utils
                         StartInfo = { UseShellExecute = true, FileName = validAsset.browser_download_url }
                     };
                     proc.Start();
-                    return;
                 }
-
-                Logger.Error("无可用的资源，请向项目维护人咨询具体情况");
+                else
+                {
+                    Show($"发现新版本v{remoteVersion}，但无可用的资源", Logger.Error);
+                }
             }
-            catch (TaskCanceledException e)
+            catch (TaskCanceledException)
             {
-                Logger.Error(e, "请求超时");
+                Show("请求超时", Logger.Error);
             }
             catch (Exception e)
             {
-                Logger.Error(e, $"[{e.GetType()}]请求失败: {e.Message}，${e.InnerException}");
+                Show($"[{e.GetType()}]请求失败: {e.Message}，${e.InnerException}", Logger.Error);
+            }
+
+            void Show(string message, Action<string> logger)
+            {
+                if (interactive)
+                {
+                    MessageBox.Show(message, Title);
+                }
+                else
+                {
+                    logger(message);
+                }
             }
         }
 
