@@ -1,0 +1,10 @@
+﻿[*.cs]
+
+# CA1712: Do not prefix enum values with type name
+dotnet_diagnostic.CA1712.severity = none
+
+# CS0649: Field 'field' is never assigned to, and will always have its default value 'value'
+dotnet_diagnostic.CS0649.severity = suggestion
+
+# CA2235: Mark all non-serializable fields
+dotnet_diagnostic.CA2235.severity = suggestion

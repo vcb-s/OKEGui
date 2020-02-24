@@ -1,9 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Net;
+using System.Reflection;
 using System.Windows;
 using Newtonsoft.Json;
 using NLog;
@@ -84,6 +87,7 @@ namespace OKEGui.Utils
 
     static class Initializer
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public static OKEGuiConfig Config = new OKEGuiConfig();
 
         public static OKEGuiConfig LoadConfig()
@@ -157,6 +161,34 @@ namespace OKEGui.Utils
                     .Where(f => f.LastWriteTime < DateTime.Now.AddMonths(-3) || (f.LastWriteTime < DateTime.Now.AddDays(-7) && f.Length < 1024))
                     .ToList()
                     .ForEach(f => f.Delete());
+            }
+        }
+
+        public static void CheckUpdate()
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            Updater.SoftwareName = "OKEGui";
+            Updater.CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            Updater.RepoName = "vcb-s/OKEGui";
+            try
+            {
+                var reg = RegistryStorage.Load(null, "LastCheck");
+                if (string.IsNullOrEmpty(reg))
+                {
+                    RegistryStorage.Save(DateTime.Now.ToString(CultureInfo.InvariantCulture), null, "LastCheck");
+                    return;
+                }
+
+                var lastCheckTime = DateTime.Parse(reg);
+                if (DateTime.Now - lastCheckTime > new TimeSpan(7, 0, 0, 0))
+                {
+                    Updater.CheckUpdate();
+                    RegistryStorage.Save(DateTime.Now.ToString(CultureInfo.InvariantCulture), null, "LastCheck");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Failed to check update");
             }
         }
     }

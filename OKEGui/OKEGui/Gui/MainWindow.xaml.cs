@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using OKEGui.Task;
 using OKEGui.Utils;
 using OKEGui.Worker;
@@ -22,6 +23,7 @@ namespace OKEGui
     public partial class MainWindow : Window
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private SystemMenu _systemMenu;
 
         public int WorkerCount = 0;
         public TaskManager tm = new TaskManager();
@@ -56,6 +58,19 @@ namespace OKEGui
                 wm.AddWorker("工作单元-" + WorkerCount.ToString());
             }
             WorkerNumber.Text = "工作单元：" + WorkerCount.ToString();
+
+            // 初始化更新菜单
+            _systemMenu = new SystemMenu(this);
+            _systemMenu.AddCommand("检查更新(&U)", () => { Updater.CheckUpdate(true); }, true);
+        }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            if (PresentationSource.FromVisual(this) is HwndSource hwndSource)
+            {
+                hwndSource.AddHook(_systemMenu.HandleMessage);
+            }
         }
 
         private void Checkbox_Changed(object sender, RoutedEventArgs e)
