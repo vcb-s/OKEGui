@@ -126,6 +126,35 @@ namespace OKEGui
             }
         }
 
+        public enum MoveTaskTopResult
+        {
+            OK, Already, Failure
+        };
+
+        public int MoveTaskTop(TaskDetail td)
+        {
+            lock(o)
+            {
+                int idx1 = taskStatus.IndexOf(td);
+                int idIdelTask;
+
+                if (td.Progress != TaskStatus.TaskProgress.WAITING)
+                {
+                    return (int)MoveTaskTopResult.Failure;
+                }
+
+                for (idIdelTask = 0; idIdelTask < taskStatus.Count && taskStatus[idIdelTask].Progress != TaskStatus.TaskProgress.WAITING; idIdelTask++) ;
+
+                if (idx1 == idIdelTask)
+                {
+                    return (int)MoveTaskTopResult.Already;
+                }
+
+                taskStatus.Move(idx1, idIdelTask);
+                return (int)MoveTaskTopResult.OK;
+            }
+        }
+
         public TaskDetail GetNextTask()
         {
             lock (o)
