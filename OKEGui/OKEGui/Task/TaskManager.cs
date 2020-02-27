@@ -100,9 +100,7 @@ namespace OKEGui
             {
                 return false;
             }
-            TaskDetail temp = taskStatus[idx1];
-            taskStatus[idx1] = taskStatus[idx2];
-            taskStatus[idx2] = temp;
+            taskStatus.Move(idx1, idx2);
             return true;
         }
 
