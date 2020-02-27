@@ -134,21 +134,21 @@ namespace OKEGui
             lock(o)
             {
                 int idx1 = taskStatus.IndexOf(td);
-                int idIdelTask;
+                int idIdleTask;
 
                 if (td.Progress != TaskStatus.TaskProgress.WAITING)
                 {
                     return (int)MoveTaskTopResult.Failure;
                 }
 
-                for (idIdelTask = 0; idIdelTask < taskStatus.Count && taskStatus[idIdelTask].Progress != TaskStatus.TaskProgress.WAITING; idIdelTask++) ;
+                for (idIdleTask = 0; idIdleTask < taskStatus.Count && taskStatus[idIdleTask].Progress != TaskStatus.TaskProgress.WAITING; idIdleTask++) ;
 
-                if (idx1 == idIdelTask)
+                if (idx1 == idIdleTask)
                 {
                     return (int)MoveTaskTopResult.Already;
                 }
 
-                taskStatus.Move(idx1, idIdelTask);
+                taskStatus.Move(idx1, idIdleTask);
                 return (int)MoveTaskTopResult.OK;
             }
         }
