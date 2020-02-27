@@ -3,7 +3,7 @@ PACKAGERS:
 You will need NSIS and upx to make the installer. You need a unicode version of NSIS.
 
 1. Open the options.nsi file in an editor and change line that contains
-   "!define PROG_VERSION "6.5.0.0"" to the version of qbittorrent you just built.
+   "!define PROG_VERSION "6.5.0.0"" to the version of OKEGui you just built.
 2. Extract the plugins found in the folder "nsis plugins" into your
    NSIS's unicode Plugin directory(usually C:\Program Files\NSIS\Plugins\x86-unicode).
    Only the *.dll files are needed. Use the unicode version of the dlls.
@@ -12,6 +12,7 @@ You will need NSIS and upx to make the installer. You need a unicode version of 
 
 The installer script expects the following file tree:
 
+```
 Root:
 installer-translations\
 	english.nsi
@@ -24,10 +25,11 @@ tools\
     (all required tools found here)
 installer.nsi
 options.nsi
-qbittorrent.nsi
+okegui.nsi
 translations.nsi
 UAC.nsh
 uninstaller.nsi
+```
 
 5. Make sure a relese build has been performed.
-6. "qbittorrent.exe" is the compiled binary file.
+6. "`OKEGui_{VERSION}_setup.exe`" is the compiled binary file.
