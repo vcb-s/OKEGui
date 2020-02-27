@@ -129,27 +129,30 @@ namespace OKEGui
             OK, Already, Failure
         };
 
-        public int MoveTaskTop(TaskDetail td)
+        public Enum MoveTaskTop(TaskDetail td)
         {
             lock(o)
             {
                 int idx1 = taskStatus.IndexOf(td);
-                int idIdleTask;
+                int idIdleTask = 0;
 
                 if (td.Progress != TaskStatus.TaskProgress.WAITING)
                 {
-                    return (int)MoveTaskTopResult.Failure;
+                    return MoveTaskTopResult.Failure;
                 }
 
-                for (idIdleTask = 0; idIdleTask < taskStatus.Count && taskStatus[idIdleTask].Progress != TaskStatus.TaskProgress.WAITING; idIdleTask++) ;
+                while (idIdleTask < taskStatus.Count && taskStatus[idIdleTask].Progress != TaskStatus.TaskProgress.WAITING)
+                {
+                    idIdleTask++;
+                }
 
                 if (idx1 == idIdleTask)
                 {
-                    return (int)MoveTaskTopResult.Already;
+                    return MoveTaskTopResult.Already;
                 }
 
                 taskStatus.Move(idx1, idIdleTask);
-                return (int)MoveTaskTopResult.OK;
+                return MoveTaskTopResult.OK;
             }
         }
 

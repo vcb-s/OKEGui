@@ -198,12 +198,12 @@ namespace OKEGui
 
             switch(tm.MoveTaskTop(item))
             {
-                case (int)TaskManager.MoveTaskTopResult.OK:
+                case TaskManager.MoveTaskTopResult.OK:
                     break;
-                case (int)TaskManager.MoveTaskTopResult.Already:
+                case TaskManager.MoveTaskTopResult.Already:
                     MessageBox.Show("任务早已在队列顶部！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Information);
                     break;
-                case (int)TaskManager.MoveTaskTopResult.Failure:
+                case TaskManager.MoveTaskTopResult.Failure:
                     MessageBox.Show("无法置顶任务！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
                     break;
                 default:
