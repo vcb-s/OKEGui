@@ -43,6 +43,7 @@ namespace OKEGui
             BtnRun.IsEnabled = false;
             BtnMoveDown.IsEnabled = false;
             BtnMoveUp.IsEnabled = false;
+            BtnMoveTop.IsEnabled = false;
             BtnPause.IsEnabled = false;
             BtnResume.IsEnabled = false;
             BtnChap.IsEnabled = false;
@@ -105,6 +106,7 @@ namespace OKEGui
                 BtnEmpty.IsEnabled = activeTaskCount > 0;
                 BtnMoveDown.IsEnabled = activeTaskCount > 1;
                 BtnMoveUp.IsEnabled = activeTaskCount > 1;
+                BtnMoveTop.IsEnabled = activeTaskCount > 2;
                 BtnChap.IsEnabled = activeTaskCount > 0;
             }
             catch (Exception ex)
@@ -184,6 +186,31 @@ namespace OKEGui
             }
         }
 
+        private void BtnMoveTop_Click(object sender, RoutedEventArgs e)
+        {
+            TaskDetail item = TaskList.SelectedItem as TaskDetail;
+
+            if (item == null)
+            {
+                MessageBox.Show("请点击一个任务开始操作", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            switch(tm.MoveTaskTop(item))
+            {
+                case TaskManager.MoveTaskTopResult.OK:
+                    break;
+                case TaskManager.MoveTaskTopResult.Already:
+                    MessageBox.Show("任务早已在队列顶部！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
+                case TaskManager.MoveTaskTopResult.Failure:
+                    MessageBox.Show("无法置顶任务！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
+                    break;
+                default:
+                    return;
+            }
+        }
+
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
             TaskDetail item = TaskList.SelectedItem as TaskDetail;
@@ -205,6 +232,7 @@ namespace OKEGui
             BtnEmpty.IsEnabled = activeTaskCount > 0;
             BtnMoveDown.IsEnabled = activeTaskCount > 1;
             BtnMoveUp.IsEnabled = activeTaskCount > 1;
+            BtnMoveTop.IsEnabled = activeTaskCount > 2;
             BtnChap.IsEnabled = activeTaskCount > 0;
         }
 
@@ -216,6 +244,7 @@ namespace OKEGui
             BtnEmpty.IsEnabled = false;
             BtnMoveDown.IsEnabled = false;
             BtnMoveUp.IsEnabled = false;
+            BtnMoveTop.IsEnabled = false;
             BtnChap.IsEnabled = false;
         }
 

@@ -100,9 +100,7 @@ namespace OKEGui
             {
                 return false;
             }
-            TaskDetail temp = taskStatus[idx1];
-            taskStatus[idx1] = taskStatus[idx2];
-            taskStatus[idx2] = temp;
+            taskStatus.Move(idx1, idx2);
             return true;
         }
 
@@ -123,6 +121,38 @@ namespace OKEGui
                 int idx1 = taskStatus.IndexOf(td);
                 int idx2 = idx1 + 1;
                 return SwapTasksByIndex(idx1, idx2);
+            }
+        }
+
+        public enum MoveTaskTopResult
+        {
+            OK, Already, Failure
+        };
+
+        public Enum MoveTaskTop(TaskDetail td)
+        {
+            lock(o)
+            {
+                int idx1 = taskStatus.IndexOf(td);
+                int idIdleTask = 0;
+
+                if (td.Progress != TaskStatus.TaskProgress.WAITING)
+                {
+                    return MoveTaskTopResult.Failure;
+                }
+
+                while (idIdleTask < taskStatus.Count && taskStatus[idIdleTask].Progress != TaskStatus.TaskProgress.WAITING)
+                {
+                    idIdleTask++;
+                }
+
+                if (idx1 == idIdleTask)
+                {
+                    return MoveTaskTopResult.Already;
+                }
+
+                taskStatus.Move(idx1, idIdleTask);
+                return MoveTaskTopResult.OK;
             }
         }
 
