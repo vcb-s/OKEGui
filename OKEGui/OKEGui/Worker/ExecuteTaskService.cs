@@ -22,6 +22,7 @@ namespace OKEGui.Worker
             window.BtnEmpty.IsEnabled = true;
             window.BtnMoveDown.IsEnabled = false;
             window.BtnMoveUp.IsEnabled = false;
+            window.BtnMoveTop.IsEnabled = false;
         }
 
         private void WorkerDoWork(object sender, DoWorkEventArgs e)
