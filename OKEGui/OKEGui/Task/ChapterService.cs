@@ -13,7 +13,8 @@ namespace OKEGui
         No,
         Yes,
         Added,
-        Maybe
+        Maybe,
+        Warn
     };
 
     public class ChapterService
@@ -89,6 +90,11 @@ namespace OKEGui
             if (chapterInfo.Chapters.Count > 1 ||
                 chapterInfo.Chapters.Count == 1 && chapterInfo.Chapters[0].Time.Ticks > 0)
             {
+                double lastChapterInMiliSec = chapterInfo.Chapters[chapterInfo.Chapters.Count - 1].Time.TotalMilliseconds;
+                if (task.LengthInMiliSec - lastChapterInMiliSec < 3003)
+                {
+                    task.ChapterStatus = ChapterStatus.Warn;
+                }
                 return chapterInfo;
             }
 
