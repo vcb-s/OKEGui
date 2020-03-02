@@ -282,7 +282,8 @@ namespace OKEGui.Worker
                                 ChapterInfo chapterInfo = ChapterService.LoadChapter(task);
                                 if (chapterInfo != null)
                                 {
-                                    if (task.ChapterStatus == ChapterStatus.Maybe)
+                                    if (task.ChapterStatus == ChapterStatus.Maybe ||
+                                            task.ChapterStatus == ChapterStatus.MKV)
                                     {
                                         task.ChapterStatus = ChapterStatus.Added;
                                     }
