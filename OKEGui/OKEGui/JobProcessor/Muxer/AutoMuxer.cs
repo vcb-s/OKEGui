@@ -196,7 +196,7 @@ namespace OKEGui
 
             if (episode.ChapterFile != null) parameters.Add($"--chapter \"{episode.ChapterFile}\"");
 
-            parameters.Add($"-i \"{episode.VideoFile}\"?fps={episode.VideoFps}?handler={episode.VideoName}");
+            parameters.Add($"-i \"{episode.VideoFile}\"?fps={episode.VideoFps},handler=\"{episode.VideoName}\"");
 
             for (int i = 0; i < episode.AudioFiles.Count; i++)
             {
@@ -204,7 +204,7 @@ namespace OKEGui
                 FileInfo ainfo = new FileInfo(audioFile);
                 if (ainfo.Extension.ToLower() == ".aac" || ainfo.Extension.ToLower() == ".m4a" || ainfo.Extension.ToLower() == ".ac3" || ainfo.Extension.ToLower() == ".dts")
                 {
-                    parameters.Add($"-i \"{audioFile}\"?language={episode.AudioLanguages[i]}?handler={episode.AudioNames[i]}");
+                    parameters.Add($"-i \"{audioFile}\"?language={episode.AudioLanguages[i]},handler=\"{episode.AudioNames[i]}\"");
                 }
             }
 
