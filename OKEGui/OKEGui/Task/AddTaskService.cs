@@ -49,7 +49,7 @@ namespace OKEGui
             // 检查参数
             if (json.Version != 2)
             {
-                MessageBox.Show("这配置文件版本号不匹配当前的OKE", "版本不对", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("你是不是把单个文件追加用的json当成一套任务用的json了？", "版本不对", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
 
@@ -66,18 +66,6 @@ namespace OKEGui
                 default:
                     MessageBox.Show("EncoderType请填写x264或者x265", "编码器版本错误", MessageBoxButton.OK, MessageBoxImage.Error);
                     return null;
-            }
-
-            // 获取编码器全路径
-            FileInfo encoder = new FileInfo(projDir.FullName + "\\" + json.Encoder);
-            if (encoder.Exists)
-            {
-                json.Encoder = encoder.FullName;
-            }
-            else
-            {
-                MessageBox.Show("编码器好像不在json指定的地方（文件名错误？还有记得放在json文件同目录下）", "找不到编码器啊", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
             }
 
             // 设置封装格式
@@ -181,6 +169,18 @@ namespace OKEGui
                 return null;
             }
 
+            // 获取编码器全路径
+            FileInfo encoder = new FileInfo(projDir.FullName + "\\" + json.Encoder);
+            if (encoder.Exists)
+            {
+                json.Encoder = encoder.FullName;
+            }
+            else
+            {
+                MessageBox.Show("编码器好像不在json指定的地方（文件名错误？还有记得放在json文件同目录下）", "找不到编码器啊", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+
             return json;
         }
 
@@ -193,6 +193,11 @@ namespace OKEGui
             {
                 json.InputScript = scriptFile.FullName;
                 string vsScript = File.ReadAllText(json.InputScript);
+                if (json.Rpc && !vsScript.Contains(".set_output(1)"))
+                {
+                    MessageBox.Show("请告诉技术总监给vpy里加上rpc的输出。", "vpy里没有准备rpc的输出", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return null;
+                }
                 if (Constants.inputRegex.IsMatch(vsScript))
                 {
                     return vsScript;

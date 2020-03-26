@@ -12,6 +12,7 @@ namespace OKEGui
 {
     public class X264Encoder : CommandlineVideoEncoder
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly string X264Path = "";
         private readonly string VspipePath = "";
 
@@ -39,6 +40,7 @@ namespace OKEGui
 
             if (line.Contains("x264 [error]:"))
             {
+                Logger.Error(line);
                 OKETaskException ex = new OKETaskException(Constants.x264ErrorSmr);
                 ex.progress = 0.0;
                 ex.Data["X264_ERROR"] = line.Substring(14);
@@ -47,6 +49,7 @@ namespace OKEGui
 
             if (line.Contains("Error: fwrite() call failed when writing frame: "))
             {
+                Logger.Error(line);
                 OKETaskException ex = new OKETaskException(Constants.x264CrashSmr);
                 throw ex;
             }

@@ -11,6 +11,7 @@ namespace OKEGui
 {
     public class X265Encoder : CommandlineVideoEncoder
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly string X265Path = "";
         private readonly string vspipePath = "";
 
@@ -38,6 +39,7 @@ namespace OKEGui
 
             if (line.Contains("x265 [error]:"))
             {
+                Logger.Error(line);
                 OKETaskException ex = new OKETaskException(Constants.x265ErrorSmr);
                 ex.progress = 0.0;
                 ex.Data["X265_ERROR"] = line.Substring(14);
@@ -46,6 +48,7 @@ namespace OKEGui
 
             if (line.Contains("Error: fwrite() call failed when writing frame: "))
             {
+                Logger.Error(line);
                 OKETaskException ex = new OKETaskException(Constants.x265CrashSmr);
                 throw ex;
             }
