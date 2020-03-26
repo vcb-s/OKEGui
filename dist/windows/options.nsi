@@ -57,6 +57,7 @@ RequestExecutionLevel user
 !define MUI_HEADERIMAGE
 !define MUI_COMPONENTSPAGE_NODESC
 !define MUI_ICON "OKEGui.ico"
+!define MUI_UNICON "OKEGui.ico"
 !define MUI_LICENSEPAGE_CHECKBOX
 !define MUI_LANGDLL_ALLLANGUAGES
 
