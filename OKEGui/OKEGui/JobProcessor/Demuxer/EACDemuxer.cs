@@ -66,7 +66,6 @@ namespace OKEGui
             new EacOutputTrackType(TrackCodec.AC3,        "AC3",                "ac3",     true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.FLAC,       "FLAC",               "flac",    true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.AAC,        "AAC",                "aac",     true,  TrackType.Audio),
-            new EacOutputTrackType(TrackCodec.AC3,        "AC3",                "ac3",     true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.DTS,        "DTS",                "dts",     true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.MPEG2,      "MPEG2",              "m2v",     false, TrackType.Video),
             new EacOutputTrackType(TrackCodec.H264_AVC,   "h264/AVC",           "264",     false, TrackType.Video),
@@ -212,14 +211,14 @@ namespace OKEGui
         private TrackCodec EacOutputToTrackCodec(string str)
         {
             str = str.Trim();
-            EacOutputTrackType outputType = s_eacOutputs.Find(val => val.RawOutput == str);
+            EacOutputTrackType outputType = s_eacOutputs.Find(val => str.StartsWith(val.RawOutput));
             return outputType.Codec;
         }
 
         private TrackType EacOutputToTrackType(string str)
         {
             str = str.Trim();
-            EacOutputTrackType outputType = s_eacOutputs.Find(val => val.RawOutput == str);
+            EacOutputTrackType outputType = s_eacOutputs.Find(val => str.StartsWith(val.RawOutput));
             return outputType.Type;
         }
 
