@@ -2,19 +2,14 @@ Section "un.$(remove_files_str)" ;"un.Remove files"
   SectionIn RO
 
   ; Remove files and uninstaller
-  Delete "$INSTDIR\Newtonsoft.Json.dll"
-  Delete "$INSTDIR\Newtonsoft.Json.xml"
-  Delete "$INSTDIR\NLog.dll"
-  Delete "$INSTDIR\NLog.xml"
+  Delete "$INSTDIR\*.dll"
+  Delete "$INSTDIR\*.xml"
   Delete "$INSTDIR\OKEGui.exe"
-  Delete "$INSTDIR\OKEGui.exe.config"
-  Delete "$INSTDIR\System.ValueTuple.dll"
-  Delete "$INSTDIR\System.ValueTuple.xml"
-  Delete "$INSTDIR\TChapter.dll"
-  Delete "$INSTDIR\Xceed.Wpf.Toolkit.dll"
   Delete "$INSTDIR\LICENSE"
   Delete "$INSTDIR\uninst.exe"
   RMDIr /r "$INSTDIR\examples"
+  RMDIr /r "$INSTDIR\x86"
+  RMDIr /r "$INSTDIR\x64"
 
   ; Remove directories used
   RMDir "$INSTDIR"

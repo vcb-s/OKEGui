@@ -24,17 +24,16 @@ Section $(inst_req_str) ;"OKEGui (required)"
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   ; Put file there
-  File "..\..\OKEGui\OKEGui\bin\Release\Newtonsoft.Json.dll"
-  File "..\..\OKEGui\OKEGui\bin\Release\Newtonsoft.Json.xml"
-  File "..\..\OKEGui\OKEGui\bin\Release\NLog.dll"
-  File "..\..\OKEGui\OKEGui\bin\Release\NLog.xml"
+  File "..\..\OKEGui\OKEGui\bin\Release\*.dll"
+  File "..\..\OKEGui\OKEGui\bin\Release\*.xml"
   File "..\..\OKEGui\OKEGui\bin\Release\OKEGui.exe"
-  File "..\..\OKEGui\OKEGui\bin\Release\OKEGui.exe.config"
-  File "..\..\OKEGui\OKEGui\bin\Release\System.ValueTuple.dll"
-  File "..\..\OKEGui\OKEGui\bin\Release\System.ValueTuple.xml"
-  File "..\..\OKEGui\OKEGui\bin\Release\TChapter.dll"
-  File "..\..\OKEGui\OKEGui\bin\Release\Xceed.Wpf.Toolkit.dll"
   File "..\..\LICENSE"
+
+  SetOutPath $INSTDIR\x86
+  File /r "..\..\OKEGui\OKEGui\bin\Release\x86\*"
+
+  SetOutPath $INSTDIR\x64
+  File /r "..\..\OKEGui\OKEGui\bin\Release\x64\*"
 
   ; Write the installation path into the registry
   WriteRegStr HKLM "Software\OKEGui" "InstallLocation" "$INSTDIR"
@@ -65,11 +64,6 @@ Section /o $(inst_samples_str) ;"Example files (optional)"
   CreateDirectory "$INSTDIR\examples"
   SetOutPath "$INSTDIR\examples"
   File /r "examples\*"
-  ;File "/oname=examples\00001.m2ts.json" "examples\00001.m2ts.json"
-  ;File "/oname=examples\demo.json" "examples\demo.json"
-  ;File "/oname=examples\demo.vpy" "examples\demo.vpy"
-  ;File "/oname=examples\demo_720p.json" "examples\demo_720p.json"
-  ;File "/oname=examples\demo_720p.vpy" "examples\demo_720p.vpy"
 SectionEnd
 
 ; Optional section (can be disabled by the user)
@@ -114,7 +108,7 @@ FunctionEnd
 
 Function PageFinishRun
 
-  !insertmacro UAC_AsUser_ExecShell "" "$INSTDIR\OKEGui.exe" "" "" ""
+  !insertmacro UAC_AsUser_ExecShell "" "$INSTDIR\OKEGui.exe" "" "$INSTDIR" ""
 
 FunctionEnd
 
