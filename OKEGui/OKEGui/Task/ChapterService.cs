@@ -69,7 +69,7 @@ namespace OKEGui
                 Logger.Warn($"{task.InputFile}不是Matroska文件。");
                 return false;
             }
-            
+
             MediaInfo.MediaInfo MI = new MediaInfo.MediaInfo();
             MI.Open(inputFile.FullName);
             MI.Option("Complete");
@@ -93,25 +93,19 @@ namespace OKEGui
             switch (task.ChapterStatus)
             {
                 case ChapterStatus.Yes:
-                {
                     FileInfo txtChapter = new FileInfo(Path.ChangeExtension(inputFile.FullName, ".txt"));
                     if (!txtChapter.Exists) return null;
                     chapterInfo = new OGMParser().Parse(txtChapter.FullName).FirstOrDefault();
                     break;
-                }
                 case ChapterStatus.Maybe:
-                {
                     DirectoryInfo playlistDirectory =
                         new DirectoryInfo(Path.Combine(inputFile.Directory.Parent.FullName, "PLAYLIST"));
                     chapterInfo = GetChapterFromMPLS(playlistDirectory.GetFiles("*.mpls"), inputFile);
                     break;
-                }
                 case ChapterStatus.MKV:
-                    {
-                        FileInfo mkvExtract = new FileInfo(".\\tools\\mkvtoolnix\\mkvextract.exe");
-                        chapterInfo = new MATROSKAParser(mkvExtract.FullName).Parse(inputFile.FullName).FirstOrDefault();
-                        break;
-                    }
+                    FileInfo mkvExtract = new FileInfo(".\\tools\\mkvtoolnix\\mkvextract.exe");
+                    chapterInfo = new MATROSKAParser(mkvExtract.FullName).Parse(inputFile.FullName).FirstOrDefault();
+                    break;
                 default:
                     return null;
             }
@@ -160,8 +154,8 @@ namespace OKEGui
 
             foreach (var chapter in chapterInfo.Chapters)
             {
-                long miliSec = (long) chapter.Time.TotalMilliseconds;
-                int frameNo = (int) (miliSec / 1000.0 * fps + 0.5);
+                long miliSec = (long)chapter.Time.TotalMilliseconds;
+                int frameNo = (int)(miliSec / 1000.0 * fps + 0.5);
                 qpFile.AppendLine($"{frameNo} I");
             }
 
