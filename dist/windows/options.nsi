@@ -1,4 +1,4 @@
-Unicode true
+﻿Unicode true
 ManifestDPIAware true
 ;Compress the header too
 !packhdr "$%TEMP%\exehead.tmp" 'upx.exe -9 --best --ultra-brute "$%TEMP%\exehead.tmp"'
@@ -22,7 +22,7 @@ XPStyle on
 !define CSIDL_LOCALAPPDATA '0x1C' ;Local Application Data path
 
 ; Program specific
-!define PROG_VERSION "6.4.0.0"
+!define PROG_VERSION "6.7"
 
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_FUNCTION PageFinishRun
@@ -40,7 +40,7 @@ VIAddVersionKey "LegalCopyright" "Copyright ©2016-2020 VCB-Studio"
 VIAddVersionKey "FileDescription" "OKEGui - One Key Encode GUI"
 VIAddVersionKey "FileVersion" "${PROG_VERSION}"
 
-VIProductVersion "${PROG_VERSION}.0"
+VIProductVersion "${PROG_VERSION}.0.0"
 
 InstallDir $APPDATA\OKEGui
 
@@ -56,7 +56,7 @@ RequestExecutionLevel user
 !define MUI_ABORTWARNING
 !define MUI_HEADERIMAGE
 !define MUI_COMPONENTSPAGE_NODESC
-;!define MUI_ICON "OKEGui.ico"
+!define MUI_ICON "OKEGui.ico"
 !define MUI_LICENSEPAGE_CHECKBOX
 !define MUI_LANGDLL_ALLLANGUAGES
 

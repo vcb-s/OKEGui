@@ -244,6 +244,5 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 
-dist/windows/*.exe
-dist/windows/examples/
+dist/windows/OKEGui*.exe
 dist/windows/tools/
