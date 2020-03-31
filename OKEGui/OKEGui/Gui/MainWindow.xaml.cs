@@ -342,7 +342,7 @@ namespace OKEGui
             {
                 int lastIndex = item.InputFile.LastIndexOf("\\");
                 string sub = item.InputFile.Substring(0, lastIndex + 1);
-                string arg;
+                //string arg;
                 //if (item.CurrentStatus == "完成") arg = @"/select," + sub + item.OutputFile;
                 //else arg = sub;
                 //Process.Start("Explorer.exe", arg);
