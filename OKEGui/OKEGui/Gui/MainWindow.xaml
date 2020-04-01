@@ -10,16 +10,18 @@
     <Window.Resources>
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <EventSetter Event="MouseDoubleClick" Handler="ListView_MouseDoubleClick" />
         </Style>
     </Window.Resources>
     <Grid>
         <ListView x:Name="TaskList" Margin="10,10,10,68" AllowDrop="True">
             <ListView.View>
+                
                 <GridView>
                     <GridViewColumn Header="" Width="30">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <CheckBox IsChecked="{Binding Path=IsEnabled}" Checked="Checkbox_Changed" Unchecked="Checkbox_Changed" MouseDoubleClick="CheckBox_MouseDoubleClick"></CheckBox>
+                                <CheckBox IsChecked="{Binding Path=IsEnabled}" Checked="Checkbox_Changed" Unchecked="Checkbox_Changed"></CheckBox>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

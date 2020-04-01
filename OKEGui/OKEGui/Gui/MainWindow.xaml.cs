@@ -330,7 +330,7 @@ namespace OKEGui
             config.ShowDialog();
         }
 
-        private void CheckBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void ListView_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             TaskDetail item = TaskList.SelectedItem as TaskDetail;
 
