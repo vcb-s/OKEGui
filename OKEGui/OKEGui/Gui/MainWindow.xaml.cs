@@ -336,16 +336,16 @@ namespace OKEGui
 
             if (item == null)
             {
-                MessageBox.Show("你需要选择一个任务来打开文件。","文件夹打开失败", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("你需要选择一个任务来打开文件。", "文件夹打开失败", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
             {
-                int lastIndex = item.InputFile.LastIndexOf("\\");
-                string sub = item.InputFile.Substring(0, lastIndex + 1);
+                string path = System.IO.Path.GetDirectoryName(item.InputFile);
                 string arg;
-                if (item.CurrentStatus == "完成") arg = @"/select," + sub + item.OutputFile;
-                else arg = sub;
+                if (item.CurrentStatus == "完成") arg = @"/select," + System.IO.Path.Combine(path, item.OutputFile);
+                else arg = path;
                 Process.Start("Explorer.exe", arg);
+
             }
         }
     }
