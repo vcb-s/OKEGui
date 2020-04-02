@@ -349,7 +349,9 @@ namespace OKEGui.Worker
                         AutoMuxer muxer = new AutoMuxer(mkvInfo.FullName, lsmash.FullName);
                         muxer.ProgressChanged += progress => task.ProgressValue = progress;
 
-                        muxer.StartMuxing(Path.GetDirectoryName(task.InputFile) + "\\" + task.OutputFile, task.MediaOutFile);
+                        OKEFile outFile = muxer.StartMuxing(Path.GetDirectoryName(task.InputFile) + "\\" + task.OutputFile, task.MediaOutFile);
+                        task.OutputFile = outFile.GetFileName();
+                        task.BitRate = CommandlineVideoEncoder.HumanReadableFilesize(outFile.GetFileSize(), 2);
                     }
                     if (task.MkaOutFile.Tracks.Count > 0)
                     {
