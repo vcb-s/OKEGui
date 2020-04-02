@@ -10,11 +10,13 @@
     <Window.Resources>
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <EventSetter Event="MouseDoubleClick" Handler="ListView_MouseDoubleClick" />
         </Style>
     </Window.Resources>
     <Grid>
         <ListView x:Name="TaskList" Margin="10,10,10,68" AllowDrop="True">
             <ListView.View>
+                
                 <GridView>
                     <GridViewColumn Header="" Width="30">
                         <GridViewColumn.CellTemplate>

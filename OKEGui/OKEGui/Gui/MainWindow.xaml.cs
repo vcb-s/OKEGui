@@ -189,14 +189,13 @@ namespace OKEGui
         private void BtnMoveTop_Click(object sender, RoutedEventArgs e)
         {
             TaskDetail item = TaskList.SelectedItem as TaskDetail;
-
             if (item == null)
             {
                 MessageBox.Show("请点击一个任务开始操作", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
-            switch(tm.MoveTaskTop(item))
+            switch (tm.MoveTaskTop(item))
             {
                 case TaskManager.MoveTaskTopResult.OK:
                     break;
@@ -329,6 +328,26 @@ namespace OKEGui
         {
             Window config = new ConfigPanel();
             config.ShowDialog();
+        }
+
+        private void ListView_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            TaskDetail item = TaskList.SelectedItem as TaskDetail;
+
+            if (item == null)
+            {
+                MessageBox.Show("你需要选择一个任务来打开文件。","文件夹打开失败", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                int lastIndex = item.InputFile.LastIndexOf("\\");
+                string sub = item.InputFile.Substring(0, lastIndex + 1);
+                //string arg;
+                //if (item.CurrentStatus == "完成") arg = @"/select," + sub + item.OutputFile;
+                //else arg = sub;
+                //Process.Start("Explorer.exe", arg);
+                Process.Start("Explorer.exe", sub);
+            }
         }
     }
 }
