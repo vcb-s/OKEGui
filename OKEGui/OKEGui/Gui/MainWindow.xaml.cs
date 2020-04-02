@@ -8,6 +8,7 @@ using System.Windows.Interop;
 using OKEGui.Task;
 using OKEGui.Utils;
 using OKEGui.Worker;
+using System.IO;
 
 namespace OKEGui
 {
@@ -340,12 +341,14 @@ namespace OKEGui
             }
             else
             {
-                string path = System.IO.Path.GetDirectoryName(item.InputFile);
+                string path = Path.GetDirectoryName(item.InputFile);
                 string arg;
-                if (item.CurrentStatus == "完成") arg = @"/select," + System.IO.Path.Combine(path, item.OutputFile);
+                if (item.CurrentStatus == "完成")
+                {
+                    arg = @"/select," + Path.Combine(path, item.OutputFile);
+                }
                 else arg = path;
                 Process.Start("Explorer.exe", arg);
-
             }
         }
     }
