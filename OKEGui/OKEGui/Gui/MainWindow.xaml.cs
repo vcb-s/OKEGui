@@ -8,6 +8,7 @@ using System.Windows.Interop;
 using OKEGui.Task;
 using OKEGui.Utils;
 using OKEGui.Worker;
+using System.IO;
 
 namespace OKEGui
 {
@@ -336,17 +337,18 @@ namespace OKEGui
 
             if (item == null)
             {
-                MessageBox.Show("你需要选择一个任务来打开文件。","文件夹打开失败", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("你需要选择一个任务来打开文件。", "文件夹打开失败", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
             {
-                int lastIndex = item.InputFile.LastIndexOf("\\");
-                string sub = item.InputFile.Substring(0, lastIndex + 1);
-                //string arg;
-                //if (item.CurrentStatus == "完成") arg = @"/select," + sub + item.OutputFile;
-                //else arg = sub;
-                //Process.Start("Explorer.exe", arg);
-                Process.Start("Explorer.exe", sub);
+                string path = Path.GetDirectoryName(item.InputFile);
+                string arg;
+                if (item.CurrentStatus == "完成")
+                {
+                    arg = @"/select," + Path.Combine(path, item.OutputFile);
+                }
+                else arg = path;
+                Process.Start("Explorer.exe", arg);
             }
         }
     }
