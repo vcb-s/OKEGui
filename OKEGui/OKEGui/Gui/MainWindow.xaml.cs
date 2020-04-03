@@ -342,12 +342,12 @@ namespace OKEGui
             else
             {
                 string path = Path.GetDirectoryName(item.InputFile);
-                string arg;
+                string arg = path;
+
                 if (item.CurrentStatus == "完成")
                 {
                     arg = @"/select," + Path.Combine(path, item.OutputFile);
                 }
-                else arg = path;
                 Process.Start("Explorer.exe", arg);
             }
         }
