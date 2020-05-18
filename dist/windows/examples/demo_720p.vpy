@@ -5,6 +5,7 @@ import mvsfunc as mvf
 
 core = vs.get_core(threads=12)
 
+#OKE:MEMORY
 core.max_cache_size = 9000
 
 #OKE:INPUTFILE

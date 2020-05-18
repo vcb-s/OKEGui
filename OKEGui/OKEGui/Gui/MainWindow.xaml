@@ -94,30 +94,45 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <Button Height="23" Grid.Column="0" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnNew" VerticalAlignment="Top" Click="BtnNew_Click" Content="新建任务" />
-            <Button Height="23" Grid.Column="1" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnRun" VerticalAlignment="Top" Click="BtnRun_Click" Content="运行" />
-            <Button Height="23" Grid.Column="2" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnPause" VerticalAlignment="Top" Click="BtnPause_Click" Content="暂停" />
-            <Button Height="23" Grid.Column="3" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnResume" VerticalAlignment="Top" Click="BtnResume_Click" Content="恢复" />
-            <Button Height="23" Grid.Column="4" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnChap" VerticalAlignment="Top" Click="BtnChap_Click" Content="检查章节" />
-            <Button Height="23" Grid.Column="5" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveUp" VerticalAlignment="Top" Click="BtnMoveUp_Click" Content="上移" />
-            <Button Height="23" Grid.Column="6" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveDown" VerticalAlignment="Top" Click="BtnMoveDown_Click" Content="下移" />
-            <Button Height="23" Grid.Column="7" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveTop" VerticalAlignment="Top" Click="BtnMoveTop_Click" Content="置顶" />
-            <Button Height="23" Grid.Column="8" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnDelete" VerticalAlignment="Top" Click="BtnDelete_Click" Content="删除" />
-            <Button Height="23" Grid.Column="9" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnEmpty" VerticalAlignment="Top" Click="BtnEmpty_Click" Content="清空" />
+            <Button Grid.Column="0" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnNew"  Click="BtnNew_Click" Content="新建任务" />
+            <Button Grid.Column="1" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnRun"  Click="BtnRun_Click" Content="运行" />
+            <Button Grid.Column="2" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnPause"  Click="BtnPause_Click" Content="暂停" />
+            <Button Grid.Column="3" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnResume"  Click="BtnResume_Click" Content="恢复" />
+            <Button Grid.Column="4" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnChap"  Click="BtnChap_Click" Content="检查章节" />
+            <Button Grid.Column="5" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveUp"  Click="BtnMoveUp_Click" Content="上移" />
+            <Button Grid.Column="6" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveDown"  Click="BtnMoveDown_Click" Content="下移" />
+            <Button Grid.Column="7" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveTop"  Click="BtnMoveTop_Click" Content="置顶" />
+            <Button Grid.Column="8" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnDelete"  Click="BtnDelete_Click" Content="删除" />
+            <Button Grid.Column="9" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnEmpty"  Click="BtnEmpty_Click" Content="清空" />
             <TextBlock Margin="0,0,6,0" VerticalAlignment="Center" Grid.Column="10" Grid.Row="0" Name="WorkerNumber"></TextBlock>
-            <Button Height="23" Grid.Column="11" Grid.Row="0" Margin="0,0,0,0" x:Name="BtnNewWorker" VerticalAlignment="Top" Click="BtnNewWorker_Click" Content="新建工作单元" Width="100" />
+            <Button Grid.Column="11" Grid.Row="0" Margin="0,0,0,0" x:Name="BtnNewWorker"  Click="BtnNewWorker_Click" Content="新建工作单元" Width="100" />
         </Grid>
 
-        <Grid Margin="20, 0, 10, 10" VerticalAlignment="Bottom">
-            <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Width="70" Margin="0,4,0,0"><Run Text="任务结束后:" /></TextBlock>
-            <ComboBox x:Name="AfterFinish" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="70,0,0,0" SelectionChanged="AfterFinish_SelectionChanged">
+        <Grid Margin="10, 0, 10, 10" VerticalAlignment="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="23"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,6,0"><Run Text="任务结束后:" /></TextBlock>
+            <ComboBox x:Name="AfterFinish" Grid.Row="0" Grid.Column="1" Width="88" HorizontalAlignment="Left" VerticalContentAlignment="Center" Margin="0,0,6,0" SelectionChanged="AfterFinish_SelectionChanged">
                 <ComboBoxItem IsSelected="True" Content="什么也不干" />
                 <ComboBoxItem Content="关机" />
                 <!--<ComboBoxItem Content="运行程序" />-->
             </ComboBox>
-            <Button Height="23" Margin="200,0,0,0" x:Name="BtnCancelShutdown" VerticalAlignment="Top" HorizontalAlignment="Left" Click="BtnCancelShutdown_Click" Content="点这里取消关机" Width="100" />
-            <Button Height="23" Width="50" Margin="310,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Click="BtnConfig_Click" Content="设置" />
-            <Button Height="23" Margin="0,0,0,0" x:Name="BtnDeleteWorker" VerticalAlignment="Top" HorizontalAlignment="Right" Click="BtnDeleteWorker_Click" Content="删除工作单元" Width="100" />
+            <Button Grid.Column="2" Margin="0,0,6,0" x:Name="BtnCancelShutdown" HorizontalAlignment="Left" Click="BtnCancelShutdown_Click" Content="点这里取消关机" Width="100" />
+            <Button Grid.Column="3"  Margin="0,0,6,0" HorizontalAlignment="Left" Click="BtnConfig_Click" Content="设置" Width="50" />
+            <TextBlock Grid.Column="4" Text="空闲内存数(MB):" VerticalAlignment="Center" Margin="0,0,6,0"></TextBlock>
+            <TextBox Grid.Column="5" x:Name="TxtFreeMemory" Width="100" VerticalContentAlignment="Center" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TxtFreeMemory_PreviewTextInput"/>
+            <Button Grid.Column="6" Margin="0,0,0,0" x:Name="BtnDeleteWorker" HorizontalAlignment="Right" Click="BtnDeleteWorker_Click" Content="删除工作单元" Width="100" />
         </Grid>
     </Grid>
 </Window>
