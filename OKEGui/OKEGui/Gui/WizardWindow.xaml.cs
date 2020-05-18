@@ -63,7 +63,7 @@ namespace OKEGui
         private readonly WorkerManager workerManager;
         private TaskProfile json;
         private string vsScript;
-
+        private int eachFreeMemory;
         public WizardWindow(WorkerManager w)
         {
             InitializeComponent();
@@ -76,6 +76,8 @@ namespace OKEGui
             DataContext = wizardInfo;
 
             workerManager = w;
+            
+            eachFreeMemory = (Convert.ToInt32(workerManager.MainWindow.TxtFreeMemory.Text) - workerManager.GetWorkerCount() * 2000) / workerManager.GetWorkerCount();
         }
 
         // 读入json文件，检查项目设置，并生成预览信息
@@ -176,6 +178,14 @@ namespace OKEGui
         private void WizardFinish(object sender, RoutedEventArgs e)
         {
             string[] inputTemplate = Constants.inputRegex.Split(vsScript);
+
+            // 处理MEMORY标签
+            if(Constants.memoryRegex.IsMatch(vsScript))
+            {
+                string[] memoryTag = Constants.memoryRegex.Split(inputTemplate[0]);
+                inputTemplate[0] = memoryTag[0] + memoryTag[1] + eachFreeMemory.ToString() + memoryTag[3];
+            }
+
             // 处理DEBUG标签
             if (Constants.debugRegex.IsMatch(vsScript))
             {
@@ -188,6 +198,7 @@ namespace OKEGui
                 }
                 inputTemplate[3] = debugTag[0] + debugTag[1] + "None" + debugTag[3];
             }
+            
 
             // 新建任务
             // 1、清理残留文件
