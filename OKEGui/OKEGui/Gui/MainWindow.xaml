@@ -104,7 +104,7 @@
             <Button Height="23" Grid.Column="7" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveTop" VerticalAlignment="Top" Click="BtnMoveTop_Click" Content="置顶" />
             <Button Height="23" Grid.Column="8" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnDelete" VerticalAlignment="Top" Click="BtnDelete_Click" Content="删除" />
             <Button Height="23" Grid.Column="9" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnEmpty" VerticalAlignment="Top" Click="BtnEmpty_Click" Content="清空" />
-            <TextBlock Height="23" Margin="0,4,6,0" Grid.Column="10" Grid.Row="0" Name="WorkerNumber"></TextBlock>
+            <TextBlock Margin="0,0,6,0" VerticalAlignment="Center" Grid.Column="10" Grid.Row="0" Name="WorkerNumber"></TextBlock>
             <Button Height="23" Grid.Column="11" Grid.Row="0" Margin="0,0,0,0" x:Name="BtnNewWorker" VerticalAlignment="Top" Click="BtnNewWorker_Click" Content="新建工作单元" Width="100" />
         </Grid>
 
