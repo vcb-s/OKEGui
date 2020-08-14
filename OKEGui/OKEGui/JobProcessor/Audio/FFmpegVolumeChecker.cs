@@ -13,29 +13,32 @@ namespace OKEGui
         public double MeanVolume { get; private set; }
         public double MaxVolume { get; private set; }
 
+        private Regex rmsLevelRegex = new Regex(@"RMS level dB: (-?(?:\d+\.\d+|inf))");
+        private Regex peakLevelRegex = new Regex(@"Peak level dB: (-?(?:\d+\.\d+|inf))");
+
         public FFmpegVolumeChecker(string inputFile)
         {
             executable = Constants.ffmpegPath;
-            commandLine = "-i \"" + inputFile + "\" -af astats=measure_perchannel=none -f null /dev/null";
+            commandLine = $"-i \"{inputFile}\" -af astats=measure_perchannel=none -f null /dev/null";
         }
 
         public override void ProcessLine(string line, StreamType stream)
         {
             base.ProcessLine(line, stream);
 
-            if (line.Contains("RMS level dB"))
+            var rmsLevel = rmsLevelRegex.Match(line);
+            if (rmsLevel.Success)
             {
-                Regex rf = new Regex(@"RMS level dB: (-?\d+.\d+)");
-                string[] result = rf.Split(line);
-                MeanVolume = double.Parse(result[1]);
+                var success = double.TryParse(rmsLevel.Groups[1].Value, out double meanVolume);
+                MeanVolume = success ? meanVolume : double.NegativeInfinity;
                 return;
             }
 
-            if (line.Contains("Peak level dB"))
+            var peakLevel = peakLevelRegex.Match(line);
+            if (peakLevel.Success)
             {
-                Regex rf = new Regex(@"Peak level dB: (-?\d+.\d+)");
-                string[] result = rf.Split(line);
-                MaxVolume = double.Parse(result[1]);
+                var success = double.TryParse(peakLevel.Groups[1].Value, out double maxVolume);
+                MaxVolume = success ? maxVolume : double.NegativeInfinity;
                 SetFinish();
             }
         }
