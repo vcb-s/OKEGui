@@ -9,6 +9,7 @@ using OKEGui.Task;
 using OKEGui.Utils;
 using OKEGui.Worker;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace OKEGui
 {
@@ -96,26 +97,32 @@ namespace OKEGui
 
         private void BtnNew_Click(object sender, RoutedEventArgs e)
         {
-            // 新建任务。具体实现请见Gui/wizardWindow
-            try
+            if (!string.IsNullOrEmpty(TxtFreeMemory.Text))
             {
-                var wizard = new WizardWindow(wm);
-                wizard.ShowDialog();
-                int activeTaskCount = tm.GetActiveTaskCount();
-                BtnRun.IsEnabled = activeTaskCount > 0;
-                BtnDelete.IsEnabled = activeTaskCount > 0;
-                BtnEmpty.IsEnabled = activeTaskCount > 0;
-                BtnMoveDown.IsEnabled = activeTaskCount > 1;
-                BtnMoveUp.IsEnabled = activeTaskCount > 1;
-                BtnMoveTop.IsEnabled = activeTaskCount > 2;
-                BtnChap.IsEnabled = activeTaskCount > 0;
+                // 新建任务。具体实现请见Gui/wizardWindow
+                try
+                {
+                    var wizard = new WizardWindow(wm);
+                    wizard.ShowDialog();
+                    int activeTaskCount = tm.GetActiveTaskCount();
+                    BtnRun.IsEnabled = activeTaskCount > 0;
+                    BtnDelete.IsEnabled = activeTaskCount > 0;
+                    BtnEmpty.IsEnabled = activeTaskCount > 0;
+                    BtnMoveDown.IsEnabled = activeTaskCount > 1;
+                    BtnMoveUp.IsEnabled = activeTaskCount > 1;
+                    BtnMoveTop.IsEnabled = activeTaskCount > 2;
+                    BtnChap.IsEnabled = activeTaskCount > 0;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Fatal(ex.StackTrace);
+                    Environment.Exit(0);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Logger.Fatal(ex.StackTrace);
-                Environment.Exit(0);
+                MessageBox.Show("请输入系统可用空闲内存！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
         }
 
         private void BtnPause_Click(object sender, RoutedEventArgs e)
@@ -342,14 +349,22 @@ namespace OKEGui
             else
             {
                 string path = Path.GetDirectoryName(item.InputFile);
-                string arg;
+                string arg = path;
+
                 if (item.CurrentStatus == "完成")
                 {
                     arg = @"/select," + Path.Combine(path, item.OutputFile);
                 }
-                else arg = path;
                 Process.Start("Explorer.exe", arg);
             }
         }
+
+        private void TxtFreeMemory_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            Regex re = new Regex("[^0-9]+");
+
+            e.Handled = re.IsMatch(e.Text);
+        }
+
     }
 }

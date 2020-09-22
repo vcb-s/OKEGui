@@ -1,10 +1,12 @@
 import vapoursynth as vs
 import sys
+from vapoursynth import core
 import havsfunc as haf
 import mvsfunc as mvf
 
-core = vs.get_core(threads=12)
+core.num_threads = 12
 
+#OKE:MEMORY
 core.max_cache_size = 9000
 
 #OKE:INPUTFILE

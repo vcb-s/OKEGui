@@ -290,7 +290,7 @@ namespace OKEGui.Worker
 
                                     FileInfo outputChapterFile =
                                         new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
-                                    if (outputChapterFile.Exists)
+                                    if (outputChapterFile.Exists && !File.Exists(outputChapterFile.FullName + ".bak"))
                                     {
                                         File.Move(outputChapterFile.FullName, outputChapterFile.FullName + ".bak");
                                     }

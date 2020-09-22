@@ -69,6 +69,7 @@ SectionEnd
 ; Optional section (can be disabled by the user)
 Section /o $(inst_dekstop_str) ;"Create Desktop Shortcut"
 
+  SetOutPath "$INSTDIR"
   CreateShortCut "$DESKTOP\OKEGui.lnk" "$INSTDIR\OKEGui.exe"
 
 SectionEnd
@@ -76,6 +77,7 @@ SectionEnd
 Section $(inst_startmenu_str) ;"Create Start Menu Shortcut"
 
   CreateDirectory "$SMPROGRAMS\OKEGui"
+  SetOutPath "$INSTDIR"
   CreateShortCut "$SMPROGRAMS\OKEGui\OKEGui.lnk" "$INSTDIR\OKEGui.exe"
   CreateShortCut "$SMPROGRAMS\OKEGui\Uninstall.lnk" "$INSTDIR\uninst.exe"
 

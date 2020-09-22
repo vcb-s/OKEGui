@@ -88,7 +88,7 @@ namespace OKEGui
                 switch (Type)
                 {
                     case TrackType.Audio:
-                        return Math.Abs(MeanVolume - other.MeanVolume) < 1e-4 && Math.Abs(MaxVolume - other.MaxVolume) < 1e-4;
+                        return Math.Abs(MeanVolume - other.MeanVolume) < 0.01 && Math.Abs(MaxVolume - other.MaxVolume) < 0.01;
                     default:
                         return FileSize == other.FileSize;
                 }
