@@ -65,6 +65,8 @@ namespace OKEGui
             // 初始化更新菜单
             _systemMenu = new SystemMenu(this);
             _systemMenu.AddCommand("检查更新(&U)", () => { Updater.CheckUpdate(true); }, true);
+
+            TxtFreeMemory.Text = Initializer.Config.memoeryLimit.ToString();
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -99,6 +101,8 @@ namespace OKEGui
         {
             if (!string.IsNullOrEmpty(TxtFreeMemory.Text))
             {
+                Initializer.Config.memoeryLimit = int.Parse(TxtFreeMemory.Text);
+                Initializer.WriteConfig();
                 // 新建任务。具体实现请见Gui/wizardWindow
                 try
                 {
