@@ -93,6 +93,17 @@ namespace OKEGui.Utils
                 NotifyPropertyChanged();
             }
         }
+
+        private int _memoeryTotal;
+        public int memoeryTotal
+        {
+            get => _memoeryTotal;
+            set
+            {
+                _memoeryTotal = value;
+                NotifyPropertyChanged();
+            }
+        }
     }
 
     static class Initializer
