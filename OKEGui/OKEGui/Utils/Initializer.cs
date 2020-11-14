@@ -83,24 +83,24 @@ namespace OKEGui.Utils
             }
         }
 
-        private int _memoeryLimit;
-        public int memoeryLimit
+        private int _memoryLimit;
+        public int memoryLimit
         {
-            get => _memoeryLimit;
+            get => _memoryLimit;
             set
             {
-                _memoeryLimit = value;
+                _memoryLimit = value;
                 NotifyPropertyChanged();
             }
         }
 
-        private int _memoeryTotal;
-        public int memoeryTotal
+        private int _memoryTotal;
+        public int memoryTotal
         {
-            get => _memoeryTotal;
+            get => _memoryTotal;
             set
             {
-                _memoeryTotal = value;
+                _memoryTotal = value;
                 NotifyPropertyChanged();
             }
         }

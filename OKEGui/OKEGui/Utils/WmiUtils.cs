@@ -1,10 +1,12 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Management;
 
 namespace OKEGui.Utils
 {
     static class WmiUtils
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public static int GetTotalPhysicalMemory()
         {
             long capacity = 0;
@@ -16,10 +18,11 @@ namespace OKEGui.Utils
             catch (Exception ex)
             {
                 capacity = -1;
-                Console.WriteLine(ex.Message);
+                Logger.Error(ex, "Failed to get total physical memory");
             }
             return (int)(capacity / 1024.0 / 1024);
         }
+
         public static int GetAvailablePhysicalMemory()
         {
             int capacity = 0;
@@ -31,7 +34,7 @@ namespace OKEGui.Utils
             catch (Exception ex)
             {
                 capacity = -1;
-                Console.WriteLine(ex.Message);
+                Logger.Error(ex, "Failed to get available physical memory");
             }
             return capacity;
         }

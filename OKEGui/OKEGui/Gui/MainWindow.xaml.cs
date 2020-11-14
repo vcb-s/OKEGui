@@ -10,7 +10,6 @@ using OKEGui.Utils;
 using OKEGui.Worker;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.ServiceModel.Channels;
 
 namespace OKEGui
 {
@@ -67,9 +66,9 @@ namespace OKEGui
             _systemMenu = new SystemMenu(this);
             _systemMenu.AddCommand("检查更新(&U)", () => { Updater.CheckUpdate(true); }, true);
 
-            if(Initializer.Config.memoeryTotal == WmiUtils.GetTotalPhysicalMemory())
+            if (Initializer.Config.memoryTotal == WmiUtils.GetTotalPhysicalMemory())
             {
-                TxtFreeMemory.Text = Initializer.Config.memoeryLimit.ToString();
+                TxtFreeMemory.Text = Initializer.Config.memoryLimit.ToString();
             }
         }
 
@@ -111,14 +110,14 @@ namespace OKEGui
                 }
                 else if (int.Parse(TxtFreeMemory.Text) < WmiUtils.GetAvailablePhysicalMemory())
                 {
-                    Initializer.Config.memoeryTotal = WmiUtils.GetTotalPhysicalMemory();
+                    Initializer.Config.memoryTotal = WmiUtils.GetTotalPhysicalMemory();
                 }
                 else
                 {
                     MessageBox.Show("内存设置大于系统可用空闲内存！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                Initializer.Config.memoeryLimit = int.Parse(TxtFreeMemory.Text);
+                Initializer.Config.memoryLimit = int.Parse(TxtFreeMemory.Text);
                 Initializer.WriteConfig();
                 // 新建任务。具体实现请见Gui/wizardWindow
                 try
@@ -386,6 +385,5 @@ namespace OKEGui
 
             e.Handled = re.IsMatch(e.Text);
         }
-
     }
 }
