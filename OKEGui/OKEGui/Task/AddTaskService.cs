@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
+using YamlDotNet.Serialization;
 
 namespace OKEGui
 {
@@ -30,7 +31,8 @@ namespace OKEGui
             TaskProfile json;
             try
             {
-                json = JsonConvert.DeserializeObject<TaskProfile>(profileStr);
+                var deserializer = new Deserializer();
+                json = deserializer.Deserialize<TaskProfile>(profileStr);
             }
             catch (Exception e)
             {
