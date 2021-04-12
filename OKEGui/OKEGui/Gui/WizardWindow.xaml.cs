@@ -134,7 +134,7 @@ namespace OKEGui
         private void OpenProjectBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "OKEGui 项目文件 (*.json;*.yaml)|*.json;*.yaml";
+            ofd.Filter = "OKEGui 项目文件 (*.json;*.yaml;*.yml)|*.json;*.yaml;*.yml";
             var result = ofd.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.Cancel)
             {
