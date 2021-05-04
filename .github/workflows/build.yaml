@@ -33,4 +33,4 @@ jobs:
       uses: actions/upload-artifact@v1.0.0
       with:
         name: OKEGui-release
-        path: "./OKEGui/OKEGui/bin/Release/"
+        path: "./OKEGui/OKEGui/bin/"
