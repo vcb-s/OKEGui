@@ -104,11 +104,12 @@ namespace OKEGui
         {
             if (!string.IsNullOrEmpty(TxtFreeMemory.Text))
             {
-                if (WmiUtils.GetAvailablePhysicalMemory() < 0)
+                int availMB = WmiUtils.GetAvailablePhysicalMemory();
+                if (availMB < 0)
                 {
                     MessageBox.Show("无法获取当前空闲内存！请自行检查当前可用内存。", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                else if (int.Parse(TxtFreeMemory.Text) < WmiUtils.GetAvailablePhysicalMemory())
+                else if (int.Parse(TxtFreeMemory.Text) < availMB)
                 {
                     Initializer.Config.memoryTotal = WmiUtils.GetTotalPhysicalMemory();
                 }
