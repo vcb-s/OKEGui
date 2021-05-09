@@ -161,7 +161,7 @@ namespace OKEGui.Utils
 
             LoggingConfiguration config = new LoggingConfiguration();
 
-            FileTarget logfile = new FileTarget("logfile") { FileName = $"log\\{time}_{pid}.log" };
+            FileTarget logfile = new FileTarget("logfile") { FileName = $"log\\OKE_{time}_{pid}.log" };
             DebuggerTarget logconsole = new DebuggerTarget("logconsole");
 
             // Rules for mapping loggers to targets            
