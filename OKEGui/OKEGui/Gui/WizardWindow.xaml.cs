@@ -77,7 +77,7 @@ namespace OKEGui
 
             workerManager = w;
             
-            eachFreeMemory = (Convert.ToInt32(workerManager.MainWindow.TxtFreeMemory.Text) - workerManager.GetWorkerCount() * 2000) / workerManager.GetWorkerCount();
+            eachFreeMemory = (Initializer.Config.memoryLimit - workerManager.GetWorkerCount() * 2000) / workerManager.GetWorkerCount();
         }
 
         // 读入json文件，检查项目设置，并生成预览信息

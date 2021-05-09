@@ -73,13 +73,34 @@ namespace OKEGui.Utils
         }
 
         private bool _avx512;
-
         public bool avx512
         {
             get => _avx512;
             set
             {
                 _avx512 = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private int _memoryLimit;
+        public int memoryLimit
+        {
+            get => _memoryLimit;
+            set
+            {
+                _memoryLimit = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private int _memoryTotal;
+        public int memoryTotal
+        {
+            get => _memoryTotal;
+            set
+            {
+                _memoryTotal = value;
                 NotifyPropertyChanged();
             }
         }

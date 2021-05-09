@@ -39,7 +39,7 @@ namespace OKEGui
         private static bool HasBlurayStructure(TaskDetail task)
         {
             FileInfo inputFile = new FileInfo(task.InputFile);
-            if (inputFile.Extension != ".m2ts")
+            if (inputFile.Extension.ToLower() != ".m2ts")
             {
                 Logger.Warn($"{task.InputFile}不是蓝光原盘文件。");
                 return false;
@@ -64,7 +64,7 @@ namespace OKEGui
         private static bool HasMatroskaChapter(TaskDetail task)
         {
             FileInfo inputFile = new FileInfo(task.InputFile);
-            if (inputFile.Extension != ".mkv")
+            if (inputFile.Extension.ToLower() != ".mkv")
             {
                 Logger.Warn($"{task.InputFile}不是Matroska文件。");
                 return false;

@@ -65,6 +65,11 @@ namespace OKEGui
             // 初始化更新菜单
             _systemMenu = new SystemMenu(this);
             _systemMenu.AddCommand("检查更新(&U)", () => { Updater.CheckUpdate(true); }, true);
+
+            if (Initializer.Config.memoryTotal == WmiUtils.GetTotalPhysicalMemory())
+            {
+                TxtFreeMemory.Text = Initializer.Config.memoryLimit.ToString();
+            }
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -99,6 +104,22 @@ namespace OKEGui
         {
             if (!string.IsNullOrEmpty(TxtFreeMemory.Text))
             {
+                int availMB = WmiUtils.GetAvailablePhysicalMemory();
+                if (availMB < 0)
+                {
+                    MessageBox.Show("无法获取当前空闲内存！请自行检查当前可用内存。", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else if (int.Parse(TxtFreeMemory.Text) < availMB)
+                {
+                    Initializer.Config.memoryTotal = WmiUtils.GetTotalPhysicalMemory();
+                }
+                else
+                {
+                    MessageBox.Show("内存设置大于系统可用空闲内存！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                Initializer.Config.memoryLimit = int.Parse(TxtFreeMemory.Text);
+                Initializer.WriteConfig();
                 // 新建任务。具体实现请见Gui/wizardWindow
                 try
                 {
@@ -365,6 +386,5 @@ namespace OKEGui
 
             e.Handled = re.IsMatch(e.Text);
         }
-
     }
 }

@@ -73,7 +73,7 @@ namespace OKEGui
                     case TrackType.Audio:
                         return MeanVolume < -70 && MaxVolume < -30;
                     case TrackType.Subtitle:
-                        return FileSize / Length < 6 * 1024 * 1024 / 3600;
+                        return FileSize / Length < 3 * 1024 * 1024 / 3600;
                     default:
                         return FileSize < 64;
                 }

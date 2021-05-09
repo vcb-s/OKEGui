@@ -108,6 +108,7 @@ namespace OKEGui
                 // startTime = DateTime.Now;
                 isProcessing = true;
                 Logger.Debug(executable + "开始运行");
+                proc.PriorityClass = ProcessPriorityClass.BelowNormal;
                 readStdErr();
                 readStdOut();
             } catch (Exception e) {
