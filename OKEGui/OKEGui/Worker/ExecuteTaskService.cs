@@ -77,7 +77,7 @@ namespace OKEGui.Worker
 
                     // 抽取音轨
                     profile.ExtractVideo = VideoService.ForceExtractVideo(task.InputFile);
-                    FileInfo eacInfo = new FileInfo(".\\tools\\eac3to\\eac3to.exe");
+                    FileInfo eacInfo = new FileInfo(Constants.eac3toWrapperPath);
                     MediaFile srcTracks = new EACDemuxer(eacInfo.FullName, task.InputFile, profile).Extract(
                         (double progress, EACProgressType type) =>
                         {

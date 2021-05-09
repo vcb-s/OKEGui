@@ -69,10 +69,6 @@ namespace OKEGui.JobProcessor
             }
             switch (ex.summary)
             {
-                case Constants.eac3toMissingSmr:
-                    msg.errorMsg = Constants.eac3toMissingMsg;
-                    break;
-
                 case Constants.audioNumMismatchSmr:
                     msg.errorMsg = string.Format(Constants.audioNumMismatchMsg, ex.Data["SRC_TRACK"], ex.Data["DST_TRACK"], task.InputFile);
                     break;

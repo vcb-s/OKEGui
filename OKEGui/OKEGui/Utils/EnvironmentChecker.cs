@@ -20,7 +20,7 @@ namespace OKEGui.Utils
             }
             Config = Initializer.LoadConfig();
 
-            return CheckVspipe() && CheckQAAC() && CheckFfmpeg() && CheckRPChecker();
+            return CheckVspipe() && CheckQAAC() && CheckFfmpeg() && CheckRPChecker() && CheckEac3toWrapper();
         }
 
         static bool CheckRootFolderWriteAccess()
@@ -190,6 +190,21 @@ namespace OKEGui.Utils
             else
             {
                 MessageBox.Show("请准备RPChecker最新版，程序将退出。", "此文件无法读取");
+                return false;
+            }
+        }
+
+        static bool CheckEac3toWrapper()
+        {
+            FileInfo eac3toWrapperInfo = new FileInfo(Constants.eac3toWrapperPath);
+
+            if (eac3toWrapperInfo.Exists)
+            {
+                return true;
+            }
+            else
+            {
+                MessageBox.Show("请更新tools工具包。", "无法找到eac3to-wrapper");
                 return false;
             }
         }

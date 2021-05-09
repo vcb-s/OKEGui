@@ -12,13 +12,14 @@ namespace OKEGui.Utils
         //ffmpeg
         public const string ffmpegPath = ".\\tools\\ffmpeg\\ffmpeg.exe";
 
+        //eac3to-wrapper
+        public const string eac3toWrapperPath = ".\\tools\\eac3to\\eac3to-wrapper.exe";
+
         //Audio & sub language.
         public const string language = "jpn";
 
         //Error messages and summaries
-        public const string eac3toMissingMsg = "eac3to.exe 不存在。";
-        public const string eac3toMissingSmr = "无EAC3TO";
-
+       
         public const string audioNumMismatchMsg = "当前的视频含有轨道数{0}，与json中指定的数量{1}不符合。该文件{2}将跳过处理。请转告技术总监复查。";
         public const string audioNumMismatchSmr = "音轨数不一致";
 
