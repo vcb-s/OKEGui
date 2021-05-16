@@ -288,6 +288,7 @@ namespace OKEGui
             if (WorkerCount == 1)
             {
                 MessageBox.Show("工作单元删除失败！", "只有一个工作单元了", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
             if (wm.DeleteWorker("工作单元-" + WorkerCount.ToString()))
             {
