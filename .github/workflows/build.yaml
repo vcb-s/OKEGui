@@ -19,8 +19,21 @@ jobs:
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.5
 
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.16'
+
     - name: Navigate to Workspace
       run: cd $GITHUB_WORKSPACE
+
+    - name: Clone & Build eac3to-wrapper
+      shell: bash
+      run: |
+        git clone https://github.com/AkarinVS/eac3to-wrapper
+        cd eac3to-wrapper
+        go build -ldflags "-X main.version=$(git describe --tags)"
+        cd ..
 
     - name: Restore Packages
       run: nuget restore OKEGui/OKEGui.sln
@@ -29,8 +42,14 @@ jobs:
       run: |
         msbuild.exe OKEGui/OKEGui.sln /nologo /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release"
 
+    - name: Integrate eac3to-wrapper
+      shell: bash
+      run: |
+        mkdir -p "./OKEGui/OKEGui/bin/Release/tools/eac3to"
+        cp eac3to-wrapper/eac3to-wrapper.exe "./OKEGui/OKEGui/bin/Release/tools/eac3to"
+
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
       with:
         name: OKEGui-release
-        path: "./OKEGui/OKEGui/bin/"
+        path: "./OKEGui/OKEGui/bin"
