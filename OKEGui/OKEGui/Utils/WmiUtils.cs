@@ -28,8 +28,8 @@ namespace OKEGui.Utils
             int capacity = 0;
             try
             {
-                foreach (ManagementObject mo1 in new ManagementClass("Win32_PerfFormattedData_PerfOS_Memory").GetInstances())
-                    capacity += int.Parse(mo1.Properties["AvailableMBytes"].Value.ToString());
+                foreach (ManagementObject mo1 in new ManagementClass("Win32_OperatingSystem").GetInstances())
+                    capacity += int.Parse(mo1.Properties["FreePhysicalMemory"].Value.ToString()) / 1024;
             }
             catch (Exception ex)
             {
