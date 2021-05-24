@@ -1,3 +1,4 @@
 [submodule "TChapter"]
 	path = TChapter
 	url = https://github.com/vcb-s/TChapter.git
+	branch = net-45
