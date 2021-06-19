@@ -177,6 +177,13 @@ namespace OKEGui
         // 为所有输入文件生成vs脚本，并添加任务至TaskManager。
         private void WizardFinish(object sender, RoutedEventArgs e)
         {
+            // 处理PROJECTDIR标签
+            if (Constants.projectDirRegex.IsMatch(vsScript)) {
+                string[] dirTag = Constants.projectDirRegex.Split(vsScript);
+                string projectDir = new DirectoryInfo(wizardInfo.ProjectFile).Parent.FullName;
+                vsScript = dirTag[0] + dirTag[1] + "r\"" + projectDir + "\"" + dirTag[3];
+            }
+
             string[] inputTemplate = Constants.inputRegex.Split(vsScript);
 
             // 处理MEMORY标签
