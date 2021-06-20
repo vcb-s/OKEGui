@@ -57,6 +57,7 @@ namespace OKEGui
         private List<Info> JobSub;
         private int length;
         private bool extractVideo;
+        private string WorkingPathPrefix;
 
         private static List<EacOutputTrackType> s_eacOutputs = new List<EacOutputTrackType> {
             new EacOutputTrackType(TrackCodec.RAW_PCM,    "RAW/PCM",            "flac",    true,  TrackType.Audio),
@@ -90,6 +91,7 @@ namespace OKEGui
                 JobSub.AddRange(jobProfile.SubtitleTracks);
             }
             extractVideo = jobProfile.ExtractVideo;
+            WorkingPathPrefix = jobProfile.WorkingPathPrefix;
         }
 
         private void StartEac(string arguments, bool asyncRead)
@@ -257,6 +259,7 @@ namespace OKEGui
                     Length = length,
                     RawOutput = line,
                     SourceFile = sourceFile,
+                    WorkingPathPrefix = WorkingPathPrefix,
                     Type = EacOutputToTrackType(match.Groups[2].Value),
                     DupOrEmpty = false
                 };

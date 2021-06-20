@@ -153,7 +153,7 @@ namespace OKEGui.Worker
 
                     if (profile.VideoFormat == "HEVC")
                     {
-                        videoJob.Output = new FileInfo(task.InputFile).FullName + ".hevc";
+                        videoJob.Output = task.Taskfile.WorkingPathPrefix + ".hevc";
                         if (!profile.EncoderParam.ToLower().Contains("--pools"))
                         {
                             videoJob.EncodeParam += " --pools " + NumaNode.X265PoolsParam(videoJob.NumaNode);
@@ -161,7 +161,7 @@ namespace OKEGui.Worker
                     }
                     else
                     {
-                        videoJob.Output = new FileInfo(task.InputFile).FullName;
+                        videoJob.Output = task.Taskfile.WorkingPathPrefix;
                         videoJob.Output += profile.ContainerFormat == "MKV" ? "_.mkv" : ".h264";
                         if (!profile.EncoderParam.ToLower().Contains("--threads") && NumaNode.UsableCoreCount > 10)
                         {
@@ -288,12 +288,16 @@ namespace OKEGui.Worker
                                         task.ChapterStatus = ChapterStatus.Added;
                                     }
 
-                                    FileInfo outputChapterFile =
+                                    FileInfo inputChapterFile =
                                         new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
-                                    if (outputChapterFile.Exists && !File.Exists(outputChapterFile.FullName + ".bak"))
+                                    FileInfo outputChapterFile =
+                                        new FileInfo(Path.ChangeExtension(task.Taskfile.WorkingPathPrefix, ".txt"));
+                                    if (inputChapterFile.Exists && !File.Exists(outputChapterFile.FullName))
+                                        File.Copy(inputChapterFile.FullName, outputChapterFile.FullName);
+                                    /*if (outputChapterFile.Exists && !File.Exists(outputChapterFile.FullName + ".bak"))
                                     {
                                         File.Move(outputChapterFile.FullName, outputChapterFile.FullName + ".bak");
-                                    }
+                                    }*/
 
                                     chapterInfo.Save(ChapterTypeEnum.OGM, outputChapterFile.FullName);
                                     outputChapterFile.Refresh();
@@ -301,7 +305,7 @@ namespace OKEGui.Worker
                                     task.MediaOutFile.AddTrack(new ChapterTrack(chapterFile));
 
                                     // 用章节文件生成qpfile
-                                    string qpFileName = Path.ChangeExtension(task.InputFile, ".qpf");
+                                    string qpFileName = Path.ChangeExtension(task.Taskfile.WorkingPathPrefix, ".qpf");
                                     string qpFile = vJob.Vfr
                                         ? ChapterService.GenerateQpFile(chapterInfo, timecode)
                                         : ChapterService.GenerateQpFile(chapterInfo, vJob.Fps);
@@ -349,7 +353,7 @@ namespace OKEGui.Worker
                         AutoMuxer muxer = new AutoMuxer(mkvInfo.FullName, lsmash.FullName);
                         muxer.ProgressChanged += progress => task.ProgressValue = progress;
 
-                        OKEFile outFile = muxer.StartMuxing(Path.GetDirectoryName(task.InputFile) + "\\" + task.OutputFile, task.MediaOutFile);
+                        OKEFile outFile = muxer.StartMuxing(Path.GetDirectoryName(task.Taskfile.WorkingPathPrefix) + "\\" + task.OutputFile, task.MediaOutFile);
                         task.OutputFile = outFile.GetFileName();
                         task.BitRate = CommandlineVideoEncoder.HumanReadableFilesize(outFile.GetFileSize(), 2);
                     }
@@ -360,7 +364,7 @@ namespace OKEGui.Worker
                         FileInfo lsmash = new FileInfo(".\\tools\\l-smash\\muxer.exe");
                         AutoMuxer muxer = new AutoMuxer(mkvInfo.FullName, lsmash.FullName);
                         muxer.ProgressChanged += progress => task.ProgressValue = progress;
-                        string mkaOutputFile = task.InputFile + ".mka";
+                        string mkaOutputFile = task.Taskfile.WorkingPathPrefix + ".mka";
 
                         muxer.StartMuxing(mkaOutputFile, task.MkaOutFile);
                     }

@@ -247,8 +247,11 @@ namespace OKEGui
                 string vpy = inputTemplate[0] + inputTemplate[1] + "r\"" +
                     inputFile + "\"" + inputTemplate[3];
 
+                string newPath = new DirectoryInfo(wizardInfo.ProjectFile).Parent.FullName + "/" + inputFile.Replace(':', '_');
+                Directory.CreateDirectory(new DirectoryInfo(newPath).Parent.FullName);
+
                 DateTime time = DateTime.Now;
-                string fileName = inputFile + "-" + time.ToString("MMddHHmm") + ".vpy";
+                string fileName = /*inputFile*/newPath + "-" + time.ToString("MMddHHmm") + ".vpy";
                 File.WriteAllText(fileName, vpy);
 
                 FileInfo finfo = new FileInfo(inputFile);
@@ -258,6 +261,7 @@ namespace OKEGui
                     Taskfile = json.Clone() as TaskProfile,
                     InputFile = inputFile,
                 };
+                td.Taskfile.WorkingPathPrefix = newPath;
 
                 // 更新输入脚本和输出文件拓展名
                 td.Taskfile.InputScript = fileName;
