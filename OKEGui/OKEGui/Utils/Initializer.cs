@@ -104,6 +104,17 @@ namespace OKEGui.Utils
                 NotifyPropertyChanged();
             }
         }
+
+        private string _stripCommonPathCompnents = "BDBOX/BDROM/BD/BDMV/STREAM/BD_VIDEO";
+        public string stripCommonPathCompnents
+        {
+            get => _stripCommonPathCompnents;
+            set
+            {
+                _stripCommonPathCompnents = value;
+                NotifyPropertyChanged();
+            }
+        }
     }
 
     static class Initializer

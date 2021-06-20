@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Forms;
 using OKEGui.Utils;
@@ -247,8 +248,20 @@ namespace OKEGui
                 string vpy = inputTemplate[0] + inputTemplate[1] + "r\"" +
                     inputFile + "\"" + inputTemplate[3];
 
+                string inputSuffixPath = inputFile.Replace(':', '_');
+                string[] strippedComponents = Initializer.Config.stripCommonPathCompnents.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var comp in strippedComponents)
+                {
+                    inputSuffixPath = Regex.Replace(inputSuffixPath, @"[/\\]" + Regex.Escape(comp) + @"[/\\]", "\\");
+                }
+                Logger.Debug("Transformed input path: " + inputSuffixPath);
+                string newPath = new DirectoryInfo(wizardInfo.ProjectFile).Parent.FullName + "/" + inputSuffixPath;
+                Directory.CreateDirectory(new DirectoryInfo(newPath).Parent.FullName);
+                string outPath = Regex.Replace(newPath, @"[/\\]._[/\\]", "\\output\\");
+                Directory.CreateDirectory(new DirectoryInfo(outPath).Parent.FullName);
+
                 DateTime time = DateTime.Now;
-                string fileName = inputFile + "-" + time.ToString("MMddHHmm") + ".vpy";
+                string fileName = newPath + "-" + time.ToString("MMddHHmm") + ".vpy";
                 File.WriteAllText(fileName, vpy);
 
                 FileInfo finfo = new FileInfo(inputFile);
@@ -258,6 +271,8 @@ namespace OKEGui
                     Taskfile = json.Clone() as TaskProfile,
                     InputFile = inputFile,
                 };
+                td.Taskfile.WorkingPathPrefix = newPath;
+                td.Taskfile.OutputPathPrefix = outPath;
 
                 // 更新输入脚本和输出文件拓展名
                 td.Taskfile.InputScript = fileName;
