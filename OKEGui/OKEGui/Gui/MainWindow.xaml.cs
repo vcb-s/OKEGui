@@ -37,6 +37,8 @@ namespace OKEGui
 
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             Title += " v" + version;
+            var description = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyDescriptionAttribute>();
+            if (description != null) Title += " " + description.Description;
 
             TaskList.ItemsSource = tm.taskStatus;
 
