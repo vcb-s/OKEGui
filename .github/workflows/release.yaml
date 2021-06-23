@@ -2,11 +2,12 @@ name: OKEGui Mod Release
 
 on:
   push:
-    branch: mod
+    tags: v*
 
 jobs:
   build:
     runs-on: windows-latest
+    if: github.event.base_ref == 'refs/heads/mod'
 
     steps:
     - uses: actions/checkout@v2
@@ -61,5 +62,6 @@ jobs:
       with:
         files: OKEGui-*.zip
         body_path: RELNOTES.md
+        draft: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
