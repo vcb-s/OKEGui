@@ -3,11 +3,12 @@ name: OKEGui Mod Release
 on:
   push:
     tags: v*
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
-    if: github.event.base_ref == 'refs/heads/mod'
+    #if: github.event.base_ref == 'refs/heads/mod'
 
     steps:
     - uses: actions/checkout@v2
