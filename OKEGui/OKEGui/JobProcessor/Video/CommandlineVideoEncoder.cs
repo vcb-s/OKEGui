@@ -144,7 +144,7 @@ namespace OKEGui
             }
             else
             {
-                job.BitRate = bitrate.ToString("0.00") + unit;
+                job.BitRate = bitrate.ToString("0.00") + " " + unit;
             }
 
             // su.NbFramesDone = currentFrameNumber;
@@ -161,7 +161,7 @@ namespace OKEGui
                 i++;
             }
 
-            return Math.Round(size * Math.Pow(10, digit)) / Math.Pow(10, digit) + units[i];
+            return Math.Round(size * Math.Pow(10, digit)) / Math.Pow(10, digit) + " " + units[i];
         }
 
         protected void encodeFinish(ulong reportedFrames)
