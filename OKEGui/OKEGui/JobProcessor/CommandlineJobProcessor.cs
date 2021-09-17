@@ -101,7 +101,7 @@ namespace OKEGui
             //proc.EnableRaisingEvents = true;
             //proc.Exited += new EventHandler(proc_Exited);
             bWaitForExit = false;
-            Logger.Info(pstart.FileName + " " + pstart.Arguments);
+            Logger.Trace(pstart.FileName + " " + pstart.Arguments);
 
             try {
                 bool started = proc.Start();

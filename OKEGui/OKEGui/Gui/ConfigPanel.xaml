@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:OKEGui"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         mc:Ignorable="d"
-        Title="设置" Height="300" Width="500">
+        Title="设置" Height="330" Width="500">
     <Window.Resources>
         <Style TargetType="DataGridCell">
             <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -36,9 +36,10 @@
             <TextBox Height="25" Grid.Row="1" Grid.Column="1" Text="{Binding Config.rpCheckerPath}"/>
             <Button Height="25" Width="40" Grid.Row="1" Grid.Column="2" Content="选择" Click="RPChecker_Click"/>
         </Grid>
-        <Grid Grid.Row="1" Height="105" VerticalAlignment="Top">
+        <Grid Grid.Row="1" Height="109" VerticalAlignment="Top" Grid.RowSpan="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="347.414"/>
+                <ColumnDefinition Width="52.586"/>
                 <ColumnDefinition Width="95"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -46,8 +47,8 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBlock Margin="10,9" Height="30" Grid.Row="0" Grid.Column="0" Text="记录详细程度（从上到下越来越详细）"/>
-            <ComboBox Height="25" Width="70" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="1" SelectedValue="{Binding Config.logLevel}" SelectedValuePath="Content">
+            <TextBlock Margin="10,9,10,31" Height="30" Grid.Row="0" Grid.Column="0" Text="记录详细程度（从上到下越来越详细）" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+            <ComboBox Height="25" Width="70" Grid.Row="0" HorizontalAlignment="Center" Grid.Column="2" SelectedValue="{Binding Config.logLevel}" SelectedValuePath="Content" Margin="12,5,13,5">
                 <ComboBoxItem Content="OFF"/>
                 <ComboBoxItem Content="FATAL"/>
                 <ComboBoxItem Content="ERROR"/>
@@ -56,10 +57,14 @@
                 <ComboBoxItem Content="DEBUG"/>
                 <ComboBoxItem Content="TRACE"/>
             </ComboBox>
-            <TextBlock Margin="10,9" Height="30" Grid.Row="1" Grid.Column="0" Text="跳过Numa检测（AMD Ryzen 1000系列请勾选）"/>
-            <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" IsChecked="{Binding Config.noNuma}"/>
-            <TextBlock Margin="10,9" Height="30" Grid.Row="2" Grid.Column="0" Text="开启AVX512烤鸡模式"/>
-            <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" IsChecked="{Binding Config.avx512}"/>
+            <TextBlock Margin="10,9,10,31" Height="30" Grid.Row="1" Grid.Column="0" Text="跳过Numa检测（AMD Ryzen 1000系列请勾选）" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+            <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="2" IsChecked="{Binding Config.noNuma}" Margin="40,10,39,10"/>
+            <TextBlock Margin="10,9,10,-4" Height="30" Grid.Row="2" Grid.Column="0" Text="开启AVX512烤鸡模式" Grid.ColumnSpan="2"/>
+            <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Grid.Column="2" IsChecked="{Binding Config.avx512}" Margin="40,10,39,10"/>
+            <TextBlock Margin="10,45,10,-39" Height="30" Grid.Row="2" Grid.Column="0" Text="使用" Grid.ColumnSpan="2"/>
+            <TextBlock Margin="41,39,74,-33" Height="30" Grid.Row="2" Grid.Column="0" Text="HUGE" Grid.ColumnSpan="3" FontSize="20" FontWeight="Bold"/>
+            <TextBlock Margin="108,45,7,-39" Height="30" Grid.Row="2" Grid.Column="0" Text="page （仅对VS R55以及魔改版x265生效）" Grid.ColumnSpan="3"/>
+            <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Grid.Column="2" IsChecked="{Binding Config.hugePage}" Margin="40,46,39,-25"/>
         </Grid>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>

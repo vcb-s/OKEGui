@@ -106,8 +106,14 @@ namespace OKEGui
         private string BuildCommandline(string extractParam, int numaNode, List<string> vspipeArgs)
         {
             StringBuilder sb = new StringBuilder();
-
-            sb.Append("/c \"start \"foo\" /b /wait /affinity 0xFFFFFFF /node ");
+            sb.Append("/v /c \"");
+            if (Initializer.Config.hugePage)
+            {
+                int targetgigs = (int)Math.Floor((double)Initializer.Config.memoryLimit / 2 / 1024) + 1;
+                sb.Append("set MIMALLOC_RESERVE_HUGE_OS_PAGES=" + targetgigs + "&& ");
+                sb.Append("set MIMALLOC_VERBOSE=1&& ");
+            }
+            sb.Append("start \"foo\" /b /wait /affinity 0xFFFFFFF /node ");
             sb.Append(numaNode.ToString());
             // 构建vspipe参数
             sb.Append(" \"" + vspipePath + "\"");
