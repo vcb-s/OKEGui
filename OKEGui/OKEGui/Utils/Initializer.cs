@@ -83,6 +83,17 @@ namespace OKEGui.Utils
             }
         }
 
+        private bool _hugePage;
+        public bool hugePage
+        {
+            get => _hugePage;
+            set
+            {
+                _hugePage = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         private int _memoryLimit;
         public int memoryLimit
         {
