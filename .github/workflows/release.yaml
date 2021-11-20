@@ -55,6 +55,7 @@ jobs:
       run: |
         git clone https://github.com/AkarinVS/exe
         export PATH=`pwd`/exe/:$PATH
+        cp -r dist/windows/examples ./OKEGui/OKEGui/bin/Release
         pushd ./OKEGui/OKEGui/bin
         zip -9r ../../../"OKEGui-mod-$(git describe --tags).zip" Release
 
