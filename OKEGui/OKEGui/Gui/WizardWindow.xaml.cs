@@ -247,7 +247,7 @@ namespace OKEGui
                 string vpy = inputTemplate[0] + inputTemplate[1] + "r\"" +
                     inputFile + "\"" + inputTemplate[3];
 
-                string newPath = new DirectoryInfo(wizardInfo.ProjectFile).Parent.FullName + "/" + inputFile.Replace(':', '_');
+                string newPath = new DirectoryInfo(wizardInfo.ProjectFile).Parent.FullName + "/" + inputFile.Replace(':', '_').Replace("\\STREAM\\", "\\").Replace("\\BDMV\\", "\\");
                 Directory.CreateDirectory(new DirectoryInfo(newPath).Parent.FullName);
 
                 DateTime time = DateTime.Now;
