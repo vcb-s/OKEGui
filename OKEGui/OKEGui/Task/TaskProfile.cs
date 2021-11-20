@@ -33,6 +33,7 @@ namespace OKEGui.Model
         public string AudioFormat;
 
         public string WorkingPathPrefix;
+        public string OutputPathPrefix;
 
         public Object Clone()
         {

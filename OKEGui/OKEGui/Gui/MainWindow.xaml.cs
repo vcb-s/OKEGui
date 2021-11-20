@@ -372,7 +372,7 @@ namespace OKEGui
             }
             else
             {
-                string path = Path.GetDirectoryName(item.Taskfile.WorkingPathPrefix);
+                string path = Path.GetDirectoryName(item.Taskfile.OutputPathPrefix);
                 string arg = path;
 
                 if (item.CurrentStatus == "完成")
