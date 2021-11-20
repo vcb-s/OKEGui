@@ -1,3 +1,19 @@
+# v7.2.4 "The Protagonist Returns", again!
+
+- Simplify temporary working directory path, useless "BDMV" and "STREAM" components are removed.
+- Separate output files from the working directory. Place output files into "./output/" under the project directory.
+- The window title is still "The Protagonist Returns".
+
+# v7.2.3 "Attack on Memory"
+
+- Change task name text alignment to left by default
+- Add **HUGE** page support for vs-classic and modded x265 that use mimalloc
+- I forget to change the AssemblyDescription, so the window title is still "The Protagonist Returns", it's a feature!
+
+# v7.2.2 "The Protagonist Returns"
+
+- Recognizes ass and srt subs in mkv inputs (though no support for muxing them into the final output though, so you have to specify `"MuxOption": "Skip"` for all those ASS/SRT tracks.
+
 # v7.2.1 "Me and You and the Student Council"
 
 Compared to upstream v7.2 release, this release introduces the following changes:
