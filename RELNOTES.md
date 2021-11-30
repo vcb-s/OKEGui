@@ -2,6 +2,7 @@
 
 - If "跳过Numa检测" is set, do not set numa node when starting vspipe and encoder.
   - Also change the affinity mask from (1<<28)-1 to (1<<64)-1 to avoid wasting CPUs.
+- Updated eac3to-wrapper to v1.2 (built with Go 1.17).
 - The window title is still "The Protagonist Returns".
 
 # v7.2.4 "The Protagonist Returns", again!
