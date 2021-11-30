@@ -113,8 +113,11 @@ namespace OKEGui
                 sb.Append("set MIMALLOC_RESERVE_HUGE_OS_PAGES=" + targetgigs + "&& ");
                 sb.Append("set MIMALLOC_VERBOSE=1&& ");
             }
-            sb.Append("start \"foo\" /b /wait /affinity 0xFFFFFFF /node ");
-            sb.Append(numaNode.ToString());
+            sb.Append("start \"foo\" /b /wait ");
+            if (!Initializer.Config.noNuma) {
+                sb.Append("/affinity 0xFFFFFFFFFFFFFFFF /node ");
+                sb.Append(numaNode.ToString());
+            }
             // 构建vspipe参数
             sb.Append(" \"" + vspipePath + "\"");
             sb.Append(" --y4m");
