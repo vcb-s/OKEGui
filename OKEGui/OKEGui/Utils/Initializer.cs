@@ -201,7 +201,7 @@ namespace OKEGui.Utils
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             Updater.SoftwareName = "OKEGui";
             Updater.CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            Updater.RepoName = "vcb-s/OKEGui";
+            Updater.RepoName = "AmusementClub/OKEGui";
             try
             {
                 var reg = RegistryStorage.Load(null, "LastCheck");
