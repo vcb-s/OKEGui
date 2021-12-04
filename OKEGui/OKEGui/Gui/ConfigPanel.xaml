@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:OKEGui"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         mc:Ignorable="d"
-        Title="设置" Height="330" Width="500">
+        Title="设置" Height="381.562" Width="500">
     <Window.Resources>
         <Style TargetType="DataGridCell">
             <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -65,6 +65,8 @@
             <TextBlock Margin="41,39,74,-33" Height="30" Grid.Row="2" Grid.Column="0" Text="HUGE" Grid.ColumnSpan="3" FontSize="20" FontWeight="Bold"/>
             <TextBlock Margin="108,45,7,-39" Height="30" Grid.Row="2" Grid.Column="0" Text="page （仅对VS R55以及魔改版x265生效）" Grid.ColumnSpan="3"/>
             <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Grid.Column="2" IsChecked="{Binding Config.hugePage}" Margin="40,46,39,-25"/>
+            <TextBlock Margin="10,70,10,-63" Height="30" Grid.Row="2" Grid.Column="0" Text="删除工作/输出目录路径中的以下目录层次（使用 / 分割）"/>
+            <TextBox Grid.Row="2" Text="{Binding Config.stripCommonPathCompnents}" Margin="10,92,13,-104" Grid.ColumnSpan="3"/>
         </Grid>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>

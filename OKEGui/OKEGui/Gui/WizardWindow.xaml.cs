@@ -248,7 +248,13 @@ namespace OKEGui
                 string vpy = inputTemplate[0] + inputTemplate[1] + "r\"" +
                     inputFile + "\"" + inputTemplate[3];
 
-                string newPath = new DirectoryInfo(wizardInfo.ProjectFile).Parent.FullName + "/" + inputFile.Replace(':', '_').Replace("\\STREAM\\", "\\").Replace("\\BDMV\\", "\\");
+                string inputSuffixPath = inputFile.Replace(':', '_');
+                string[] strippedComponents = Initializer.Config.stripCommonPathCompnents.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var comp in strippedComponents) {
+                    inputSuffixPath = Regex.Replace(inputSuffixPath, @"[/\\]" + Regex.Escape(comp) + @"[/\\]", "\\");
+                }
+                Logger.Debug("Transformed input path: " + inputSuffixPath);
+                string newPath = new DirectoryInfo(wizardInfo.ProjectFile).Parent.FullName + "/" + inputSuffixPath;
                 Directory.CreateDirectory(new DirectoryInfo(newPath).Parent.FullName);
                 string outPath = Regex.Replace(newPath, @"[/\\]._[/\\]", "\\output\\");
                 Directory.CreateDirectory(new DirectoryInfo(outPath).Parent.FullName);
