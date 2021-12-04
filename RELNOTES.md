@@ -1,3 +1,9 @@
+# v7.2.6 "The Protagonist Returns", again^3!
+
+- Strip configurable set of common path components (e.g. BDMV STREAM) in working & output directory path.
+- Update auto-update to check the AmusementClub fork, instead of the origin upstream.
+- The window title is still "The Protagonist Returns".
+
 # v7.2.5 "The Protagonist Returns", again^2!
 
 - If "跳过Numa检测" is set, do not set numa node when starting vspipe and encoder.
