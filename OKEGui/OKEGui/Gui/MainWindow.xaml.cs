@@ -43,6 +43,7 @@ namespace OKEGui
                 Title += " + VS portable " + ver;
             }
             catch { /* it's ok if VERSION doesn't exist. */ }
+            Title += "  [" + Initializer.Config.vspipePath + "]";
 
             TaskList.ItemsSource = tm.taskStatus;
 
