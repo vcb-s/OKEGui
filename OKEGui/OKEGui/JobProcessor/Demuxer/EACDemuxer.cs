@@ -309,20 +309,24 @@ namespace OKEGui
                         break;
                 }
             }
-            if (srcAudio.Count != JobAudio.Count)
+            List<AudioInfo> requiredAudios = JobAudio.FindAll(val => !val.Optional);
+            if (srcAudio.Count != JobAudio.Count && srcAudio.Count != requiredAudios.Count)
             {
                 OKETaskException ex = new OKETaskException(Constants.audioNumMismatchSmr);
                 ex.progress = 0.0;
                 ex.Data["SRC_TRACK"] = srcAudio.Count;
-                ex.Data["DST_TRACK"] = JobAudio.Count;
+                ex.Data["DST_REQ_TRACK"] = requiredAudios.Count;
+                ex.Data["DST_OPT_TRACK"] = JobAudio.Count - requiredAudios.Count;
                 throw ex;
             }
-            if (srcSub.Count != JobSub.Count)
+            List<Info> requiredSubs = JobSub.FindAll(val => !val.Optional);
+            if (srcSub.Count != JobSub.Count && srcSub.Count != requiredSubs.Count)
             {
                 OKETaskException ex = new OKETaskException(Constants.subNumMismatchSmr);
                 ex.progress = 0.0;
                 ex.Data["SRC_TRACK"] = srcSub.Count;
-                ex.Data["DST_TRACK"] = JobSub.Count;
+                ex.Data["DST_REQ_TRACK"] = requiredSubs.Count;
+                ex.Data["DST_OPT_TRACK"] = JobSub.Count - requiredSubs.Count;
                 throw ex;
             }
             int audioId = 0, subId = 0;
