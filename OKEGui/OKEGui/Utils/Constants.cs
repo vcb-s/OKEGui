@@ -20,10 +20,10 @@ namespace OKEGui.Utils
 
         //Error messages and summaries
        
-        public const string audioNumMismatchMsg = "当前的视频含有轨道数{0}，与json中指定的数量{1}不符合。该文件{2}将跳过处理。请转告技术总监复查。";
+        public const string audioNumMismatchMsg = "当前的视频含有轨道数{0}，与json中指定的数量{1}必须+{2}可选不符合。该文件{3}将跳过处理。请转告技术总监复查。";
         public const string audioNumMismatchSmr = "音轨数不一致";
 
-        public const string subNumMismatchMsg = "当前的视频含有字幕数{0}，与json中指定的数量{1}不符合。该文件{2}将跳过处理。请转告技术总监复查。";
+        public const string subNumMismatchMsg = "当前的视频含有字幕数{0}，与json中指定的数量{1}必须+{2}可选不符合。该文件{3}将跳过处理。请转告技术总监复查。";
         public const string subNumMismatchSmr = "字幕数不一致";
 
         public const string fpsMismatchMsg = "输出FPS和指定FPS不一致。json里指定帧率为{0}，vs输出帧率为{1}。该文件{2}将跳过处理。请转告技术总监复查。";

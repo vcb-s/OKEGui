@@ -26,6 +26,7 @@ namespace OKEGui.Model
         public MuxOption MuxOption = MuxOption.Default;
         public string Language = Constants.language;
         public string Name = "";
+        public bool Optional = false;
         private bool _dupOrEmpty;
         public bool DupOrEmpty
         {
