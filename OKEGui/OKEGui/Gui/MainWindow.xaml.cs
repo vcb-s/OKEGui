@@ -39,6 +39,7 @@ namespace OKEGui
             Title += " v" + version;
             var description = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyDescriptionAttribute>();
             if (description != null) Title += " " + description.Description;
+            Title += " [" + Initializer.Config.vspipePath + "]";
 
             TaskList.ItemsSource = tm.taskStatus;
 
