@@ -1,3 +1,9 @@
+# v7.2.7 "The Protagonist Returns", again^4!
+
+- Show vspipe path in window title.
+- Add support for "Optional" field in AudioTracks and SubtitleTracks. All optionals tracks of the same type must satisfy that either all exist or none exists.
+- The window title is still "The Protagonist Returns".
+
 # v7.2.6 "The Protagonist Returns", again^3!
 
 - Strip configurable set of common path components (e.g. BDMV STREAM) in working & output directory path.
