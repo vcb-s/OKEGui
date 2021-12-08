@@ -329,6 +329,11 @@ namespace OKEGui
                 ex.Data["DST_OPT_TRACK"] = JobSub.Count - requiredSubs.Count;
                 throw ex;
             }
+            if (srcAudio.Count != JobAudio.Count)
+                JobAudio.RemoveAll(info => info.Optional);
+            if (srcSub.Count != JobSub.Count)
+                JobSub.RemoveAll(info => info.Optional);
+
             int audioId = 0, subId = 0;
             foreach (TrackInfo track in tracks)
             {
