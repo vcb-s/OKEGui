@@ -1,3 +1,10 @@
+# v7.3.2 "The Protagonist Returns", again^4!
+Basically upstream v7.3, with the following additions:
+- Huge page support.
+- Configurable set of common path components to strip for working/output directory.
+- "Lossy" audio transcode support.
+- The window title is still "The Protagonist Returns".
+
 # v7.2.7 "The Protagonist Returns", again^4!
 
 - Show vspipe path in window title.
