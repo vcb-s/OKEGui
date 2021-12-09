@@ -31,7 +31,7 @@ namespace OKEGui
             TaskProfile json;
             try
             {
-                var deserializer = new Deserializer();
+                var deserializer = new DeserializerBuilder().IgnoreUnmatchedProperties().Build();
                 json = deserializer.Deserialize<TaskProfile>(profileStr);
             }
             catch (Exception e)
