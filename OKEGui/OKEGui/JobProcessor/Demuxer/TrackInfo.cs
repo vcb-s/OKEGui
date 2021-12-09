@@ -33,6 +33,7 @@ namespace OKEGui
             public string Information;
             public string RawOutput;
             public string SourceFile;
+            public string WorkingPathPrefix;
             public TrackType Type;
             public bool DupOrEmpty;
             public int Length;
@@ -44,7 +45,7 @@ namespace OKEGui
             {
                 get
                 {
-                    var directory = Path.GetDirectoryName(SourceFile);
+                    var directory = Path.GetDirectoryName(WorkingPathPrefix);
                     var baseName = Path.GetFileNameWithoutExtension(SourceFile);
 
                     if (Type == TrackType.Video)

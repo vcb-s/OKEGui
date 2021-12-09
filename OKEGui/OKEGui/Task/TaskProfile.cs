@@ -32,6 +32,9 @@ namespace OKEGui.Model
         public string VideoFormat;
         public string AudioFormat;
 
+        public string WorkingPathPrefix;
+        public string OutputPathPrefix;
+
         public Object Clone()
         {
             TaskProfile clone = MemberwiseClone() as TaskProfile;
