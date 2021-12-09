@@ -50,13 +50,13 @@ namespace OKEGui.Utils
             }
         }
 
-        private bool _noNuma = false;
-        public bool noNuma
+        private bool _singleNuma = false;
+        public bool singleNuma
         {
-            get => _noNuma;
+            get => _singleNuma;
             set
             {
-                _noNuma = value;
+                _singleNuma = value;
                 NotifyPropertyChanged();
             }
         }

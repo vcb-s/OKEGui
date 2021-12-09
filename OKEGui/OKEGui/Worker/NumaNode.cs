@@ -17,7 +17,7 @@ namespace OKEGui.Worker
 
         static NumaNode()
         {
-            if (Initializer.Config.noNuma)
+            if (Initializer.Config.singleNuma)
             {
                 CurrentNuma = 0;
                 NumaCount = 1;
