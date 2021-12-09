@@ -71,6 +71,8 @@ namespace OKEGui
             new EacOutputTrackType(TrackCodec.H264_AVC,   "h264/AVC",           "264",     false, TrackType.Video),
             new EacOutputTrackType(TrackCodec.H265_HEVC,  "h265/HEVC",          "265",     false, TrackType.Video),
             new EacOutputTrackType(TrackCodec.PGS,        "Subtitle (PGS)",     "sup",     true,  TrackType.Subtitle),
+            new EacOutputTrackType(TrackCodec.ASS,        "Subtitle (ASS)",     "ass",     true,  TrackType.Subtitle),
+            new EacOutputTrackType(TrackCodec.SRT,        "Subtitle (SRT)",     "srt",     true,  TrackType.Subtitle),
             new EacOutputTrackType(TrackCodec.Chapter,    "Chapters",           "txt",     false, TrackType.Chapter),
             new EacOutputTrackType(TrackCodec.VobSub,     "Subtitle (VobSub)",  "sub",     false, TrackType.Subtitle) //vobsub is not supported by eac3to
         };
