@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:OKEGui"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         mc:Ignorable="d"
-        Title="设置" Height="370" Width="500">
+        Title="设置" Height="300" Width="500">
     <Window.Resources>
         <Style TargetType="DataGridCell">
             <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -16,7 +16,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="70"/>
-            <RowDefinition Height="187"/>
+            <RowDefinition Height="105"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Height="70" VerticalAlignment="Top">
@@ -60,8 +60,6 @@
             <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" IsChecked="{Binding Config.singleNuma}"/>
             <TextBlock Margin="10,9" Height="30" Grid.Row="2" Grid.Column="0" Text="开启AVX512烤鸡模式"/>
             <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" IsChecked="{Binding Config.avx512}"/>
-            <TextBlock Margin="10,44,10,-39" Height="30" Grid.Row="2" Grid.Column="0" Text="删除工作/输出目录路径中的以下目录层次（使用 / 分割）"/>
-            <TextBox Grid.Row="2" Text="{Binding Config.stripCommonPathCompnents}" Margin="10,74,13,-80" Grid.ColumnSpan="2"/>
         </Grid>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>

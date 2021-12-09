@@ -249,7 +249,8 @@ namespace OKEGui
                     inputFile + "\"" + inputTemplate[3];
 
                 string inputSuffixPath = inputFile.Replace(':', '_');
-                string[] strippedComponents = Initializer.Config.stripCommonPathCompnents.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+                const string stripCommonPathComponents = "BDBOX/BDROM/BD/BDMV/STREAM/BD_VIDEO"; // FIXME: do not hardcode this.
+                string[] strippedComponents = stripCommonPathComponents.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var comp in strippedComponents)
                 {
                     inputSuffixPath = Regex.Replace(inputSuffixPath, @"[/\\]" + Regex.Escape(comp) + @"[/\\]", "\\");
