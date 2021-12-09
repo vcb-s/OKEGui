@@ -70,11 +70,11 @@ namespace OKEGui.JobProcessor
             switch (ex.summary)
             {
                 case Constants.audioNumMismatchSmr:
-                    msg.errorMsg = string.Format(Constants.audioNumMismatchMsg, ex.Data["SRC_TRACK"], ex.Data["DST_TRACK"], task.InputFile);
+                    msg.errorMsg = string.Format(Constants.audioNumMismatchMsg, ex.Data["SRC_TRACK"], ex.Data["DST_REQ_TRACK"], ex.Data["DST_OPT_TRACK"], task.InputFile);
                     break;
 
                 case Constants.subNumMismatchSmr:
-                    msg.errorMsg = string.Format(Constants.subNumMismatchMsg, ex.Data["SRC_TRACK"], ex.Data["DST_TRACK"], task.InputFile);
+                    msg.errorMsg = string.Format(Constants.subNumMismatchMsg, ex.Data["SRC_TRACK"], ex.Data["DST_REQ_TRACK"], ex.Data["DST_OPT_TRACK"], task.InputFile);
                     break;
 
                 case Constants.fpsMismatchSmr:

@@ -10,7 +10,9 @@
     },{
         "OutputCodec" : "aac",
         "Bitrate" : 192,
-        "Language" : "eng"
+        "Name": "Commentary",
+        "Language" : "eng",
+        "Optional": true
     }],
     "InputScript" : "demo.vpy",
     "Fps" : 23.976,
