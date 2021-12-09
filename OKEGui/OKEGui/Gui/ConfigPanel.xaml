@@ -57,7 +57,7 @@
                 <ComboBoxItem Content="TRACE"/>
             </ComboBox>
             <TextBlock Margin="10,9" Height="30" Grid.Row="1" Grid.Column="0" Text="跳过Numa检测（AMD Ryzen 1000系列请勾选）"/>
-            <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" IsChecked="{Binding Config.noNuma}"/>
+            <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" IsChecked="{Binding Config.singleNuma}"/>
             <TextBlock Margin="10,9" Height="30" Grid.Row="2" Grid.Column="0" Text="开启AVX512烤鸡模式"/>
             <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" IsChecked="{Binding Config.avx512}"/>
         </Grid>
