@@ -21,7 +21,9 @@ namespace OKEGui
             DTS,
             PGS,
             Chapter,
-            VobSub
+            VobSub,
+            ASS,
+            SRT
         }
 
         public class TrackInfo
