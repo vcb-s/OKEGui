@@ -294,10 +294,6 @@ namespace OKEGui.Worker
                                         new FileInfo(Path.ChangeExtension(task.Taskfile.WorkingPathPrefix, ".txt"));
                                     if (inputChapterFile.Exists && !File.Exists(outputChapterFile.FullName))
                                         File.Copy(inputChapterFile.FullName, outputChapterFile.FullName);
-                                    /*if (outputChapterFile.Exists && !File.Exists(outputChapterFile.FullName + ".bak"))
-                                    {
-                                        File.Move(outputChapterFile.FullName, outputChapterFile.FullName + ".bak");
-                                    }*/
 
                                     chapterInfo.Save(ChapterTypeEnum.OGM, outputChapterFile.FullName);
                                     outputChapterFile.Refresh();

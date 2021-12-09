@@ -135,7 +135,7 @@ namespace OKEGui
         private void OpenProjectBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "OKEGui 项目文件 (*.json)|*.json";
+            ofd.Filter = "OKEGui 项目文件 (*.json;*.yaml;*.yml)|*.json;*.yaml;*.yml";
             var result = ofd.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.Cancel)
             {
@@ -250,7 +250,8 @@ namespace OKEGui
 
                 string inputSuffixPath = inputFile.Replace(':', '_');
                 string[] strippedComponents = Initializer.Config.stripCommonPathCompnents.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var comp in strippedComponents) {
+                foreach (var comp in strippedComponents)
+                {
                     inputSuffixPath = Regex.Replace(inputSuffixPath, @"[/\\]" + Regex.Escape(comp) + @"[/\\]", "\\");
                 }
                 Logger.Debug("Transformed input path: " + inputSuffixPath);
@@ -260,7 +261,7 @@ namespace OKEGui
                 Directory.CreateDirectory(new DirectoryInfo(outPath).Parent.FullName);
 
                 DateTime time = DateTime.Now;
-                string fileName = /*inputFile*/newPath + "-" + time.ToString("MMddHHmm") + ".vpy";
+                string fileName = newPath + "-" + time.ToString("MMddHHmm") + ".vpy";
                 File.WriteAllText(fileName, vpy);
 
                 FileInfo finfo = new FileInfo(inputFile);

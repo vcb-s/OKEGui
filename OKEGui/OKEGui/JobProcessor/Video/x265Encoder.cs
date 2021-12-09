@@ -114,7 +114,8 @@ namespace OKEGui
                 sb.Append("set MIMALLOC_VERBOSE=1&& ");
             }
             sb.Append("start \"foo\" /b /wait ");
-            if (!Initializer.Config.noNuma) {
+            if (!Initializer.Config.singleNuma)
+            {
                 sb.Append("/affinity 0xFFFFFFFFFFFFFFFF /node ");
                 sb.Append(numaNode.ToString());
             }
