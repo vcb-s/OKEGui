@@ -1,5 +1,6 @@
 {
-    "Version" : 2,
+    "Version" : 3,
+    "VSVersion" : "20210901",
     "ProjectName" : "Demo - 1080p",
     "EncoderType" : "x265",
     "Encoder" : "x265-10b.exe",

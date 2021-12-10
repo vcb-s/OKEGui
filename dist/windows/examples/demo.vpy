@@ -10,7 +10,7 @@ core.num_threads = 8
 
 #OKE:PROJECTDIR
 projDir = '.'
-sys.path.insert(1, sdir) # some packages rely on having '' as sys.path[0]
+sys.path.insert(1, projDir) # some packages rely on having '' as sys.path[0]
 #import custom  # import python modules under the project directory
 #core.std.LoadPlugin(os.path.join(projDir, 'libcustom.dll')) # or load custom plugins
 
