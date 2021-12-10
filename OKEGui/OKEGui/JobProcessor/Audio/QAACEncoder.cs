@@ -12,7 +12,7 @@ namespace OKEGui
         private ManualResetEvent retrieved = new ManualResetEvent(false);
 
         // TODO: 变更编码参数
-        public QAACEncoder(AudioJob j, int bitrate = Constants.QAACBitrate) : base()
+        public QAACEncoder(AudioJob j, int bitrate = Constants.QAACBitrate, int quality = 0) : base()
         {
             if (j.Input != "-")
             { //not from stdin, but an actual file
@@ -20,7 +20,15 @@ namespace OKEGui
             }
 
             executable = Constants.QAACPath;
-            commandLine = $"-i -v {bitrate} -q 2 --no-delay -o \"{j.Output}\" {j.Input}";
+            if (quality > 0)
+            {
+                commandLine = $"-V {quality}";
+            }
+            else
+            {
+                commandLine = $"-v {bitrate}";
+            }
+            commandLine += $" -i -q 2 --no-delay -o \"{j.Output}\" {j.Input}";
         }
 
         public QAACEncoder(string commandLine)

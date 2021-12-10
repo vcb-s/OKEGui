@@ -207,7 +207,7 @@ namespace OKEGui.Worker
                                     task.CurrentStatus = "音频转码中";
                                     task.IsUnKnowProgress = true;
 
-                                    QAACEncoder qaac = new QAACEncoder(aJob, info.Bitrate);
+                                    QAACEncoder qaac = new QAACEncoder(aJob, info.Bitrate, info.Quality);
 
                                     qaac.start();
                                     qaac.waitForFinish();
