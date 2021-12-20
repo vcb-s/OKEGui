@@ -49,10 +49,36 @@ namespace OKEGui
         {
 
             // 检查参数
-            if (json.Version != 2)
+            if (json.Version != 2 && json.Version != 3)
             {
                 MessageBox.Show("你是不是把单个文件追加用的json当成一套任务用的json了？", "版本不对", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
+            }
+
+            // 检查VS版本
+            if (json.Version >= 3)
+            {
+                if (json.VSVersion == "")
+                {
+                    MessageBox.Show("v3版的 JSON 中没有指定VS版本（VSVersion），请联系总监修改。", "JSON错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return null;
+                }
+                string version;
+                try
+                {
+                    version = File.ReadAllText(Path.Combine(Directory.GetParent(Initializer.Config.vspipePath).FullName, "VERSION")).TrimEnd();
+                    Logger.Debug("Detected VS Version: " + version);
+                }
+                catch
+                {
+                    MessageBox.Show("无法获取VS版本，请检查VS安装。", "VS版本不对", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return null;
+                }
+                if (version != json.VSVersion)
+                {
+                    MessageBox.Show("总监指定的VS版本是" + json.VSVersion + "，但是OKEGui使用的版本是" + version, "VS版本不对", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return null;
+                }
             }
 
             // 编码器设置，目前只允许x264/x265
