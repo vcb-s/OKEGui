@@ -36,8 +36,6 @@ namespace OKEGui
 
         public override void ProcessLine(string line, StreamType stream)
         {
-            base.ProcessLine(line, stream);
-
             if (line.Contains("x264 [error]:"))
             {
                 Logger.Error(line);
@@ -56,6 +54,7 @@ namespace OKEGui
 
             if (line.ToLowerInvariant().Contains("encoded"))
             {
+                Logger.Debug(line);
                 Regex rf = new Regex("encoded ([0-9]+) frames, ([0-9]+.[0-9]+) fps, ([0-9]+.[0-9]+) kb/s");
 
                 var result = rf.Split(line);
@@ -78,6 +77,7 @@ namespace OKEGui
             var status = r.Split(line);
             if (status.Length < 3)
             {
+                Logger.Debug(line);
                 return;
             }
 
