@@ -185,28 +185,29 @@ namespace OKEGui
                 vsScript = dirTag[0] + dirTag[1] + "r\"" + projectDir + "\"" + dirTag[3];
             }
 
-            string[] inputTemplate = Constants.inputRegex.Split(vsScript);
+            string updatedVsScript = vsScript;
 
             // 处理MEMORY标签
-            if(Constants.memoryRegex.IsMatch(vsScript))
+            if(Constants.memoryRegex.IsMatch(updatedVsScript))
             {
-                string[] memoryTag = Constants.memoryRegex.Split(inputTemplate[0]);
-                inputTemplate[0] = memoryTag[0] + memoryTag[1] + eachFreeMemory.ToString() + memoryTag[3];
+                string[] memoryTag = Constants.memoryRegex.Split(updatedVsScript);
+                updatedVsScript = memoryTag[0] + memoryTag[1] + eachFreeMemory.ToString() + memoryTag[3];
             }
 
             // 处理DEBUG标签
-            if (Constants.debugRegex.IsMatch(vsScript))
+            if (Constants.debugRegex.IsMatch(updatedVsScript))
             {
-                string[] debugTag = Constants.debugRegex.Split(inputTemplate[3]);
+                string[] debugTag = Constants.debugRegex.Split(updatedVsScript);
                 if (debugTag.Length < 4)
                 {
                     // error
                     System.Windows.MessageBox.Show("Debug标签语法错误！", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                inputTemplate[3] = debugTag[0] + debugTag[1] + "None" + debugTag[3];
+                updatedVsScript = debugTag[0] + debugTag[1] + "None" + debugTag[3];
             }
-            
+
+            string[] inputTemplate = Constants.inputRegex.Split(updatedVsScript);
 
             // 新建任务
             // 1、清理残留文件
