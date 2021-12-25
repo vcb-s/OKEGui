@@ -55,6 +55,7 @@ namespace OKEGui
 
             if (line.ToLowerInvariant().Contains("encoded"))
             {
+                Logger.Debug(line);
                 Regex rf = new Regex("encoded ([0-9]+) frames in ([0-9]+.[0-9]+)s \\(([0-9]+.[0-9]+) fps\\), ([0-9]+.[0-9]+) kb/s, Avg QP:(([0-9]+.[0-9]+))");
 
                 var result = rf.Split(line);
@@ -87,6 +88,7 @@ namespace OKEGui
             }
             else
             {
+                Logger.Debug(line);
                 return;
             }
 
