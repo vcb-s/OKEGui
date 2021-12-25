@@ -1,3 +1,9 @@
+# v7.3.3 "The Protagonist Returns", again^5!
+
+- Add support for mandatory VS version checks, for v3 json.
+- Allow arbitrary ordering of `#OKE:DEBUG` and `#OKE:INPUTFILE`.
+- Log all unrecognized lines on stderr for `vspipe | x265`.
+
 # v7.3.2 "The Protagonist Returns", again^4!
 Basically upstream v7.3, with the following additions:
 - Huge page support.
