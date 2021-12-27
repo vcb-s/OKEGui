@@ -88,7 +88,10 @@ namespace OKEGui
             }
             else
             {
-                Logger.Debug(line);
+                if (Initializer.Config.logLevel != "TRACE")
+                {
+                    Logger.Debug(line);
+                }
                 return;
             }
 
