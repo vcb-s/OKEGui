@@ -29,7 +29,6 @@ namespace OKEGui.Model
         public bool TimeCode;
 
         //后续任务中填写的参数
-        public bool ExtractVideo;
         public string VideoFormat;
         public string AudioFormat;
 
