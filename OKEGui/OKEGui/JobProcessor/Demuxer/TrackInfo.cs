@@ -48,15 +48,7 @@ namespace OKEGui
                     var directory = Path.GetDirectoryName(WorkingPathPrefix);
                     var baseName = Path.GetFileNameWithoutExtension(SourceFile);
 
-                    if (Type == TrackType.Video)
-                    {
-                        return $"{Path.Combine(directory, baseName)}{FileExtension}";
-                    }
-                    else
-                    {
-                        return $"{Path.Combine(directory, baseName)}_{Index}{FileExtension}";
-                    }
-
+                    return $"{Path.Combine(directory, baseName)}_{Index}{FileExtension}";
                 }
             }
 
