@@ -11,6 +11,7 @@ namespace OKEGui.Model
     {
         // 在json里会使用的参数
         public int Version;
+        public string VSVersion; // v3+
         public string ProjectName;
         public string EncoderType;
         public string Encoder;
