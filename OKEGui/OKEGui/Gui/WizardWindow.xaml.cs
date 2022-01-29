@@ -123,11 +123,14 @@ namespace OKEGui
         private void SelectProjectFile_PreviewDrop(object sender, System.Windows.DragEventArgs e)
         {
             string fileDrop = System.Windows.DataFormats.FileDrop;
-            if (e.Data.GetDataPresent(fileDrop) &&
-                Path.GetExtension((e.Data.GetData(fileDrop) as string[])[0]).ToLower() != ".json")
+            if (e.Data.GetDataPresent(fileDrop))
             {
-                e.Effects = System.Windows.DragDropEffects.Copy;
-                e.Handled = true;
+                string ext = Path.GetExtension((e.Data.GetData(fileDrop) as string[])[0]).ToLower();
+                if (ext != ".json" && ext != ".yaml" && ext != ".yml")
+                {
+                    e.Effects = System.Windows.DragDropEffects.Copy;
+                    e.Handled = true;
+                }
             }
         }
 
