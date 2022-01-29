@@ -35,8 +35,6 @@ namespace OKEGui
 
         public override void ProcessLine(string line, StreamType stream)
         {
-            base.ProcessLine(line, stream);
-
             if (line.Contains("x265 [error]:"))
             {
                 Logger.Error(line);
@@ -88,10 +86,7 @@ namespace OKEGui
             }
             else
             {
-                if (Initializer.Config.logLevel != "TRACE")
-                {
-                    Logger.Debug(line);
-                }
+                Logger.Debug(line);
                 return;
             }
 

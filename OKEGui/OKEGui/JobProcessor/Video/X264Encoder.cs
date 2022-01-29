@@ -36,8 +36,6 @@ namespace OKEGui
 
         public override void ProcessLine(string line, StreamType stream)
         {
-            base.ProcessLine(line, stream);
-
             if (line.Contains("x264 [error]:"))
             {
                 Logger.Error(line);
@@ -78,6 +76,7 @@ namespace OKEGui
             var status = r.Split(line);
             if (status.Length < 3)
             {
+                Logger.Debug(line);
                 return;
             }
 
