@@ -171,6 +171,13 @@ namespace OKEGui.Utils
                 }
             }
 
+            rpCheckerInfo = new FileInfo(Constants.rpcPath);
+            if (rpCheckerInfo.Exists)
+            {
+                Config.rpCheckerPath = rpCheckerInfo.FullName;
+                return true;
+            }
+
             MessageBox.Show(
                         "无法找到RPChecker.exe。请手动指定其位置，否则程序将退出。",
                         "无法找到RPChecker.exe",
