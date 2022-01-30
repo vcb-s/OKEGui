@@ -1,3 +1,11 @@
+# v7.3.4 "The Protagonist Returns", again^6!
+
+- Recognize AV1 video tracks in the input (mkv only)
+- Allow drag-n-drop YAML project files into the new project window
+- Log more messages from the x26x encoder to aid debugging
+- Add bundled x264/x265 encoders (now you can left out `"Encoder"` setting in project JSON)
+- Support bundled vapoursynth & RPChecker
+
 # v7.3.3 "The Protagonist Returns", again^5!
 
 - Add support for mandatory VS version checks, for v3 json.
