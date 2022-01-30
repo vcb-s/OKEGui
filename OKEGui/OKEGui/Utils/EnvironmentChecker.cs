@@ -52,6 +52,13 @@ namespace OKEGui.Utils
                 }
             }
 
+            vspipeInfo = new FileInfo(Constants.vspipePath);
+            if (vspipeInfo.Exists)
+            {
+                Config.vspipePath = vspipeInfo.FullName;
+                return true;
+            }
+
             RegistryKey key = Registry.LocalMachine.OpenSubKey("software\\vapoursynth");
             if (key == null)
             {
