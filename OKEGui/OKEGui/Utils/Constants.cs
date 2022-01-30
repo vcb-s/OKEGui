@@ -24,6 +24,9 @@ namespace OKEGui.Utils
         //x265
         public const string x265Path = ".\\tools\\x26x\\x265.exe";
 
+        //rpchecker
+        public const string rpcPath = ".\\tools\\rpc\\rpchecker.exe";
+
         //Audio & sub language.
         public const string language = "jpn";
 
