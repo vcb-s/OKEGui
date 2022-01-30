@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security;
 using System.Security.Permissions;
@@ -20,7 +21,7 @@ namespace OKEGui.Utils
             }
             Config = Initializer.LoadConfig();
 
-            return CheckVspipe() && CheckQAAC() && CheckFfmpeg() && CheckRPChecker() && CheckEac3toWrapper();
+            return CheckVspipe() && CheckQAAC() && CheckFfmpeg() && CheckRPChecker() && CheckEac3toWrapper() && CheckEncoders();
         }
 
         static bool CheckRootFolderWriteAccess()
@@ -207,6 +208,23 @@ namespace OKEGui.Utils
                 MessageBox.Show("请更新tools工具包。", "无法找到eac3to-wrapper");
                 return false;
             }
+        }
+
+        static bool CheckEncoders()
+        {
+            var encoders = new List<FileInfo> {
+                new FileInfo(Constants.x264Path),
+                new FileInfo(Constants.x265Path),
+            };
+            foreach (FileInfo fi in encoders)
+            {
+                if (!fi.Exists)
+                {
+                    MessageBox.Show("请更新tools工具包。", "无法找到" + fi.Name);
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
