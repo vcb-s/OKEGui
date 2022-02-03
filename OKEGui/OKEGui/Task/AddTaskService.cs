@@ -198,15 +198,35 @@ namespace OKEGui
             }
 
             // 获取编码器全路径
-            FileInfo encoder = new FileInfo(projDir.FullName + "\\" + json.Encoder);
-            if (encoder.Exists)
+            if (string.IsNullOrEmpty(json.Encoder))
             {
+                FileInfo encoder;
+                switch (json.EncoderType)
+                {
+                    case "x264":
+                        encoder = new FileInfo(Constants.x264Path);
+                        break;
+                    case "x265":
+                        encoder = new FileInfo(Constants.x265Path);
+                        break;
+                    default:
+                        // shouldn't happen.
+                        return null;
+                }
                 json.Encoder = encoder.FullName;
             }
             else
             {
-                MessageBox.Show("编码器好像不在json指定的地方（文件名错误？还有记得放在json文件同目录下）", "找不到编码器啊", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
+                FileInfo encoder = new FileInfo(projDir.FullName + "\\" + json.Encoder);
+                if (encoder.Exists)
+                {
+                    json.Encoder = encoder.FullName;
+                }
+                else
+                {
+                    MessageBox.Show("编码器好像不在json指定的地方（文件名错误？还有记得放在json文件同目录下）", "找不到编码器啊", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return null;
+                }
             }
 
             return json;

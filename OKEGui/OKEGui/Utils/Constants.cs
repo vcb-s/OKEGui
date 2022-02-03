@@ -15,6 +15,18 @@ namespace OKEGui.Utils
         //eac3to-wrapper
         public const string eac3toWrapperPath = ".\\tools\\eac3to\\eac3to-wrapper.exe";
 
+        //vspipe
+        public const string vspipePath = ".\\tools\\vapoursynth\\vspipe.exe";
+
+        //x264
+        public const string x264Path = ".\\tools\\x26x\\x264.exe";
+
+        //x265
+        public const string x265Path = ".\\tools\\x26x\\x265.exe";
+
+        //rpchecker
+        public const string rpcPath = ".\\tools\\rpc\\rpchecker.exe";
+
         //Audio & sub language.
         public const string language = "jpn";
 
