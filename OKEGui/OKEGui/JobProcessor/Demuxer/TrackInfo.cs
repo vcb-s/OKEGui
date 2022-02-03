@@ -12,6 +12,7 @@ namespace OKEGui
             MPEG2,
             H264_AVC,
             H265_HEVC,
+            AV1,
             RAW_PCM,
             FLAC,
             AAC,
