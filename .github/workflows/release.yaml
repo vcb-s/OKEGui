@@ -1,0 +1,102 @@
+name: OKEGui Release
+
+on:
+  push:
+    tags: "[0-9]*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.5
+
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.17'
+
+    - name: Navigate to Workspace
+      run: cd $GITHUB_WORKSPACE
+
+    - name: Clone & Build eac3to-wrapper
+      shell: bash
+      run: |
+        git clone https://github.com/AkarinVS/eac3to-wrapper
+        cd eac3to-wrapper
+        go build -ldflags "-X main.version=$(git describe --tags)"
+        cd ..
+
+    - name: Restore Packages
+      run: nuget restore OKEGui/OKEGui.sln
+
+    - name: Build Solution
+      run: |
+        msbuild.exe OKEGui/OKEGui.sln /nologo /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release"
+
+    - name: Integrate tools pack from previous release
+      shell: bash
+      run: |
+        set -ex
+        curl -s -o tools.zip -L https://github.com/vcb-s/OKEGui/releases/download/7.3/OKEGui_v7.3.zip
+        7z x -otmp tools.zip
+        mv tmp/OKEGui/tools "./OKEGui/OKEGui/bin/Release/"
+        rm -rf tmp
+
+    - name: Integrate eac3to-wrapper
+      shell: bash
+      run: |
+        mkdir -p "./OKEGui/OKEGui/bin/Release/tools/eac3to"
+        cp eac3to-wrapper/eac3to-wrapper.exe "./OKEGui/OKEGui/bin/Release/tools/eac3to"
+
+    - name: Integrate x264 tmod and x265 Yuuki
+      shell: bash
+      run: |
+        set -ex
+        mkdir -p "./OKEGui/OKEGui/bin/Release/tools/x26x"
+        #
+        curl -s -o x264.7z -L https://github.com/jpsdr/x264/releases/download/r3075/x264_tmod_r3075.7z
+        7z x -otmp x264.7z
+        cp -a tmp/posix/x264_x64.exe "./OKEGui/OKEGui/bin/Release/tools/x26x/x264.exe"
+        rm -rf tmp
+        #
+        curl -s -o x265.7z -L https://github.com/AmusementClub/x265/releases/download/Yuuki-3.5-AC2/x265-win64-skylake-clang.Yuuki-3.5-AC2.7z
+        7z x -otmp x265.7z
+        cp -a tmp/x265.exe "./OKEGui/OKEGui/bin/Release/tools/x26x/x265.exe"
+        rm -rf tmp
+
+    - name: Integrate RP-Checker
+      shell: bash
+      run: |
+        set -ex
+        mkdir -p "./OKEGui/OKEGui/bin/Release/tools/rpc"
+        #
+        curl -s -o RPChecker.exe -L https://github.com/vcb-s/rp-checker/releases/download/1.0.6.5/RPChecker.exe
+        mv RPChecker.exe "./OKEGui/OKEGui/bin/Release/tools/rpc/"
+
+    - name: Package release
+      shell: bash
+      run: |
+        git clone https://github.com/AkarinVS/exe
+        export PATH=`pwd`/exe/:$PATH
+        cp -r dist/windows/examples ./OKEGui/OKEGui/bin/Release
+        pushd ./OKEGui/OKEGui/bin
+        mv Release OKEGui
+        zip -9r ../../../"OKEGui-v$(git describe --tags).zip" OKEGui
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: OKEGui-*.zip
+        draft: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
