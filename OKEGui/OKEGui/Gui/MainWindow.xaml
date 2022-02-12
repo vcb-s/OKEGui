@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Closing="MainWindow_Closing"
-        Title="OKEGui" Height="700" Width="1100" WindowStartupLocation="CenterScreen" Icon="App.ico">
+        Title="OKEGui" Height="700" Width="1100" WindowStartupLocation="CenterScreen" Icon="App.ico" FontFamily="Microsoft YaHei">
     <Window.Resources>
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Center" />
