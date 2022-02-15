@@ -24,7 +24,12 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="任务名称" Width="95" DisplayMemberBinding="{Binding Path=TaskName}">
+                    <GridViewColumn Header="任务名称" Width="95">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextAlignment="Left" Text="{Binding Path=TaskName}"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="输入文件" Width="150">
                         <GridViewColumn.CellTemplate>
