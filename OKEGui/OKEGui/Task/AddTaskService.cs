@@ -168,6 +168,14 @@ namespace OKEGui
 
             if (json.AudioTracks != null && json.AudioTracks.Count > 0)
             {
+                foreach (AudioInfo ai in json.AudioTracks)
+                {
+                    if (string.IsNullOrWhiteSpace(ai.OutputCodec))
+                    {
+                        MessageBox.Show("音轨未设置 OutputCodec，请检查大小写", "音轨编码错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return null;
+                    }
+                }
                 // 主音轨
                 json.AudioFormat = json.AudioTracks[0].OutputCodec;
                 if (string.IsNullOrEmpty(json.AudioFormat))
