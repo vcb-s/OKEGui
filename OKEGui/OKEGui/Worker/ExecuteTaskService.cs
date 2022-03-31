@@ -205,9 +205,11 @@ namespace OKEGui.Worker
                                 if (srcFmt == "FLAC" && aJob.CodecString == "AAC")
                                 {
                                     task.CurrentStatus = "音频转码中";
-                                    task.IsUnKnowProgress = true;
 
-                                    QAACEncoder qaac = new QAACEncoder(aJob, info.Bitrate);
+                                    QAACEncoder qaac = new QAACEncoder(aJob, (double progress) =>
+                                    {
+                                        task.ProgressValue = progress;
+                                    }, info.Bitrate);
 
                                     qaac.start();
                                     qaac.waitForFinish();
