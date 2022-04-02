@@ -126,6 +126,10 @@ namespace OKEGui
             {
                 Formatting = Formatting.None
             };
+            if (Status != RpcStatus.通过)
+            {
+                job.Output = job.FailedRPCOutputFile;
+            }
             job.Output = job.Output.Replace(".rpc", $"-{Status.ToString()}.rpc");
             using (StreamWriter fileWriter = new StreamWriter(job.Output))
             using (JsonTextWriter writer = new JsonTextWriter(fileWriter))
