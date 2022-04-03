@@ -24,7 +24,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="任务名称" Width="95">
+                    <GridViewColumn Header="任务名称" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock TextAlignment="Left" Text="{Binding Path=TaskName}"></TextBlock>
@@ -49,9 +49,9 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="状态" Width="80" DisplayMemberBinding="{Binding Path=CurrentStatus}">
+                    <GridViewColumn Header="状态" Width="75" DisplayMemberBinding="{Binding Path=CurrentStatus}">
                     </GridViewColumn>
-                    <GridViewColumn Header="进度" Width="115" x:Name="TaskProgress">
+                    <GridViewColumn Header="进度" Width="100" x:Name="TaskProgress">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid VerticalAlignment="Center" Margin="0, 0, 0, 0">
@@ -69,7 +69,7 @@
                     </GridViewColumn>
                     <GridViewColumn Header="工作单元" Width="75" DisplayMemberBinding="{Binding Path=WorkerName}">
                     </GridViewColumn>
-                    <GridViewColumn Header="花屏检查" Width="100">
+                    <GridViewColumn Header="花屏检查" Width="90">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Content="{Binding RpcStatus}" Click="BtnRpc_Click" Tag="{Binding RpcOutput}" IsEnabled="{Binding RpcButtonEnabled}"/>
