@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 using OKEGui.Utils;
 using OKEGui.JobProcessor;
@@ -10,10 +11,13 @@ namespace OKEGui
     internal class QAACEncoder : CommandlineJobProcessor
     {
         private ManualResetEvent retrieved = new ManualResetEvent(false);
+        private Action<double> _progressCallback;
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         // TODO: 变更编码参数
-        public QAACEncoder(AudioJob j, int bitrate = Constants.QAACBitrate) : base()
+        public QAACEncoder(AudioJob j, Action<double> progressCallback, int bitrate = Constants.QAACBitrate) : base()
         {
+            _progressCallback = progressCallback;
             if (j.Input != "-")
             { //not from stdin, but an actual file
                 j.Input = $"\"{j.Input}\"";
@@ -31,14 +35,27 @@ namespace OKEGui
 
         public override void ProcessLine(string line, StreamType stream)
         {
-            base.ProcessLine(line, stream);
-            if (line.Contains(".done"))
+            Regex rAnalyze = new Regex("\\[([0-9.]+)%\\]");
+            double p = 0;
+            if (rAnalyze.IsMatch(line))
             {
-                SetFinish();
+                double.TryParse(rAnalyze.Split(line)[1], out p);
+                if (p > 1)
+                {
+                    _progressCallback(p);
+                }
             }
-            if (line.Contains("ERROR"))
+            else
             {
-                throw new OKETaskException(Constants.qaacErrorSmr);
+                Logger.Debug(line);
+                if (line.Contains(".done"))
+                {
+                    SetFinish();
+                }
+                if (line.Contains("ERROR"))
+                {
+                    throw new OKETaskException(Constants.qaacErrorSmr);
+                }
             }
         }
     }
