@@ -24,23 +24,38 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="任务名称" Width="100" DisplayMemberBinding="{Binding Path=TaskName}">
+                    <GridViewColumn Header="任务名称" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextAlignment="Left" TextTrimming="CharacterEllipsis" Text="{Binding Path=TaskName}"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="输入文件" Width="150" DisplayMemberBinding="{Binding Path=InputFile}">
+                    <GridViewColumn Header="输入文件" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextAlignment="Left" TextTrimming="CharacterEllipsis" Text="{Binding Path=InputFile}"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="章节" Width="50">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextAlignment="Center" Text="{Binding Path=ChapterStatus}"></TextBlock>
+                                <TextBlock TextAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Path=ChapterStatus}"></TextBlock>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="输出文件" Width="125" DisplayMemberBinding="{Binding Path=OutputFile}">
+                    <GridViewColumn Header="输出文件" Width="125">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextAlignment="Left" TextTrimming="CharacterEllipsis" Text="{Binding Path=OutputFile}"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="状态" Width="75">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextAlignment="Center" Text="{Binding Path=CurrentStatus}"></TextBlock>
+                                <TextBlock TextAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Path=CurrentStatus}"></TextBlock>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -49,7 +64,7 @@
                             <DataTemplate>
                                 <Grid VerticalAlignment="Center" Margin="0, 0, 0, 0">
                                     <ProgressBar Height="15" Margin="3,0,3,0"  Value="{Binding Path=ProgressValue}" Minimum="0" Maximum="100"  SmallChange="0.1" IsIndeterminate="{Binding Path=IsUnKnowProgress}"></ProgressBar>
-                                    <TextBlock TextAlignment="Center" Text="{Binding Path=ProgressStr}" Width="{Binding ElementName=TaskProgress, Path=Width}"></TextBlock>
+                                    <TextBlock TextAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Path=ProgressStr}" Width="{Binding ElementName=TaskProgress, Path=Width}"></TextBlock>
                                 </Grid>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
@@ -57,28 +72,28 @@
                     <GridViewColumn Header="速度" Width="75">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextAlignment="Right" Text="{Binding Path=Speed}"></TextBlock>
+                                <TextBlock TextAlignment="Right" TextTrimming="CharacterEllipsis" Text="{Binding Path=Speed}"></TextBlock>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="码率" Width="90">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextAlignment="Right" Text="{Binding Path=BitRate}"></TextBlock>
+                                <TextBlock TextAlignment="Right" TextTrimming="CharacterEllipsis" Text="{Binding Path=BitRate}"></TextBlock>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="剩余时间" Width="75">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextAlignment="Center" Text="{Binding Path=TimeRemainStr}"></TextBlock>
+                                <TextBlock TextAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Path=TimeRemainStr}"></TextBlock>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="工作单元" Width="75">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextAlignment="Center" Text="{Binding Path=WorkerName}"></TextBlock>
+                                <TextBlock TextAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Path=WorkerName}"></TextBlock>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
