@@ -9,7 +9,7 @@
         Title="OKEGui" Height="700" Width="1100" WindowStartupLocation="CenterScreen" Icon="App.ico" FontFamily="Microsoft YaHei">
     <Window.Resources>
         <Style TargetType="ListViewItem">
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
             <EventSetter Event="MouseDoubleClick" Handler="ListView_MouseDoubleClick" />
         </Style>
     </Window.Resources>
@@ -20,36 +20,29 @@
                     <GridViewColumn Header="" Width="30">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <CheckBox IsChecked="{Binding Path=IsEnabled}" Checked="Checkbox_Changed" Unchecked="Checkbox_Changed"></CheckBox>
+                                <CheckBox IsChecked="{Binding Path=IsEnabled}" Checked="Checkbox_Changed" Unchecked="Checkbox_Changed"  HorizontalAlignment="Center"></CheckBox>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="任务名称" Width="100">
+                    <GridViewColumn Header="任务名称" Width="100" DisplayMemberBinding="{Binding Path=TaskName}">
+                    </GridViewColumn>
+                    <GridViewColumn Header="输入文件" Width="150" DisplayMemberBinding="{Binding Path=InputFile}">
+                    </GridViewColumn>
+                    <GridViewColumn Header="章节" Width="50">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextAlignment="Left" Text="{Binding Path=TaskName}"></TextBlock>
+                                <TextBlock TextAlignment="Center" Text="{Binding Path=ChapterStatus}"></TextBlock>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="输入文件" Width="150">
+                    <GridViewColumn Header="输出文件" Width="125" DisplayMemberBinding="{Binding Path=OutputFile}">
+                    </GridViewColumn>
+                    <GridViewColumn Header="状态" Width="75">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextAlignment="Left" Text="{Binding Path=InputFile}"></TextBlock>
+                                <TextBlock TextAlignment="Center" Text="{Binding Path=CurrentStatus}"></TextBlock>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="章节" Width="50" DisplayMemberBinding="{Binding Path=ChapterStatus}">
-                    </GridViewColumn>
-                    <GridViewColumn Header="输出文件" Width="125">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <Grid VerticalAlignment="Top"  Margin="0, 0, 0, 0">
-                                    <TextBlock TextAlignment="Left" Text="{Binding Path=OutputFile}"></TextBlock>
-                                </Grid>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="状态" Width="75" DisplayMemberBinding="{Binding Path=CurrentStatus}">
                     </GridViewColumn>
                     <GridViewColumn Header="进度" Width="100" x:Name="TaskProgress">
                         <GridViewColumn.CellTemplate>
@@ -61,18 +54,38 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="速度" Width="75" DisplayMemberBinding="{Binding Path=Speed}">
+                    <GridViewColumn Header="速度" Width="75">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextAlignment="Right" Text="{Binding Path=Speed}"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="码率" Width="90" DisplayMemberBinding="{Binding Path=BitRate}">
+                    <GridViewColumn Header="码率" Width="90">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextAlignment="Right" Text="{Binding Path=BitRate}"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="剩余时间" Width="75" DisplayMemberBinding="{Binding Path=TimeRemainStr}">
+                    <GridViewColumn Header="剩余时间" Width="75">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextAlignment="Center" Text="{Binding Path=TimeRemainStr}"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="工作单元" Width="75" DisplayMemberBinding="{Binding Path=WorkerName}">
+                    <GridViewColumn Header="工作单元" Width="75">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextAlignment="Center" Text="{Binding Path=WorkerName}"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="花屏检查" Width="90">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="{Binding RpcStatus}" Click="BtnRpc_Click" Tag="{Binding RpcOutput}" IsEnabled="{Binding RpcButtonEnabled}"/>
+                                <Button Content="{Binding RpcStatus}" Click="BtnRpc_Click" Tag="{Binding RpcOutput}" IsEnabled="{Binding RpcButtonEnabled}" HorizontalAlignment="Center"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
