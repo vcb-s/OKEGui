@@ -6,7 +6,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:OKEGui"
         mc:Ignorable="d"
-        Title="新建任务向导" Height="450" Width="525" WindowStartupLocation="CenterScreen" FontFamily="Microsoft YaHei">
+        Title="新建任务向导" Height="450" Width="525" WindowStartupLocation="CenterScreen" FontFamily="Segoe UI, Microsoft YaHei">
     <Window.Resources>
         <Style TargetType="ListBoxItem">
         </Style>
@@ -14,7 +14,7 @@
     <Grid>
         <xctk:Wizard x:Name="taskWizard" FinishButtonClosesWindow="True" Finish="WizardFinish">
             <xctk:WizardPage x:Name="SelectProjectFile" PageType="Interior"
-                             Title="选择OKEGui项目文件"
+                             Title="选择 OKEGui 项目文件"
                              NextPage="{Binding ElementName=SelectInputFile}"
                              CanSelectNextPage="False"
                              AllowDrop="True"

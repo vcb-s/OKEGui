@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:OKEGui"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         mc:Ignorable="d"
-        Title="设置" Height="300" Width="500" FontFamily="Microsoft YaHei">
+        Title="设置" Height="300" Width="500" FontFamily="Segoe UI, Microsoft YaHei">
     <Window.Resources>
         <Style TargetType="DataGridCell">
             <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -29,7 +29,7 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBlock Margin="10,9" Height="30" Grid.Row="0" Grid.Column="0" Text="vspipe.exe"/>
+            <TextBlock Margin="10,9" Height="30" Grid.Row="0" Grid.Column="0" Text="VSPipe.exe"/>
             <TextBox Height="25" Grid.Row="0" Grid.Column="1" Text="{Binding Config.vspipePath}"/>
             <Button Height="25" Width="40" Grid.Row="0" Grid.Column="2" Content="选择" Click="Vspipe_Click"/>
             <TextBlock Margin="10,9" Height="30" Grid.Row="1" Grid.Column="0" Text="RPChecker.exe"/>
@@ -56,9 +56,9 @@
                 <ComboBoxItem Content="DEBUG"/>
                 <ComboBoxItem Content="TRACE"/>
             </ComboBox>
-            <TextBlock Margin="10,9" Height="30" Grid.Row="1" Grid.Column="0" Text="跳过Numa检测（AMD Ryzen 1000系列请勾选）"/>
+            <TextBlock Margin="10,9" Height="30" Grid.Row="1" Grid.Column="0" Text="跳过 Numa 检测（AMD Ryzen 1000 系列请勾选）"/>
             <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" IsChecked="{Binding Config.singleNuma}"/>
-            <TextBlock Margin="10,9" Height="30" Grid.Row="2" Grid.Column="0" Text="开启AVX512烤鸡模式"/>
+            <TextBlock Margin="10,9" Height="30" Grid.Row="2" Grid.Column="0" Text="开启 AVX512 烤鸡模式"/>
             <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" IsChecked="{Binding Config.avx512}"/>
         </Grid>
         <Grid Grid.Row="2">
