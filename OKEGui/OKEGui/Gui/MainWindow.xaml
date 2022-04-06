@@ -9,7 +9,6 @@
         Title="OKEGui" Height="700" Width="1100" WindowStartupLocation="CenterScreen" Icon="App.ico" FontFamily="Microsoft YaHei">
     <Window.Resources>
         <Style TargetType="ListViewItem">
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
             <EventSetter Event="MouseDoubleClick" Handler="ListView_MouseDoubleClick" />
         </Style>
     </Window.Resources>
