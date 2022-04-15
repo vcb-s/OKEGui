@@ -69,7 +69,7 @@ jobs:
         cp -a tmp/posix/x264_x64.exe "./OKEGui/OKEGui/bin/Release/tools/x26x/x264.exe"
         rm -rf tmp
         #
-        curl -s -o x265.7z -L https://github.com/AmusementClub/x265/releases/download/Yuuki-3.5-AC2/x265-win64-skylake-clang.Yuuki-3.5-AC2.7z
+        curl -s -o x265.7z -L https://github.com/AmusementClub/x265/releases/download/Kyouko-3.5-AC/x265-win64-skylake-clang.Kyouko-3.5-AC.7z
         7z x -otmp x265.7z
         cp -a tmp/x265.exe "./OKEGui/OKEGui/bin/Release/tools/x26x/x265.exe"
         rm -rf tmp
