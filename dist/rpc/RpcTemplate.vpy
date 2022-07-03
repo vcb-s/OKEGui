@@ -22,7 +22,7 @@ if not (srcy.format.bits_per_sample == 8): srcy = srcy.fmtc.bitdepth(bits=8, dmo
 # Load the ripped file.
 rip = core.lsmas.LWLibavSource(videoFile)
 ripy = rip.std.ShufflePlanes(0, vs.GRAY)
-if not (rip.format.bits_per_sample == 8): ripy = ripy.fmtc.bitdepth(bits=8, dmode=2)
+if not (ripy.format.bits_per_sample == 8): ripy = ripy.fmtc.bitdepth(bits=8, dmode=2)
 
 # Get the Y plane in same dimention.
 if srcy.width != ripy.width or srcy.height != ripy.height:
