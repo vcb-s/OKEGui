@@ -1,14 +1,10 @@
 import vapoursynth as vs
-import mvsfunc as mvf
 import types
 import sys
 import functools
-import multiprocessing
 from vapoursynth import core
 from importlib.machinery import SourceFileLoader
 
-core.num_threads = min(16, multiprocessing.cpu_count())
-core.max_cache_size = core.num_threads * 500
 
 # Load the source clip by loading another vs script. 
 
@@ -18,17 +14,19 @@ loader = SourceFileLoader('source', sourceScript)
 mod = types.ModuleType(loader.name)
 OKE:VSPIPE_ARGS
 loader.exec_module(mod)
+
 src = vs.get_output(index = 1)
-src = core.fmtc.bitdepth(src, bits=16)
+srcy = src.std.ShufflePlanes(0, vs.GRAY)
+if not (srcy.format.bits_per_sample == 8): srcy = srcy.fmtc.bitdepth(bits=8, dmode=2)
 
 # Load the ripped file.
-rip = core.lsmas.LWLibavSource(videoFile).fmtc.bitdepth(bits=16)
+rip = core.lsmas.LWLibavSource(videoFile)
+ripy = rip.std.ShufflePlanes(0, vs.GRAY)
+if not (rip.format.bits_per_sample == 8): ripy = ripy.fmtc.bitdepth(bits=8, dmode=2)
 
 # Get the Y plane in same dimention.
-src = mvf.GetPlane(src)
-rip = mvf.GetPlane(rip)
-if src.width != rip.width or src.height != rip.height:
-    src = core.resize.Bicubic(src, rip.width, rip.height, format=vs.GRAY16)
+if srcy.width != ripy.width or srcy.height != ripy.height:
+    srcy = srcy.resize.Bicubic(ripy.width, ripy.height)
 
 # runtime function to print psnr value to console.
 def callback(n, f, clip):
@@ -36,6 +34,6 @@ def callback(n, f, clip):
     return clip
 
 # Compare. Run it using 'vspipe "00009.m2ts_rpc.vpy" NUL'. 
-cmp = mvf.PlaneCompare(rip, src, mae=False, rmse=False, cov=False, corr=False)
+cmp = core.complane.PSNR(ripy, srcy)
 cmp = core.std.FrameEval(cmp,functools.partial(callback, clip=cmp), prop_src=[cmp])
 cmp.set_output()
