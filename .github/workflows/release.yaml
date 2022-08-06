@@ -82,6 +82,10 @@ jobs:
         #
         curl -s -o RPChecker.exe -L https://github.com/vcb-s/rp-checker/releases/download/1.0.6.6/RPChecker.exe
         mv RPChecker.exe "./OKEGui/OKEGui/bin/Release/tools/rpc/"
+        #
+        curl -s -o RpcTemplate.vpy https://raw.githubusercontent.com/AmusementClub/vapoursynth-script/master/RpcTemplate.vpy
+        mv "./OKEGui/OKEGui/bin/Release/tools/rpc/RpcTemplate.vpy" "./OKEGui/OKEGui/bin/Release/tools/rpc/RpcTemplate.vpy.old"
+        mv RpcTemplate.vpy "./OKEGui/OKEGui/bin/Release/tools/rpc/"
 
     - name: Package release
       shell: bash
