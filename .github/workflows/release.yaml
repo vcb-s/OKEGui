@@ -97,6 +97,13 @@ jobs:
         mv Release OKEGui
         zip -9r ../../../"OKEGui-v$(git describe --tags).zip" OKEGui
 
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: release
+        path: |
+           OKEGui-*.zip
+
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
