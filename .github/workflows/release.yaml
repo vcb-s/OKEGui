@@ -49,6 +49,11 @@ jobs:
         set -ex
         curl -s -o tools.zip -L https://github.com/vcb-s/OKEGui/releases/download/7.3/OKEGui_v7.3.zip
         7z x -otmp tools.zip
+        # clean up unnecessary files
+        rm -f tmp/OKEGui/tools/mkvtoolnix/cache/fileIdentifier/*
+        # tweak mkvtoolnix setting
+        sed -i -e 's|chapterNameTemplate=.*|chapterNameTemplate=Chapter <NUM:2>|g' tmp/OKEGui/tools/mkvtoolnix/mkvtoolnix-gui.ini
+        # integrate into release
         mv tmp/OKEGui/tools "./OKEGui/OKEGui/bin/Release/"
         rm -rf tmp
 
