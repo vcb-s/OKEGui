@@ -225,7 +225,7 @@ namespace OKEGui
             }
             else
             {
-                FileInfo encoder = new FileInfo(projDir.FullName + "\\" + json.Encoder);
+                FileInfo encoder = new FileInfo(PathUtils.GetFullPath(json.Encoder, projDir.FullName));
                 if (encoder.Exists)
                 {
                     json.Encoder = encoder.FullName;
@@ -280,7 +280,7 @@ namespace OKEGui
                 inputFile.Clear();
                 foreach (string file in json.InputFiles)
                 {
-                    FileInfo input = new FileInfo(jsonDir.FullName + "\\" + file);
+                    FileInfo input = new FileInfo(PathUtils.GetFullPath(file, jsonDir.FullName));
                     if (inputFile.Contains(input.FullName))
                     {
                         MessageBox.Show("指定的文件(" + input.FullName + ")重复了，请总监复查下输入文件列表？", "输入文件有重复", MessageBoxButton.OK, MessageBoxImage.Error);
