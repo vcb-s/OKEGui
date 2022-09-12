@@ -35,7 +35,7 @@ jobs:
     - name: Install .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 6.0.x
 
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
@@ -43,7 +43,7 @@ jobs:
 
     - uses: nuget/setup-nuget@v1
       with:
-        nuget-version: '5.x'
+        nuget-version: '6.x'
 
     - name: Restore Nuget packages
       run: nuget restore $env:Solution_Name
