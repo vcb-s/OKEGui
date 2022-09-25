@@ -53,6 +53,10 @@ jobs:
         rm -f tmp/OKEGui/tools/mkvtoolnix/cache/fileIdentifier/*
         # tweak mkvtoolnix setting
         sed -i -e 's|chapterNameTemplate=.*|chapterNameTemplate=Chapter <NUM:2>|g' tmp/OKEGui/tools/mkvtoolnix/mkvtoolnix-gui.ini
+        # update eac3to's libdcadec.dll, see https://forum.videohelp.com/threads/400707-UsEac3to-1-3-0-DTS-HD-MA-to-FLAC#post2651323
+        curl -s -o dcadec.zip -L https://github.com/foo86/dcadec/releases/download/v0.2.0/dcadec-0.2.0-win32.zip
+        7z x -odcadec dcadec.zip
+        mv dcadec/libdcadec.dll tmp/OKEGui/tools/eac3to/libdcadec.dll
         # integrate into release
         mv tmp/OKEGui/tools "./OKEGui/OKEGui/bin/Release/"
         rm -rf tmp
