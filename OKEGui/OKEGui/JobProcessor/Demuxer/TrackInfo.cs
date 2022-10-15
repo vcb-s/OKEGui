@@ -20,6 +20,8 @@ namespace OKEGui
             TRUEHD_AC3,
             AC3,
             DTS,
+            EAC3,
+            OPUS,
             PGS,
             Chapter,
             VobSub,

@@ -68,6 +68,8 @@ namespace OKEGui
             new EacOutputTrackType(TrackCodec.FLAC,       "FLAC",               "flac",    true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.AAC,        "AAC",                "aac",     true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.DTS,        "DTS",                "dts",     true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.EAC3,       "EAC3",               "eac3",    true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.OPUS,       "OPUS",               "opus",    true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.MPEG2,      "MPEG2",              "m2v",     false, TrackType.Video),
             new EacOutputTrackType(TrackCodec.H264_AVC,   "h264/AVC",           "264",     false, TrackType.Video),
             new EacOutputTrackType(TrackCodec.H265_HEVC,  "h265/HEVC",          "265",     false, TrackType.Video),
