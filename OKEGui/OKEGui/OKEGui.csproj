@@ -157,6 +157,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Task\VideoService.cs" />
+    <Compile Include="Utils\PathUtils.cs" />
     <Compile Include="Utils\RegistryStorage.cs" />
     <Compile Include="Utils\SystemMenu.cs" />
     <Compile Include="Utils\TChapterExtension.cs" />
