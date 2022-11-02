@@ -152,6 +152,10 @@ namespace OKEGui
                         json.FpsNum = 30000;
                         json.FpsDen = 1001;
                         break;
+                    case 30.000:
+                        json.FpsNum = 30;
+                        json.FpsDen = 1;
+                        break;
                     case 50.000:
                         json.FpsNum = 50;
                         json.FpsDen = 1;
@@ -159,6 +163,10 @@ namespace OKEGui
                     case 59.940:
                         json.FpsNum = 60000;
                         json.FpsDen = 1001;
+                        break;
+                    case 60.000:
+                        json.FpsNum = 60;
+                        json.FpsDen = 1;
                         break;
                     default:
                         MessageBox.Show("请通过FpsNum和FpsDen来指定", "不知道的帧率诶", MessageBoxButton.OK, MessageBoxImage.Error);
