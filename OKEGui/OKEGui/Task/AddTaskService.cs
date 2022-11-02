@@ -170,7 +170,7 @@ namespace OKEGui
             {
                 foreach (AudioInfo ai in json.AudioTracks)
                 {
-                    if (string.IsNullOrWhiteSpace(ai.OutputCodec))
+                    if (ai.MuxOption != MuxOption.Skip && string.IsNullOrWhiteSpace(ai.OutputCodec))
                     {
                         MessageBox.Show("音轨未设置 OutputCodec，请检查大小写", "音轨编码错误", MessageBoxButton.OK, MessageBoxImage.Error);
                         return null;
