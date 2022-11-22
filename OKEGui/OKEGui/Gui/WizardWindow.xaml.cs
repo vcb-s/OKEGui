@@ -161,7 +161,7 @@ namespace OKEGui
             using (var ofd = new OpenFileDialog
             {
                 Multiselect = true,
-                Filter = "视频文件 (*.m2ts, *.mkv, *.mp4, *.m2v, *.vob)|*.m2ts;*.mkv;*.mp4;*.m2v;*.vob"
+                Filter = "视频文件 (*.m2ts, *.mkv, *.ts, *.m2v, *.vob)|*.m2ts;*.mkv;*.ts;*.m2v;*.vob"
             })
             {
                 if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
