@@ -179,7 +179,7 @@ namespace OKEGui.Utils
             {
                 Directory.GetFiles("log")
                     .Select(f => new FileInfo(f))
-                    .Where(f => f.LastWriteTime < DateTime.Now.AddMonths(-3) || (f.LastWriteTime < DateTime.Now.AddDays(-7) && f.Length < 1024))
+                    .Where(f => f.LastWriteTime < DateTime.Now.AddMonths(-6) || (f.LastWriteTime < DateTime.Now.AddDays(-7) && f.Length < 1024))
                     .ToList()
                     .ForEach(f => f.Delete());
             }
