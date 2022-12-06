@@ -49,6 +49,19 @@ namespace OKEGui
             return;
         }
 
+        private void proc_Exited2(object sender, EventArgs e)
+        {
+            Process p = sender as Process;
+            Logger.Debug("exitCode=", p.ExitCode);
+            onExited(p.ExitCode);
+        }
+
+
+        protected virtual void onExited(int exitCode)
+        {
+            return;
+        }
+
         /// <summary>
         /// handles the encoder process existing
         /// </summary>
@@ -98,8 +111,9 @@ namespace OKEGui
             pstart.CreateNoWindow = true;
             pstart.UseShellExecute = false;
             proc.StartInfo = pstart;
-            //proc.EnableRaisingEvents = true;
+            proc.EnableRaisingEvents = true;
             //proc.Exited += new EventHandler(proc_Exited);
+            proc.Exited += new EventHandler(proc_Exited2);
             bWaitForExit = false;
             Logger.Info(pstart.FileName + " " + pstart.Arguments);
 

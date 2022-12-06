@@ -12,7 +12,10 @@ namespace OKEGui
 {
     public class VSPipeProcessor : CommandlineJobProcessor
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private VSVideoInfo videoInfo;
+        private bool videoInfoOk;
+        private string lastStderrLine;
         private ManualResetEvent retrieved = new ManualResetEvent(false);
 
         public VSPipeProcessor(VideoInfoJob j) : base()
@@ -20,6 +23,7 @@ namespace OKEGui
             // 获取VSPipe路径
             executable = Initializer.Config.vspipePath;
             videoInfo = new VSVideoInfo();
+            videoInfoOk = false;
 
             StringBuilder sb = new StringBuilder();
 
@@ -36,7 +40,9 @@ namespace OKEGui
 
         public override void ProcessLine(string line, StreamType stream)
         {
-            base.ProcessLine(line, stream);
+            Logger.Debug(line);
+            if (stream == StreamType.Stderr)
+                lastStderrLine = line;
             Regex rWidth = new Regex("Width: ([0-9]+)");
             Regex rHeight = new Regex("Height: ([0-9]+)");
             Regex rFrames = new Regex("Frames: ([0-9]+)");
@@ -127,6 +133,7 @@ namespace OKEGui
                 }
 
                 // 假设到这里已经获取完毕了
+                videoInfoOk = true;
                 retrieved.Set();
             }
             else if (line.Contains("SubSampling"))
@@ -140,10 +147,22 @@ namespace OKEGui
             retrieved.WaitOne();
         }
 
+        protected override void onExited(int exitCode)
+        {
+            if (exitCode != 0)
+            {
+                if (lastStderrLine == "")
+                    lastStderrLine = "exitcode is " + exitCode.ToString();
+                retrieved.Set();
+            }
+        }
+
         public VSVideoInfo VideoInfo
         {
             get {
                 retrieved.WaitOne();
+                if (!videoInfoOk)
+                    throw new Exception("vspipe -i failed: " + lastStderrLine);
                 return videoInfo;
             }
         }
