@@ -313,7 +313,7 @@ namespace OKEGui
         private void InputList_Drop(object sender, System.Windows.DragEventArgs e)
         {
             string[] inputPaths = e.Data.GetData(System.Windows.DataFormats.FileDrop) as string[];
-            string[] allowedExts = { ".mkv", ".m2ts", ".mp4", ".m2v", ".vob" };
+            string[] allowedExts = { ".mkv", ".m2ts", ".ts", ".m2v", ".vob" };
 
             string[] inputFileList = inputPaths.Where(i => allowedExts.Contains(Path.GetExtension(i).ToLower())).ToArray();
 
