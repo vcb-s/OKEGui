@@ -27,6 +27,7 @@ namespace OKEGui.Model
         public EpisodeConfig Config;
         public bool Rpc;
         public bool TimeCode;
+        public bool RenumberChapters;
 
         //后续任务中填写的参数
         public string VideoFormat;
@@ -67,6 +68,8 @@ namespace OKEGui.Model
             str += "\n视频编码: " + VideoFormat;
             str += "\n视频帧率: " + string.Format("{0:0.000} fps", Fps);
             str += "\n音频编码(主音轨): " + AudioFormat;
+            if (RenumberChapters)
+                str += "\n章节名重编号: YES";
             str += "\n输入文件数量: " + InputFiles?.Count;
 
             return str;

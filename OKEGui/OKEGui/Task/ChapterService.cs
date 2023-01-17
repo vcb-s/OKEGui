@@ -115,6 +115,15 @@ namespace OKEGui
             chapterInfo.Chapters.Sort((a, b) => a.Time.CompareTo(b.Time));
             chapterInfo.Chapters = chapterInfo.Chapters
                 .Where(x => task.LengthInMiliSec - x.Time.TotalMilliseconds > 1001).ToList();
+
+            if (task.Taskfile.RenumberChapters)
+            {
+                for (int i = 0; i < chapterInfo.Chapters.Count; i++)
+                {
+                    chapterInfo.Chapters[i].Name = string.Format("Chapter {0,2:0#}", i+1);
+                }
+            }
+
             if (chapterInfo.Chapters.Count > 1 ||
                 chapterInfo.Chapters.Count == 1 && chapterInfo.Chapters[0].Time.Ticks > 0)
             {
