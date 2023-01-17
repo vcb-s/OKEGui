@@ -18,6 +18,12 @@ namespace OKEGui
         public (string src, string opt) FileNamePair;
         public LogBuffer Logs = new LogBuffer();
     }
+    public class RpcResult3
+    {
+        public List<(int index, double value, double valueU, double valueV)> Data = new List<(int index, double value, double valueU, double valueV)>();
+        public (string src, string opt) FileNamePair;
+        public LogBuffer Logs = new LogBuffer();
+    }
 
     public class RpChecker : CommandlineJobProcessor
     {
@@ -25,6 +31,7 @@ namespace OKEGui
 
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private static readonly double psnr_threashold = 30.0;
+        private static readonly double psnrUV_threshold = 40.0;
 
         private RpcStatus status = RpcStatus.等待中;
         public RpcStatus Status
@@ -41,18 +48,7 @@ namespace OKEGui
         }
 
         private RpcResult result = new RpcResult();
-        public RpcResult Result
-        {
-            get
-            {
-                finishMre.WaitOne();
-                return result;
-            }
-            private set
-            {
-                result = value;
-            }
-        }
+        private RpcResult3 result3 = new RpcResult3();
 
         private const string TemplateFile = ".\\tools\\rpc\\RpcTemplate.vpy";
         private RpcJob job;
@@ -95,15 +91,22 @@ namespace OKEGui
                 ex.Data["RPC_ERROR"] = line.Substring(18);
                 throw ex;
             }
-            else if (line.Contains("RPCOUT"))
+            else if (line.Contains("RPCOUT:"))
             {
                 frameCount++;
                 job.Progress = 100.0 * frameCount / job.TotalFrame;
                 string[] strNumbers = line.Substring(8).Split(new char[] { ' ' });
                 int frameNo = int.Parse(strNumbers[0]);
-                double psnr = double.Parse(strNumbers[1]);
-                result.Data.Add((frameNo, psnr));
-                if (psnr < psnr_threashold)
+                double psnr = double.Parse(strNumbers[1]), psnrU = psnrUV_threshold, psnrV = psnrUV_threshold;
+                if (strNumbers.Length > 3)
+                {
+                    psnrU = double.Parse(strNumbers[2]);
+                    psnrV = double.Parse(strNumbers[3]);
+                    result3.Data.Add((frameNo, psnr, psnrU, psnrV));
+                }
+                else
+                    result.Data.Add((frameNo, psnr));
+                if (psnr < psnr_threashold || psnrU < psnrUV_threshold || psnrV < psnrUV_threshold)
                 {
                     status = RpcStatus.未通过;
                 }
@@ -134,7 +137,10 @@ namespace OKEGui
             using (StreamWriter fileWriter = new StreamWriter(job.Output))
             using (JsonTextWriter writer = new JsonTextWriter(fileWriter))
             {
-                serializer.Serialize(writer, new RpcResult[] { Result });
+                if (result.Data.Count > 0)
+                    serializer.Serialize(writer, new RpcResult[] { result });
+                else
+                    serializer.Serialize(writer, new RpcResult3[] { result3 });
             }
         }
     }
