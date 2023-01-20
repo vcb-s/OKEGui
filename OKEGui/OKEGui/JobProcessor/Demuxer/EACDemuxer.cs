@@ -56,7 +56,6 @@ namespace OKEGui
         private List<AudioInfo> JobAudio;
         private List<Info> JobSub;
         private int length;
-        private bool extractVideo;
         private string WorkingPathPrefix;
 
         private static List<EacOutputTrackType> s_eacOutputs = new List<EacOutputTrackType> {
@@ -95,7 +94,6 @@ namespace OKEGui
             {
                 JobSub.AddRange(jobProfile.SubtitleTracks);
             }
-            extractVideo = jobProfile.ExtractVideo;
             WorkingPathPrefix = jobProfile.WorkingPathPrefix;
         }
 
@@ -341,7 +339,7 @@ namespace OKEGui
             foreach (TrackInfo track in tracks)
             {
                 EacOutputTrackType trackType = s_eacOutputs.Find(val => val.Codec == track.Codec);
-                if (!(trackType.Extract || trackType.Type == TrackType.Video && extractVideo))
+                if (!trackType.Extract)
                 {
                     continue;
                 };
