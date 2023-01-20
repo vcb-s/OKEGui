@@ -15,6 +15,9 @@ namespace OKEGui
         // Task所分解成的Job队列。
         public Queue<Job> JobQueue = new Queue<Job>();
 
+        public string ChapterFileName;
+        public string ChapterLanguage;
+
         // 输出文件轨道。MediaOutFile是主文件(mp4/mkv), MkaOutFile是外挂mka
         public MediaFile MediaOutFile;
         public MediaFile MkaOutFile;

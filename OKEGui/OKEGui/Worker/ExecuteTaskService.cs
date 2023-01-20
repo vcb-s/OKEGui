@@ -283,7 +283,7 @@ namespace OKEGui.Worker
                                     }
 
                                     FileInfo inputChapterFile =
-                                        new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
+                                        new FileInfo(task.ChapterFileName);
                                     FileInfo outputChapterFile =
                                         new FileInfo(Path.ChangeExtension(task.Taskfile.WorkingPathPrefix, ".txt"));
                                     if (inputChapterFile.Exists && !File.Exists(outputChapterFile.FullName))
@@ -293,6 +293,7 @@ namespace OKEGui.Worker
                                     outputChapterFile.Refresh();
                                     OKEFile chapterFile = new OKEFile(outputChapterFile);
                                     task.MediaOutFile.AddTrack(new ChapterTrack(chapterFile));
+                                    task.MediaOutFile.ChapterLanguage = task.ChapterLanguage;
 
                                     // 用章节文件生成qpfile
                                     string qpFileName = Path.ChangeExtension(task.Taskfile.WorkingPathPrefix, ".qpf");

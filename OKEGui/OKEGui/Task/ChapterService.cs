@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -32,8 +33,7 @@ namespace OKEGui
 
         private static bool HasChapterFile(TaskDetail task)
         {
-            FileInfo txtChapter = new FileInfo(Path.ChangeExtension(task.InputFile, ".txt"));
-            return txtChapter.Exists;
+            return FindChapterFile(task);
         }
 
         private static bool HasBlurayStructure(TaskDetail task)
@@ -86,6 +86,29 @@ namespace OKEGui
             return true;
         }
 
+        public static bool FindChapterFile(TaskDetail task)
+        {
+            if (!string.IsNullOrEmpty(task.ChapterFileName))
+                return true;
+            FileInfo inputFile = new FileInfo(task.InputFile);
+            string inputPath = Path.GetFullPath(inputFile.FullName);
+            string basename = Path.GetFileNameWithoutExtension(inputFile.FullName);
+            string[] files = Directory.GetFiles(Path.GetDirectoryName(inputPath), basename + ".*txt");
+            Logger.Warn($"ChapterFile: found {String.Join(",", files)}.");
+            if (files.Length > 1)
+                throw new Exception("More than one chapter files found for " + task.InputFile + ": " + String.Join(",", files));
+            if (files.Length == 1)
+            {
+                task.ChapterFileName = files[0];
+                string ext = Path.GetFileNameWithoutExtension(task.ChapterFileName);
+                if (ext.Length > basename.Length)
+                    task.ChapterLanguage = ext.Substring(basename.Length + 1);
+                Logger.Warn($"ChapterFile {task.ChapterFileName}, language \"{task.ChapterLanguage}\".");
+                return true;
+            }
+            return false;
+        }
+
         public static ChapterInfo LoadChapter(TaskDetail task)
         {
             FileInfo inputFile = new FileInfo(task.InputFile);
@@ -93,9 +116,8 @@ namespace OKEGui
             switch (task.ChapterStatus)
             {
                 case ChapterStatus.Yes:
-                    FileInfo txtChapter = new FileInfo(Path.ChangeExtension(inputFile.FullName, ".txt"));
-                    if (!txtChapter.Exists) return null;
-                    chapterInfo = new OGMParser().Parse(txtChapter.FullName).FirstOrDefault();
+                    if (!FindChapterFile(task)) return null;
+                    chapterInfo = new OGMParser().Parse(task.ChapterFileName).FirstOrDefault();
                     break;
                 case ChapterStatus.Maybe:
                     DirectoryInfo playlistDirectory =

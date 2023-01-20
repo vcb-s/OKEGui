@@ -46,6 +46,7 @@ namespace OKEGui.Model
         public List<SubtitleTrack> SubtitleTracks = new List<SubtitleTrack>();
 
         public ChapterTrack ChapterTrack = null;
+        public string ChapterLanguage = null;
 
         /// <summary>
         /// 插入多媒体轨道
