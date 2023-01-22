@@ -257,7 +257,6 @@ namespace OKEGui.Worker
                                     File.Delete(timeCodeFile);
                                     try
                                     {
-
                                         timecode.SaveTimecode(timeCodeFile);
                                     }
                                     catch (IOException ex)
@@ -284,13 +283,8 @@ namespace OKEGui.Worker
                                         task.ChapterStatus = ChapterStatus.Added;
                                     }
 
-                                    FileInfo inputChapterFile =
-                                        new FileInfo(task.ChapterFileName);
                                     FileInfo outputChapterFile =
                                         new FileInfo(Path.ChangeExtension(task.Taskfile.WorkingPathPrefix, ".txt"));
-                                    if (inputChapterFile.Exists && !File.Exists(outputChapterFile.FullName))
-                                        File.Copy(inputChapterFile.FullName, outputChapterFile.FullName);
-
                                     chapterInfo.Save(ChapterTypeEnum.OGM, outputChapterFile.FullName);
                                     outputChapterFile.Refresh();
                                     OKEFile chapterFile = new OKEFile(outputChapterFile);
