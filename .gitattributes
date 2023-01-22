@@ -3,6 +3,9 @@
 ###############################################################################
 * text=auto
 
+# Specify vpy files should be treated as Python source.
+*.vpy linguist-language=Python
+
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
