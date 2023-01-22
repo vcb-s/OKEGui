@@ -1,0 +1,25 @@
+{
+    "Version" : 3,
+    "VSVersion" : "2023H1b1",
+    "ProjectName" : "VFR Demo - 1080p",
+    "EncoderType" : "x265",
+    "EncoderParam" : "-D 10 --deblock -1:-1 --preset slower --limit-tu 4 --no-strong-intra-smoothing --ctu 32 --crf 16 --qg-size 8 --pbratio 1.2 --cbqpoffs -2 --crqpoffs -2 --no-sao --me 3 --subme 5 --merange 38 --b-intra --no-amp --ref 4 --weightb --keyint 360 --min-keyint 1 --bframes 6 --aq-mode 1 --aq-strength 0.7 --rd 5 --psy-rd 1.5 --psy-rdoq 0.8 --rdoq-level 2 --no-open-gop --rc-lookahead 80 --scenecut 40 --qcomp 0.65 --vbv-bufsize 40000 --vbv-maxrate 30000 --colormatrix bt709 --range limited",
+    "ContainerFormat" : "mkv",
+    "AudioTracks" : [{
+        "OutputCodec" : "flac"
+    },{
+        "OutputCodec" : "aac",
+        "Bitrate" : 192,
+        "Name": "Commentary",
+        "Language" : "eng",
+        "Optional": true
+    }],
+    "InputScript" : "vfr.vpy",
+    "InputFiles" : [
+        "Main_Disc\\BDMV\\STREAM\\00000.m2ts",
+        "Main_Disc\\BDMV\\STREAM\\00001.m2ts",
+        "Main_Disc\\BDMV\\STREAM\\00002.m2ts"
+    ],
+    "TimeCode": true,
+    "Rpc" : true
+}

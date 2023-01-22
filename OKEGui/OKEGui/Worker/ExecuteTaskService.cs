@@ -254,8 +254,10 @@ namespace OKEGui.Worker
                                     timecode = new Timecode(Path.ChangeExtension(task.InputFile, ".tcfile"),
                                         (int) processor.NumberOfFrames);
                                     timeCodeFile = Path.ChangeExtension(task.InputFile, ".v2.tcfile");
+                                    File.Delete(timeCodeFile);
                                     try
                                     {
+
                                         timecode.SaveTimecode(timeCodeFile);
                                     }
                                     catch (IOException ex)

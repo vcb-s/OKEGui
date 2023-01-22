@@ -90,6 +90,10 @@ namespace OKEGui
             }
             else if (line.Contains("FPS"))
             {
+                if (line.Contains("Variable"))
+                {
+                    throw new Exception("VFR output not supported, even for VFR jobs.");
+                }
                 var s = rFPS.Split(line);
 
                 int n;

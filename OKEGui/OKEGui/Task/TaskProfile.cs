@@ -66,7 +66,7 @@ namespace OKEGui.Model
             str += "\n编码参数: " + EncoderParam.Substring(0, Math.Min(30, EncoderParam.Length - 1)) + "......";
             str += "\n\n封装格式: " + ContainerFormat;
             str += "\n视频编码: " + VideoFormat;
-            str += "\n视频帧率: " + string.Format("{0:0.000} fps", Fps);
+            str += "\n视频帧率: " + (TimeCode ? "VFR" : string.Format("{0:0.000} fps", Fps));
             str += "\n音频编码(主音轨): " + AudioFormat;
             if (RenumberChapters)
                 str += "\n章节名重编号: YES";
