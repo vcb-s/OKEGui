@@ -19,7 +19,6 @@ namespace OKEGui
                 Initializer.ConfigLogger();
                 Initializer.WriteConfig();
                 Initializer.ClearOldLogs();
-                Initializer.CheckUpdate();
                 Logger.Info("程序正常启动");
             }
             else

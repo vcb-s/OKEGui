@@ -161,7 +161,6 @@
     <Compile Include="Utils\SystemMenu.cs" />
     <Compile Include="Utils\TChapterExtension.cs" />
     <Compile Include="Utils\Timecode.cs" />
-    <Compile Include="Utils\Updater.cs" />
     <Compile Include="Utils\WmiUtils.cs" />
     <Compile Include="Worker\ExecuteTaskService.cs" />
     <Compile Include="Task\TaskStatus.cs" />
