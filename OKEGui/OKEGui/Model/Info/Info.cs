@@ -27,6 +27,7 @@ namespace OKEGui.Model
         public string Language = Constants.language;
         public string Name = "";
         public bool Optional = false;
+        public int Order = Int32.MaxValue;
         private bool _dupOrEmpty;
         public bool DupOrEmpty
         {

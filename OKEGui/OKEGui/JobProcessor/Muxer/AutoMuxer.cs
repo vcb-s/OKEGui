@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -148,7 +149,7 @@ namespace OKEGui
 
         private string GenerateMkvMergeParameter(Episode episode)
         {
-            string trackTemplate = "--language 0:{0} --track-name \"0:{1}\" \"(\" \"{2}\" \")\"";
+            string trackTemplate = "--default-track \"0:{0}\" --language 0:{1} --track-name \"0:{2}\" \"(\" \"{3}\" \")\"";
 
             var parameters = new List<string>();
             var trackOrder = new List<string>();
@@ -164,14 +165,15 @@ namespace OKEGui
                 {
                     parameters.Add($"--timestamps \"0:{episode.timeCodeFile}\"");
                 }
-                parameters.Add(string.Format(trackTemplate, "und", episode.VideoName, episode.VideoFile));
+                parameters.Add(string.Format(trackTemplate, "1", "und", episode.VideoName, episode.VideoFile));
                 trackOrder.Add($"{fileID++}:0");
             }
 
             for (int i = 0; i < episode.AudioFiles.Count; i++)
             {
                 string audioFile = episode.AudioFiles[i];
-                parameters.Add(string.Format(trackTemplate, episode.AudioLanguages[i], episode.AudioNames[i], audioFile));
+                bool isDefault = episode.VideoFile != null & i == 0;
+                parameters.Add(string.Format(trackTemplate, isDefault ? "1":"0", episode.AudioLanguages[i], episode.AudioNames[i], audioFile));
                 trackOrder.Add($"{fileID++}:0");
             }
 
@@ -180,7 +182,7 @@ namespace OKEGui
                 for (int i = 0; i < episode.SubtitleFiles.Count; i++)
                 {
                     string subtitleFile = episode.SubtitleFiles[i];
-                    parameters.Add(string.Format(trackTemplate, episode.SubtitleLanguages[i], episode.SubtitleNames[i], subtitleFile));
+                    parameters.Add(string.Format(trackTemplate, "0", episode.SubtitleLanguages[i], episode.SubtitleNames[i], subtitleFile));
                     trackOrder.Add($"{fileID++}:0");
                 }
             }
@@ -366,7 +368,7 @@ namespace OKEGui
             List<string> subtitleLanguages = new List<string>();
             List<string> subtitleNames = new List<string>();
 
-            foreach (var track in mediaFile.Tracks)
+            foreach (var track in mediaFile.Tracks.OrderBy(trk => trk.Info.Order))
             {
                 if (track.Info.MuxOption != MuxOption.Default && track.Info.MuxOption != MuxOption.Mka)
                 {

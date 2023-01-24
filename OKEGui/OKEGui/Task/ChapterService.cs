@@ -94,7 +94,8 @@ namespace OKEGui
             string inputPath = Path.GetFullPath(inputFile.FullName);
             string basename = Path.GetFileNameWithoutExtension(inputFile.FullName);
             string[] files = Directory.GetFiles(Path.GetDirectoryName(inputPath), basename + ".*txt");
-            Logger.Warn($"ChapterFile: found {String.Join(",", files)}.");
+            if (files.Length > 0)
+                Logger.Warn($"ChapterFile: found {String.Join(",", files)}.");
             if (files.Length > 1)
                 throw new Exception("More than one chapter files found for " + task.InputFile + ": " + String.Join(",", files));
             if (files.Length == 1)
