@@ -81,14 +81,16 @@ namespace OKEGui
             return false;
         }
 
-        protected bool setSpeed(string speed)
+        protected bool setSpeed(string speed, string unit = "fps")
         {
-            double fps;
+            double fps, factor = 1;
+            if (unit == "fpm")
+                factor = 60;
             if (double.TryParse(speed, out fps))
             {
                 if (fps > 0)
                 {
-                    this.speed = fps;
+                    this.speed = fps / factor;
                 }
                 else
                 {

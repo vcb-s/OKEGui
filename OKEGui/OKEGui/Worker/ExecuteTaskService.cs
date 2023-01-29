@@ -151,7 +151,7 @@ namespace OKEGui.Worker
                             videoJob.EncodeParam += " --pools " + NumaNode.X265PoolsParam(videoJob.NumaNode);
                         }
                     }
-                    else
+                    else if (profile.VideoFormat == "AVC")
                     {
                         videoJob.Output = task.Taskfile.WorkingPathPrefix;
                         videoJob.Output += profile.ContainerFormat == "MKV" ? "_.mkv" : ".h264";
@@ -159,6 +159,18 @@ namespace OKEGui.Worker
                         {
                             videoJob.EncodeParam += " --threads 16";
                         }
+                    }
+                    else if (profile.VideoFormat == "AV1")
+                    {
+                        videoJob.Output = task.Taskfile.WorkingPathPrefix + ".ivf";
+                        if (!profile.EncoderParam.ToLower().Contains("--lp") && NumaNode.UsableCoreCount > 8)
+                        {
+                            videoJob.EncodeParam += " --lp 8";
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("unknown video codec: " + profile.VideoFormat);
                     }
 
                     task.JobQueue.Enqueue(videoJob);
@@ -241,9 +253,17 @@ namespace OKEGui.Worker
                                 {
                                     processor = new X265Encoder(vJob);
                                 }
-                                else
+                                else if (vJob.CodecString == "AVC")
                                 {
                                     processor = new X264Encoder(vJob);
+                                }
+                                else if (vJob.CodecString == "AV1")
+                                {
+                                    processor = new SVTAV1Encoder(vJob);
+                                }
+                                else
+                                {
+                                    throw new Exception("unknown video codec: " + vJob.CodecString);
                                 }
 
                                 // 时间码文件
@@ -296,8 +316,16 @@ namespace OKEGui.Worker
                                     string qpFile = vJob.Vfr
                                         ? ChapterService.GenerateQpFile(chapterInfo, timecode)
                                         : ChapterService.GenerateQpFile(chapterInfo, vJob.Fps);
-                                    File.WriteAllText(qpFileName, qpFile);
-                                    processor.AppendParameter($"--qpfile \"{qpFileName}\"");
+                                    if (vJob.CodecString == "AV1")
+                                    {
+                                        qpFile = String.Join(",", qpFile.Replace(" I", "f").Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries));
+                                        processor.AppendParameter($"--force-key-frames \"{qpFile}\"");
+                                    }
+                                    else
+                                    {
+                                        File.WriteAllText(qpFileName, qpFile);
+                                        processor.AppendParameter($"--qpfile \"{qpFileName}\"");
+                                    }
                                 }
                                 else
                                 {

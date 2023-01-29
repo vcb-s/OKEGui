@@ -81,7 +81,7 @@ namespace OKEGui
                 }
             }
 
-            // 编码器设置，目前只允许x264/x265
+            // 编码器设置，目前只允许x264/x265/svtav1
             json.EncoderType = json.EncoderType.ToLower();
             switch (json.EncoderType)
             {
@@ -91,8 +91,11 @@ namespace OKEGui
                 case "x265":
                     json.VideoFormat = "HEVC";
                     break;
+                case "svtav1":
+                    json.VideoFormat = "AV1";
+                    break;
                 default:
-                    MessageBox.Show("EncoderType请填写x264或者x265", "编码器版本错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("EncoderType请填写x264/x265/svtav1", "编码器版本错误", MessageBoxButton.OK, MessageBoxImage.Error);
                     return null;
             }
 

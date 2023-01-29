@@ -89,6 +89,10 @@ namespace OKEGui.JobProcessor
                     msg.errorMsg = string.Format(Constants.x265ErrorMsg, ex.Data["X265_ERROR"], task.InputFile);
                     break;
 
+                case Constants.svtav1ErrorSmr:
+                    msg.errorMsg = string.Format(Constants.svtav1ErrorMsg, ex.Data["SVTAV1_ERROR"], task.InputFile);
+                    break;
+
                 case Constants.vpyErrorSmr:
                     msg.errorMsg = string.Format(Constants.vpyErrorMsg, ex.Data["VPY_ERROR"], task.InputFile);
                     break;
@@ -103,6 +107,10 @@ namespace OKEGui.JobProcessor
 
                 case Constants.x265CrashSmr:
                     msg.errorMsg = string.Format(Constants.x265CrashMsg, task.InputFile);
+                    break;
+
+                case Constants.svtav1CrashSmr:
+                    msg.errorMsg = string.Format(Constants.svtav1CrashMsg, task.InputFile);
                     break;
 
                 case Constants.qaacErrorSmr:

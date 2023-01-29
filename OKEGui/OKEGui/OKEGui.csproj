@@ -114,6 +114,7 @@
     <Compile Include="JobProcessor\Demuxer\TrackInfo.cs" />
     <Compile Include="JobProcessor\ExceptionParser.cs" />
     <Compile Include="JobProcessor\RpChecker\RpChecker.cs" />
+    <Compile Include="JobProcessor\Video\svtav1Encoder.cs" />
     <Compile Include="JobProcessor\Video\X264Encoder.cs" />
     <Compile Include="Job\RpcJob\RpcJob.cs" />
     <Compile Include="Model\Info\AudioInfo.cs" />
