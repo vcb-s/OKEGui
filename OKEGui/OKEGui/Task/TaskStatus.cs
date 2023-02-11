@@ -191,7 +191,7 @@ namespace OKEGui
             set
             {
                 timeRemain = value;
-                TimeRemainStr = value.ToString(@"hh\:mm\:ss");
+                TimeRemainStr = (int)value.TotalHours + value.ToString(@"\:mm\:ss");
                 if (value.TotalHours > 24.0*7)
                 {
                     TimeRemainStr = "大于一周";
