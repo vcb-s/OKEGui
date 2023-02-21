@@ -12,7 +12,7 @@ namespace OKEGui
     {
         private ManualResetEvent retrieved = new ManualResetEvent(false);
         private Action<double> _progressCallback;
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("QAACEncoder");
 
         // TODO: 变更编码参数
         public QAACEncoder(AudioJob j, Action<double> progressCallback, int bitrate = Constants.QAACBitrate) : base()

@@ -19,7 +19,7 @@ namespace OKEGui
 
     public partial class EACDemuxer
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("EACDemuxer");
 
         public enum ProcessState
         {

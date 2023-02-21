@@ -29,7 +29,7 @@ namespace OKEGui
     {
         public enum RpcStatus { 等待中, 跳过, 错误, 未通过, 通过 };
 
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("RpChecker");
         private static readonly double psnr_threashold = 30.0;
         private static readonly double psnrUV_threshold = 40.0;
 

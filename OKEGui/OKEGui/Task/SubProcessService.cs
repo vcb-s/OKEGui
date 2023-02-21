@@ -11,7 +11,7 @@ namespace OKEGui.Task
 {
     public class SubProcessService
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("SubProcessService");
 
         [Flags]
         public enum ThreadAccess : int

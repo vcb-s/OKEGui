@@ -12,7 +12,7 @@ namespace OKEGui
 {
     public class X264Encoder : CommandlineVideoEncoder
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("X264Encoder");
         private readonly string X264Path = "";
         private readonly string VspipePath = "";
 

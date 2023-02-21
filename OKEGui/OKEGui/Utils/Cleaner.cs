@@ -8,7 +8,7 @@ namespace OKEGui.Utils
 {
     class Cleaner
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("Cleaner");
 
         private List<string> sfxRemove, sfxRename;
         private const string TIME_FMT = "ddHHmm";

@@ -11,7 +11,7 @@ namespace OKEGui
 {
     public class SVTAV1Encoder : CommandlineVideoEncoder
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("SVTAV1Encoder");
         private readonly string svtav1Path = "";
         private readonly string vspipePath = "";
         private bool expectTotalFrames = false;

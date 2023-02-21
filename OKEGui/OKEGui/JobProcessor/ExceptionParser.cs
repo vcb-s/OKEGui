@@ -52,7 +52,7 @@ namespace OKEGui.JobProcessor
 
     static class ExceptionParser
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("ExceptionParser");
 
         public static ExceptionMsg Parse(OKETaskException ex, TaskDetail task)
         {

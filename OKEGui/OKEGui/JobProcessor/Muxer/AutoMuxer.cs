@@ -11,7 +11,7 @@ namespace OKEGui
 {
     public class AutoMuxer
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("AutoMuxer");
 
         private enum OutputType
         {

@@ -24,7 +24,7 @@ namespace OKEGui
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("MainWindow");
 
         public int WorkerCount = 0;
         public TaskManager tm = new TaskManager();

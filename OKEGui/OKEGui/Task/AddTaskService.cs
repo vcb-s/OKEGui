@@ -12,7 +12,7 @@ namespace OKEGui
 {
     public static class AddTaskService
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("AddTaskService");
 
         // 读入Json文件，并转成TaskProfile对象。
         public static TaskProfile LoadJsonAsProfile(string filePath, DirectoryInfo jsonDir)

@@ -13,7 +13,7 @@ namespace OKEGui.Worker
     // TODO: 改写为更模块化的函数。
     public partial class WorkerManager
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("WorkerManager");
 
         private void DisableButtonsAfterFinish(MainWindow window)
         {

@@ -37,7 +37,7 @@ namespace OKEGui
 
     public class TaskManager
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("TaskManager");
         public MTObservableCollection<TaskDetail> taskStatus = new MTObservableCollection<TaskDetail>();
 
         private int tidCount = 0;

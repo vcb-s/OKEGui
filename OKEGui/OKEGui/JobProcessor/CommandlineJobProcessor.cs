@@ -11,7 +11,7 @@ namespace OKEGui
     public abstract class CommandlineJobProcessor/*<TJob>*/ : IJobProcessor
     //where TJob : Job
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("CommandlineJobProcessor");
         #region variables
 
         // protected Job job;
@@ -52,7 +52,7 @@ namespace OKEGui
         private void proc_Exited2(object sender, EventArgs e)
         {
             Process p = sender as Process;
-            Logger.Debug("exitCode=", p.ExitCode);
+            Logger.Debug("exitCode={}", p.ExitCode);
             onExited(p.ExitCode);
         }
 

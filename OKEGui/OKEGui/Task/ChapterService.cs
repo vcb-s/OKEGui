@@ -22,7 +22,7 @@ namespace OKEGui
 
     public class ChapterService
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("ChapterService");
 
         public static ChapterStatus UpdateChapterStatus(TaskDetail task)
         {

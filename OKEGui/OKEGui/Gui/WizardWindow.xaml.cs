@@ -22,7 +22,7 @@ namespace OKEGui
     /// </summary>
     public partial class WizardWindow : Window
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("WizardWindow");
         // Wizard里需要显示的内容。
         private class NewTask : INotifyPropertyChanged
         {

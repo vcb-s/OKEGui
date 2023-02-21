@@ -11,7 +11,7 @@ namespace OKEGui
 {
     public class X265Encoder : CommandlineVideoEncoder
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("X265Encoder");
         private readonly string X265Path = "";
         private readonly string vspipePath = "";
 

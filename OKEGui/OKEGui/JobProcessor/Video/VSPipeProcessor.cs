@@ -12,7 +12,7 @@ namespace OKEGui
 {
     public class VSPipeProcessor : CommandlineJobProcessor
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("VSPipeProcessor");
         private VSVideoInfo videoInfo;
         private bool videoInfoOk;
         private string lastStderrLine;
