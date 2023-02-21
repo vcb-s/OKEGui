@@ -1,5 +1,6 @@
 ﻿using OKEGui.Utils;
 using System;
+using System.Reflection;
 using System.Windows;
 
 namespace OKEGui
@@ -10,10 +11,24 @@ namespace OKEGui
     /// </summary>
     public partial class App : Application
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("App");
 
         private void AppStartup(object sender, StartupEventArgs e)
         {
+            AppDomain.CurrentDomain.AssemblyResolve += (sender_, args) =>
+            {
+                AssemblyName assemblyName = new AssemblyName(args.Name);
+                var path = assemblyName.Name + ".dll";
+
+                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(path))
+                {
+                    if (stream == null) return null;
+
+                    var assemblyRawBytes = new byte[stream.Length];
+                    stream.Read(assemblyRawBytes, 0, assemblyRawBytes.Length);
+                    return Assembly.Load(assemblyRawBytes);
+                }
+            };
             if (EnvironmentChecker.CheckEnviornment())
             {
                 Initializer.ConfigLogger();

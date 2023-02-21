@@ -254,39 +254,44 @@
     <Error Condition="!Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets'))" />
   </Target>
   <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
-  <Target Name="ILRepack" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
-     <ItemGroup>
-         <InputAssemblies Include="$(TargetPath)"/>
-         <InputAssemblies Include="$(OutputPath)\Newtonsoft.Json.dll" />
-         <InputAssemblies Include="$(OutputPath)\MediaInfo.Wrapper.dll" />
-         <InputAssemblies Include="$(OutputPath)\Newtonsoft.Json.dll" />
-         <InputAssemblies Include="$(OutputPath)\NLog.dll" />
-         <InputAssemblies Include="$(OutputPath)\System.ValueTuple.dll" />
-         <InputAssemblies Include="$(OutputPath)\TChapter.dll" />
-         <!--<InputAssemblies Include="$(OutputPath)\Xceed.Wpf.Toolkit.dll" />-->
-         <InputAssemblies Include="$(OutputPath)\YamlDotNet.dll" />
-         <AssembliesToClean Include="@(InputAssemblies)" Condition="%(Extension) != '.exe'" />
-     </ItemGroup>
-
-     <ILRepack
-         AllowDuplicateResources="false"
-         DebugInfo="true"
-         Internalize="true"
-         InputAssemblies="@(InputAssemblies)"
-         OutputFile="$(TargetPath)"
-         Parallel="true"
-         TargetKind="SameAsPrimaryAssembly" />
-
-     <Delete Files="@(AssembliesToClean)" />
-     <Delete Files="@(AssembliesToClean->'$(OutDir)%(DestinationSubDirectory)%(Filename).xml')" />
-     <Delete Files="@(AssembliesToClean->'$(OutDir)%(DestinationSubDirectory)%(Filename).pdb')" />
-     <Delete Files="$(OutputPath)\libmp4v2.dll" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterResolveReferences">
+    <ItemGroup>
+      <EmbeddedResource Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.Extension)' == '.dll' and '%(ReferenceCopyLocalPaths.Filename)' != 'NLog'">
+        <LogicalName>%(ReferenceCopyLocalPaths.DestinationSubDirectory)%(ReferenceCopyLocalPaths.Filename)%(ReferenceCopyLocalPaths.Extension)</LogicalName>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
+  <Target Name="ILRepack" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug' or '$(Configuration)' == 'Release'">
+     <ItemGroup>
+         <InputAssemblies Include="$(TargetPath)"/>
+         <InputAssemblies Include="$(OutputPath)\NLog.dll" />
+     </ItemGroup>
+
+     <ILRepack
+         AllowDuplicateResources="false"
+         DebugInfo="true"
+         Internalize="false"
+         InputAssemblies="@(InputAssemblies)"
+         OutputFile="$(TargetPath)"
+         Parallel="true"
+         TargetKind="SameAsPrimaryAssembly" />
+  </Target>
+  <Target AfterTargets="ILRepack" Name="CleanReferenceCopyLocalPaths">
+    <Delete Files="@(ReferenceCopyLocalPaths->'$(OutDir)%(DestinationSubDirectory)%(Filename)%(Extension)')" />
+    <Delete Files="$(OutputPath)\libmp4v2.dll" />
+    <ItemGroup>
+      <Directories Include="$([System.IO.Directory]::GetDirectories('$(OutDir)%(DestinationSubDirectory)', '*', System.IO.SearchOption.AllDirectories))" />
+      <Directories>
+        <Files>$([System.IO.Directory]::GetFiles("%(Directories.Identity)", "*", System.IO.SearchOption.AllDirectories).get_Length())</Files>
+      </Directories>
+    </ItemGroup>
+    <RemoveDir Directories="@(Directories)" Condition="%(Files)=='0'" />
+  </Target>
 </Project>
