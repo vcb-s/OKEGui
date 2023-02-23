@@ -31,8 +31,8 @@ namespace OKEGui.Utils
                 whiteList.Add(inputFile);
             }
             List<string> removed = Remove(inputFile, whiteList);
-            List<string> renamed = Rename(inputFile, whiteList);
-            removed.AddRange(renamed);
+            //List<string> renamed = Rename(inputFile, whiteList);
+            //removed.AddRange(renamed);
             return removed;
         }
 
