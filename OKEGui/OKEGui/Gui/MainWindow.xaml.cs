@@ -367,6 +367,17 @@ namespace OKEGui
             }
         }
 
+        private void ListView_OpenWithVSEdit(object sender, RoutedEventArgs e)
+        {
+            TaskDetail item = TaskList.SelectedItem as TaskDetail;
+
+            if (item != null)
+            {
+                string arg = "\"" + item.Taskfile.InputScript + "\"";
+                Process.Start(Path.Combine(Path.GetDirectoryName(Initializer.Config.vspipePath), "vsedit.exe"), arg);
+            }
+        }
+
         private void TxtFreeMemory_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
             Regex re = new Regex("[^0-9]+");
