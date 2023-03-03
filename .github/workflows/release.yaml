@@ -89,7 +89,7 @@ jobs:
         set -ex
         mkdir -p "./OKEGui/OKEGui/bin/Release/tools/rpc"
         #
-        curl -s -o RPChecker.exe -L https://github.com/vcb-s/rp-checker/releases/download/1.0.7.1/RPChecker.exe
+        curl -s -o RPChecker.exe -L https://github.com/vcb-s/rp-checker/releases/download/1.0.7.2/RPChecker.exe
         mv RPChecker.exe "./OKEGui/OKEGui/bin/Release/tools/rpc/"
         #
         curl -s -o RpcTemplate.vpy https://raw.githubusercontent.com/AmusementClub/vapoursynth-script/master/RpcTemplate.vpy
