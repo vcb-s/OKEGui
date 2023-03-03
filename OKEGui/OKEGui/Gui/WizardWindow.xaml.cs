@@ -188,6 +188,7 @@ namespace OKEGui
         // 为所有输入文件生成vs脚本，并添加任务至TaskManager。
         private void WizardFinish(object sender, RoutedEventArgs e)
         {
+          try {
             // 处理PROJECTDIR标签
             if (Constants.projectDirRegex.IsMatch(vsScript)) {
                 string[] dirTag = Constants.projectDirRegex.Split(vsScript);
@@ -298,6 +299,12 @@ namespace OKEGui
                 td.ChapterStatus = ChapterService.UpdateChapterStatus(td);
                 workerManager.AddTask(td);
             }
+          }
+          catch (Exception ex)
+          {
+              Logger.Error(ex.StackTrace);
+              System.Windows.MessageBox.Show("任务初始化失败：" + ex.Message);
+          }
         }
 
         private void DeleteInput_Click(object sender, RoutedEventArgs e)

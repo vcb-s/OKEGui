@@ -157,7 +157,7 @@ namespace OKEGui
             }
             catch (Exception ex)
             {
-                Logger.Fatal(ex.StackTrace);
+                Logger.Error(ex.StackTrace);
                 MessageBox.Show("无法开始任务！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
