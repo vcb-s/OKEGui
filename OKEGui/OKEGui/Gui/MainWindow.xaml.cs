@@ -374,7 +374,20 @@ namespace OKEGui
             if (item != null)
             {
                 string arg = "\"" + item.Taskfile.InputScript + "\"";
+                Logger.Debug("Running vsedit {}", arg);
                 Process.Start(Path.Combine(Path.GetDirectoryName(Initializer.Config.vspipePath), "vsedit.exe"), arg);
+            }
+        }
+
+        private void ListView_OpenWithVSPreview(object sender, RoutedEventArgs e)
+        {
+            TaskDetail item = TaskList.SelectedItem as TaskDetail;
+
+            if (item != null)
+            {
+                string arg = "-m vspreview \"" + item.Taskfile.InputScript + "\"";
+                Logger.Debug("Running python {}", arg);
+                Process.Start(Path.Combine(Path.GetDirectoryName(Initializer.Config.vspipePath), "python.exe"), arg);
             }
         }
 

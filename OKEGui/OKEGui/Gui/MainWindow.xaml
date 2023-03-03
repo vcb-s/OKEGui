@@ -108,6 +108,7 @@
             </ListView.View>
             <ListView.ContextMenu>
                 <ContextMenu>
+                    <MenuItem Header="使用 vs-preview 打开 vpy" Click="ListView_OpenWithVSPreview"/>
                     <MenuItem Header="使用 vsedit 打开 vpy" Click="ListView_OpenWithVSEdit"/>
                 </ContextMenu>
             </ListView.ContextMenu>
