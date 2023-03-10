@@ -31,6 +31,7 @@ namespace OKEGui
             };
             if (EnvironmentChecker.CheckEnviornment())
             {
+                System.Windows.Media.RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.SoftwareOnly;
                 Initializer.ConfigLogger();
                 Initializer.WriteConfig();
                 Initializer.ClearOldLogs();
