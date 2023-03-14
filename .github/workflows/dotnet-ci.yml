@@ -19,7 +19,7 @@ jobs:
         configuration: [Release]
         targetplatform: [x64]
 
-    runs-on: windows-2019    # For a list of available runner types, refer to
+    runs-on: windows-2022    # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
     env:
@@ -31,32 +31,16 @@ jobs:
       with:
         submodules: true
 
-    # Install the .NET workload
-    - name: Install .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 5.0.x
-
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.1
 
-    - uses: nuget/setup-nuget@v1
-      with:
-        nuget-version: '5.x'
-
-    - name: Restore Nuget packages
-      run: nuget restore $env:Solution_Name
-
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
+    - name: Restore packages
+      run: msbuild $env:Solution_Name /t:Restore /p:RestorePackagesConfig=True
 
     # Build the Application project
     - name: Build the Application Project
-      run: msbuild $env:Solution_Name /p:Platform=$env:TargetPlatform /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:BuildMode /p:AppxBundle=$env:AppxBundle
+      run: msbuild $env:Solution_Name /t:OKEGui /p:Platform=$env:TargetPlatform /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:BuildMode /p:AppxBundle=$env:AppxBundle
       env:
         AppxBundle: Never
         BuildMode: SideloadOnly

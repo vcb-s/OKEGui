@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
     - uses: actions/checkout@v3
@@ -16,9 +16,6 @@ jobs:
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.1
-
-    - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1
 
     - name: Setup Go
       uses: actions/setup-go@v2
@@ -36,12 +33,12 @@ jobs:
         go build -ldflags "-X main.version=$(git describe --tags)"
         cd ..
 
-    - name: Restore Packages
-      run: nuget restore OKEGui/OKEGui.sln
+    - name: Restore packages
+      run: msbuild.exe OKEGui/OKEGui.sln /t:Restore /p:RestorePackagesConfig=True
 
     - name: Build Solution
       run: |
-        msbuild.exe OKEGui/OKEGui.sln /nologo /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release"
+        msbuild.exe OKEGui/OKEGui.sln /nologo /t:OKEGui /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release"
 
     - name: Integrate tools pack from previous release
       shell: bash
