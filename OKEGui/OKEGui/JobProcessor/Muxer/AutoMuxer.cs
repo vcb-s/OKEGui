@@ -256,7 +256,7 @@ namespace OKEGui
 
             while ((line = sr.ReadLine()) != null)
             {
-                Logger.Trace(line);
+                Logger.Debug(line);
 
                 Match progressMatch;
                 double progress = -1;
