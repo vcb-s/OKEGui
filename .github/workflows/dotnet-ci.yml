@@ -37,6 +37,9 @@ jobs:
 
     - name: Restore packages
       run: msbuild $env:Solution_Name /t:Restore /p:Platform=$env:TargetPlatform /p:Configuration=$env:Configuration /p:RestorePackagesConfig=True
+      env:
+        Configuration: ${{ matrix.configuration }}
+        TargetPlatform: ${{ matrix.targetplatform }}
 
     # Build the Application project
     - name: Build the Application Project
