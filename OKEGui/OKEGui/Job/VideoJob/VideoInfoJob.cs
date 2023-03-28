@@ -5,10 +5,12 @@ namespace OKEGui
     public class VideoInfoJob : Job
     {
         public List<string> Args = new List<string>();
-        public VideoInfoJob(string input, List<string> args) : base()
+        public VideoJob vJob;
+        public VideoInfoJob(VideoJob job) : base()
         {
-            Input = input;
-            Args.AddRange(args);
+            vJob = job;
+            Input = job.Input;
+            Args.AddRange(job.VspipeArgs);
         }
 
         public override JobType GetJobType()

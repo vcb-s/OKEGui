@@ -215,9 +215,9 @@ namespace OKEGui
         private int height;
         private VSVideoInfo videoInfo;
 
-        public VSPipeInfo(string vsScriptPath, List<string> args)
+        public VSPipeInfo(VideoJob vjob)
         {
-            VideoInfoJob j = new VideoInfoJob(vsScriptPath, args);
+            VideoInfoJob j = new VideoInfoJob(vjob);
 
             VSPipeProcessor processor = new VSPipeProcessor(j);
             processor.start();

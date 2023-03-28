@@ -17,6 +17,7 @@ namespace OKEGui
         private bool videoInfoOk;
         private string lastStderrLine;
         private ManualResetEvent retrieved = new ManualResetEvent(false);
+        private VideoJob job;
 
         public VSPipeProcessor(VideoInfoJob j) : base()
         {
@@ -24,6 +25,7 @@ namespace OKEGui
             executable = Initializer.Config.vspipePath;
             videoInfo = new VSVideoInfo();
             videoInfoOk = false;
+            job = j.vJob;
 
             StringBuilder sb = new StringBuilder();
 
@@ -50,6 +52,7 @@ namespace OKEGui
             Regex rFormatName = new Regex("Format Name: ([a-zA-Z0-9]+)");
             Regex rColorFamily = new Regex("Color Family: ([a-zA-Z]+)");
             Regex rBits = new Regex("Bits: ([0-9]+)");
+            Regex rlwiProgress = new Regex("Creating lwi index file ([0-9]+)%");
 
             if (line.Contains("Python exception: "))
             {
@@ -143,7 +146,14 @@ namespace OKEGui
             else if (line.Contains("SubSampling"))
             {
                 //目前还没有要处理subsampling的
-            } 
+            }
+            else if (rlwiProgress.IsMatch(line))
+            {
+                var s = rlwiProgress.Split(line);
+                int p;
+                int.TryParse(s[1], out p);
+                job.Progress = p;
+            }
         }
 
         public override void waitForFinish()
