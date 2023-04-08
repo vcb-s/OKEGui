@@ -36,6 +36,12 @@ namespace OKEGui
 
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             Title += " v" + version;
+            try
+            {
+                string ver = File.ReadAllText(Path.Combine(Directory.GetParent(Initializer.Config.vspipePath).FullName, "VERSION")).TrimEnd();
+                Title += " + VS portable " + ver;
+            }
+            catch { /* it's ok if VERSION doesn't exist. */ }
 
             TaskList.ItemsSource = tm.taskStatus;
 
