@@ -45,7 +45,7 @@ namespace OKEGui
                 return false;
             }
 
-            if (inputFile.Directory.Name != "STREAM")
+            if (inputFile.Directory.Name.ToUpper() != "STREAM")
             {
                 Logger.Warn($"{task.InputFile}不在BDMV文件夹结构内。");
                 return false;
