@@ -93,7 +93,7 @@ namespace OKEGui.Worker
                                     break;
 
                                 case EACProgressType.Completed:
-                                    task.CurrentStatus = "音轨抽取完毕";
+                                    task.CurrentStatus = "音轨已抽取";
                                     task.ProgressValue = progress;
                                     break;
 
