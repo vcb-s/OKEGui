@@ -14,7 +14,7 @@ namespace OKEGui.Utils
         private const string TIME_FMT = "ddHHmm";
 
         public Cleaner() : this(
-            new List<string> { "flac", "alac", "aac", "ac3", "dts", "sup", "Log.txt", "vpy", "qpf", "lwi", "rpc", "pyc" },
+            new List<string> { "flac", "alac", "aac", "ac3", "dts", "eac3", "sup", "Log.txt", "vpy", "qpf", "lwi", "rpc", "pyc" },
             new List<string> { "hevc", "mkv", "mp4", "mka", "h264" })
         {
         }

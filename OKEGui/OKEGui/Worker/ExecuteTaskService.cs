@@ -218,6 +218,18 @@ namespace OKEGui.Worker
                                     qaac.start();
                                     qaac.waitForFinish();
                                 }
+                                else if (srcFmt != "FLAC" && aJob.CodecString == "AAC" && info.Lossy)
+                                {
+                                    task.CurrentStatus = "音频转码中";
+
+                                    FFmpegPipeQAACEncoder qaac = new FFmpegPipeQAACEncoder(aJob, (double progress) =>
+                                    {
+                                        task.ProgressValue = progress;
+                                    }, info.Bitrate);
+
+                                    qaac.start();
+                                    qaac.waitForFinish();
+                                }
                                 else if (srcFmt != aJob.CodecString)
                                 {
                                     OKETaskException ex = new OKETaskException(Constants.audioFormatMistachSmr);

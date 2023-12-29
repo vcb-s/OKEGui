@@ -44,7 +44,7 @@ namespace OKEGui
         }
 
         private static List<string> s_AudioFileExtensions = new List<string> {
-            ".flac", ".wav", ".ac3", ".dts", ".aac", ".m4a"
+            ".flac", ".wav", ".ac3", ".dts", ".aac", ".m4a", ".eac3"
         };
 
         private static List<string> s_VideoFileExtensions = new List<string> {
@@ -211,7 +211,7 @@ namespace OKEGui
             {
                 string audioFile = episode.AudioFiles[i];
                 FileInfo ainfo = new FileInfo(audioFile);
-                if (ainfo.Extension.ToLower() == ".aac" || ainfo.Extension.ToLower() == ".m4a" || ainfo.Extension.ToLower() == ".ac3" || ainfo.Extension.ToLower() == ".dts")
+                if (ainfo.Extension.ToLower() == ".aac" || ainfo.Extension.ToLower() == ".m4a" || ainfo.Extension.ToLower() == ".ac3" || ainfo.Extension.ToLower() == ".dts" || ainfo.Extension.ToLower() == ".eac3")
                 {
                     parameters.Add($"-i \"{audioFile}\"?language={episode.AudioLanguages[i]},handler=\"{episode.AudioNames[i]}\"");
                 }
