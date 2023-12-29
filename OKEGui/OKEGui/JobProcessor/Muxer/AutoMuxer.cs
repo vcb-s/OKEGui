@@ -156,7 +156,7 @@ namespace OKEGui
 
             int fileID = 0;
 
-            // parameters.Add("--ui-language zh_CN");
+            parameters.Add("--ui-language en");
             parameters.Add($"--output \"{episode.OutputFile}\"");
 
             if (episode.VideoFile != null)
