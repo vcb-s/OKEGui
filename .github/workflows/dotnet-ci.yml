@@ -6,9 +6,9 @@ name: .NET Desktop
 
 on:
   push:
-    branches: [ master ]
+    branches: [ support-eac3 ]
   pull_request:
-    branches: [ master ]
+    branches: [ support-eac3 ]
 
 jobs:
 
