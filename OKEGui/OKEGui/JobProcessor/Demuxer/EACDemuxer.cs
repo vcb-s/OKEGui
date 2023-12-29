@@ -354,7 +354,8 @@ namespace OKEGui
                         continue;
                     }
                     if (jobAudioInfo.Lossy)
-                        track.Codec = TrackCodec.FLAC;
+                        if (track.Codec != TrackCodec.EAC3 && track.Codec != TrackCodec.AAC)
+                            track.Codec = TrackCodec.FLAC;
                 }
                 if (track.Type == TrackType.Subtitle)
                 {

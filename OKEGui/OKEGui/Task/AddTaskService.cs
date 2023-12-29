@@ -204,9 +204,10 @@ namespace OKEGui
             }
 
             if (json.AudioFormat != "FLAC" && json.AudioFormat != "AAC" &&
-                json.AudioFormat != "AC3" && json.AudioFormat != "DTS")
+                json.AudioFormat != "AC3" && json.AudioFormat != "DTS" &&
+                json.AudioFormat != "EAC3")
             {
-                MessageBox.Show("音轨只能是FLAC/AAC/AC3/DTS", "音轨格式不支持", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("目标音轨只能是FLAC/AAC/AC3/DTS/EAC3", "音轨格式不支持", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
 
