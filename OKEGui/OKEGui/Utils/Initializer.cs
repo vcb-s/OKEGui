@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Net;
 using System.Reflection;
 using System.Windows;
+using System.Text;
 using Newtonsoft.Json;
 using NLog;
 using NLog.Config;
@@ -161,7 +162,11 @@ namespace OKEGui.Utils
 
             LoggingConfiguration config = new LoggingConfiguration();
 
-            FileTarget logfile = new FileTarget("logfile") { FileName = $"log\\OKE_{time}_{pid}.log" };
+            FileTarget logfile = new FileTarget("logfile")
+            {
+                FileName = $"log\\OKE_{time}_{pid}.log",
+                Encoding = new UTF8Encoding()
+            };
             DebuggerTarget logconsole = new DebuggerTarget("logconsole");
 
             // Rules for mapping loggers to targets            
