@@ -81,8 +81,8 @@ namespace OKEGui.Utils
         public const string configFile = "OKEGuiConfig.json";
 
         //Input and Debug, Memory regex
-        public static readonly Regex inputRegex = new Regex("# *OKE:INPUTFILE([\\s]+\\w+[ ]*=[ ]*)([R]*[\"'].*[\"'])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-        public static readonly Regex projectDirRegex = new Regex("# *OKE:PROJECTDIR([\\s]+\\w+[ ]*=[ ]*)([R]*[\"'].*[\"'])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        public static readonly Regex inputRegex = new Regex("# *OKE:INPUTFILE([\\s]+\\w+[ ]*=[ ]*)([r]*[\"'].*[\"'])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        public static readonly Regex projectDirRegex = new Regex("# *OKE:PROJECTDIR([\\s]+\\w+[ ]*=[ ]*)([r]*[\"'].*[\"'])", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         public static readonly Regex memoryRegex = new Regex("# *OKE:MEMORY([\\s]+core.max_cache_size+[ ]*=[ ]*)(\\d+)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         public static readonly Regex debugRegex = new Regex("# *OKE:DEBUG([\\s]+\\w+[ ]*=[ ]*)(\\w+)", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 

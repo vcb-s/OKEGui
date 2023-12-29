@@ -193,7 +193,7 @@ namespace OKEGui
             if (Constants.projectDirRegex.IsMatch(vsScript)) {
                 string[] dirTag = Constants.projectDirRegex.Split(vsScript);
                 string projectDir = new DirectoryInfo(wizardInfo.ProjectFile).Parent.FullName;
-                vsScript = dirTag[0] + dirTag[1] + "r\"" + projectDir + "\"" + dirTag[3];
+                vsScript = dirTag[0] + dirTag[1] + "R\"" + projectDir + "\"" + dirTag[3];
             }
 
             string updatedVsScript = vsScript;
@@ -257,7 +257,7 @@ namespace OKEGui
                 }
 
                 // 新建vpy文件（inputname.m2ts-mmddHHMM.vpy）
-                string vpy = inputTemplate[0] + inputTemplate[1] + "r\"" +
+                string vpy = inputTemplate[0] + inputTemplate[1] + "R\"" +
                     inputFile + "\"" + inputTemplate[3];
 
                 string inputSuffixPath = inputFile.Replace(':', '_');
