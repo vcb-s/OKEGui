@@ -435,6 +435,7 @@ namespace OKEGui
                     case TrackType.Audio:
                         AudioInfo audioInfo = JobAudio[audioId++];
                         audioInfo.DupOrEmpty = item.DupOrEmpty;
+                        audioInfo.Length = item.Length;
                         mf.AddTrack(new AudioTrack(file, audioInfo));
                         break;
                     case TrackType.Subtitle:
