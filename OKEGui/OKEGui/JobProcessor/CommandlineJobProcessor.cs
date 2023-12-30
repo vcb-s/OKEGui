@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Text;
 
 namespace OKEGui
 {
@@ -107,6 +108,8 @@ namespace OKEGui
             pstart.Arguments = commandLine;
             pstart.RedirectStandardOutput = true;
             pstart.RedirectStandardError = true;
+            pstart.StandardOutputEncoding = Encoding.UTF8;
+            pstart.StandardErrorEncoding = Encoding.UTF8;
             pstart.WindowStyle = ProcessWindowStyle.Minimized;
             pstart.CreateNoWindow = true;
             pstart.UseShellExecute = false;
