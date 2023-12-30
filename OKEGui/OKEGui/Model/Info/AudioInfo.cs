@@ -7,6 +7,7 @@ namespace OKEGui.Model
         public string OutputCodec;
         public int Bitrate = Constants.QAACBitrate;
         public bool Lossy = false;
+        public int Length;
 
         public AudioInfo() : base()
         {
