@@ -44,13 +44,14 @@ jobs:
       shell: bash
       run: |
         set -ex
-        curl -s -o tools.zip -L https://github.com/vcb-s/OKEGui/releases/download/7.3/OKEGui_v7.3.zip
+        curl -s -o tools.zip -L https://github.com/vcb-s/OKEGui/releases/download/8.7.1/OKEGui-v8.7.1.zip
         7z x -otmp tools.zip
         # clean up unnecessary files
-        rm -f tmp/OKEGui/tools/mkvtoolnix/cache/fileIdentifier/*
+        rm -f tmp/OKEGui/tools/x26x/*
         # tweak mkvtoolnix setting
         sed -i -e 's|chapterNameTemplate=.*|chapterNameTemplate=Chapter <NUM:2>|g' tmp/OKEGui/tools/mkvtoolnix/mkvtoolnix-gui.ini
         sed -i -e 's|updates\\checkForUpdates=true|updates\\checkForUpdates=false|g' tmp/OKEGui/tools/mkvtoolnix/mkvtoolnix-gui.ini
+        sed -i -e 's|useLegacyFontMIMETypes=false|useLegacyFontMIMETypes=true|g' tmp/OKEGui/tools/mkvtoolnix/mkvtoolnix-gui.ini
         # update eac3to's libdcadec.dll, see https://forum.videohelp.com/threads/400707-UsEac3to-1-3-0-DTS-HD-MA-to-FLAC#post2651323
         curl -s -o dcadec.zip -L https://github.com/foo86/dcadec/releases/download/v0.2.0/dcadec-0.2.0-win32.zip
         7z x -odcadec dcadec.zip
