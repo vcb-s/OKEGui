@@ -18,6 +18,8 @@ namespace OKEGui
         private string lastStderrLine;
         private ManualResetEvent retrieved = new ManualResetEvent(false);
         private VideoJob job;
+        private bool isVSError = false;
+        private string errorMsg;
 
         public VSPipeProcessor(VideoInfoJob j) : base()
         {
@@ -56,10 +58,27 @@ namespace OKEGui
 
             if (line.Contains("Python exception: "))
             {
-                OKETaskException ex = new OKETaskException(Constants.vpyErrorSmr);
-                ex.progress = 0.0;
-                ex.Data["VPY_ERROR"] = line.Substring(18);
-                throw ex;
+                isVSError = true;
+                errorMsg = "";
+            }
+            else if (isVSError)
+            {
+                Regex rExit = new Regex("^([a-zA-Z]*)(Error|Exception|Exit|Interrupt|Iteration|Warning)");
+                if (rExit.IsMatch(line))
+                {
+                    string[] match = rExit.Split(line);
+                    Logger.Error(match[1] + match[2]);
+
+                    errorMsg += "\n" + line;
+                    OKETaskException ex = new OKETaskException(Constants.vpyErrorSmr);
+                    ex.progress = 0.0;
+                    ex.Data["VPY_ERROR"] = errorMsg;
+                    throw ex;
+                }
+                else if (line != "")
+                {
+                    errorMsg += "\n" + line;
+                }
             }
             else if (line.Contains("Width"))
             {

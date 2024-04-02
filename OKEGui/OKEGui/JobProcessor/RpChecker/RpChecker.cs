@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using OKEGui.JobProcessor;
 using OKEGui.Utils;
@@ -53,6 +54,8 @@ namespace OKEGui
         private const string TemplateFile = ".\\tools\\rpc\\RpcTemplate.vpy";
         private RpcJob job;
         private ulong frameCount = 0;
+        private bool isVSError = false;
+        private string errorMsg;
 
         public RpChecker(RpcJob job) : base()
         {
@@ -85,11 +88,28 @@ namespace OKEGui
             base.ProcessLine(line, stream);
             if (line.Contains("Python exception: "))
             {
-                status = RpcStatus.错误;
-                finishMre.Set();
-                OKETaskException ex = new OKETaskException(Constants.rpcErrorSmr);
-                ex.Data["RPC_ERROR"] = line.Substring(18);
-                throw ex;
+                isVSError = true;
+                errorMsg = "";
+            }
+            else if (isVSError)
+            {
+                Regex rExit = new Regex("^([a-zA-Z]*)(Error|Exception|Exit|Interrupt|Iteration|Warning)");
+                if (rExit.IsMatch(line))
+                {
+                    string[] match = rExit.Split(line);
+                    Logger.Error(match[1] + match[2]);
+
+                    errorMsg += "\n" + line;
+                    status = RpcStatus.错误;
+                    finishMre.Set();
+                    OKETaskException ex = new OKETaskException(Constants.rpcErrorSmr);
+                    ex.Data["RPC_ERROR"] = errorMsg;
+                    throw ex;
+                }
+                else if (line != "")
+                {
+                    errorMsg += "\n" + line;
+                }
             }
             else if (line.Contains("RPCOUT:"))
             {

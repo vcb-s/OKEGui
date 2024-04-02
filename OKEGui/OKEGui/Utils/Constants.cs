@@ -50,7 +50,7 @@ namespace OKEGui.Utils
         public const string svtav1ErrorMsg = "svt-av1出错:{0}。该文件{1}将跳过处理。请转告技术总监复查。";
         public const string svtav1ErrorSmr = "svt-av1出错";
 
-        public const string vpyErrorMsg = "vpy出错:{0}。该文件{1}将跳过处理。请转告技术总监复查。";
+        public const string vpyErrorMsg = "vpy出错:{0}。\n该文件{1}将跳过处理。请转告技术总监复查。";
         public const string vpyErrorSmr = "vpy出错";
 
         public const string unknownErrorMsg = "未知错误。该文件{0}将跳过处理。请转告技术总监复查。";
@@ -74,7 +74,7 @@ namespace OKEGui.Utils
         public const string audioFormatMistachMsg = "无法将{0}格式的音轨转为{1}格式。该文件{2}将跳过处理。请转告技术总监复查。";
         public const string audioFormatMistachSmr = "音轨格式不匹配";
 
-        public const string rpcErrorMsg = "RPC出错:{0}。请手动检查{1}，并请转告技术总监复查。";
+        public const string rpcErrorMsg = "RPC出错:{0}。\n请手动检查{1}，并请转告技术总监复查。";
         public const string rpcErrorSmr = "RPC出错";
 
         //Application configuration file
