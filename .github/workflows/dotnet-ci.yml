@@ -27,13 +27,13 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: true
 
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.1
+      uses: microsoft/setup-msbuild@v2
 
     - name: Restore packages
       run: msbuild $env:Solution_Name /t:Restore /p:Platform=$env:TargetPlatform /p:Configuration=$env:Configuration /p:RestorePackagesConfig=True
@@ -52,7 +52,7 @@ jobs:
 
     # Upload the package: https://github.com/actions/upload-artifact
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Package-${{ matrix.configuration }}
         path: |
