@@ -48,6 +48,7 @@ jobs:
         7z x -otmp tools.zip
         # clean up unnecessary files
         rm -f tmp/OKEGui/tools/x26x/*
+        rm -f tmp/OKEGui/tools/eac3to/*.wav
         # tweak mkvtoolnix setting
         sed -i -e 's|chapterNameTemplate=.*|chapterNameTemplate=Chapter <NUM:2>|g' tmp/OKEGui/tools/mkvtoolnix/mkvtoolnix-gui.ini
         sed -i -e 's|updates\\checkForUpdates=true|updates\\checkForUpdates=false|g' tmp/OKEGui/tools/mkvtoolnix/mkvtoolnix-gui.ini
