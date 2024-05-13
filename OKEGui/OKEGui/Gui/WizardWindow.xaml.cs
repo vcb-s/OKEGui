@@ -239,19 +239,24 @@ namespace OKEGui
                 // 清理文件
                 cleaner.Clean(inputFile, new List<string> { json.InputScript, inputFile + ".lwi" });
 
-                EpisodeConfig config = null;
-                string cfgPath = inputFile + ".json";
-                FileInfo cfgFile = new FileInfo(cfgPath);
-                if (cfgFile.Exists)
+                EpisodeConfig epConfig = null;
+                string cfgPath = null;
+                string[] cfgSuffixList = {".json", ".yaml", ".yml"};
+
+                foreach (string suffix in cfgSuffixList)
                 {
-                    try
+                    FileInfo cfgFile = new FileInfo(inputFile + suffix);
+                    if (cfgFile.Exists)
                     {
-                        string configStr = File.ReadAllText(cfgPath);
-                        config = JsonConvert.DeserializeObject<EpisodeConfig>(configStr);
+                        cfgPath = inputFile + suffix;
+                        break;
                     }
-                    catch (Exception ex)
+                }
+                if (cfgPath != null)
+                {
+                    epConfig = AddEpProfileService.LoadJsonAsProfile(cfgPath);
+                    if (epConfig == null)
                     {
-                        System.Windows.MessageBox.Show(ex.ToString(), cfgFile.Name + "文件写错了诶", MessageBoxButton.OK, MessageBoxImage.Error);
                         continue;
                     }
                 }
@@ -289,11 +294,16 @@ namespace OKEGui
 
                 // 更新输入脚本和输出文件拓展名
                 td.Taskfile.InputScript = fileName;
-                if (config != null)
-                {
-                    td.Taskfile.Config = config.Clone() as EpisodeConfig;
-                }
                 td.UpdateOutputFileName();
+
+                if (epConfig != null)
+                {
+                    td.Taskfile.Config = epConfig.Clone() as EpisodeConfig;
+                    if (epConfig.EnableReEncode)
+                    {
+                        Logger.Debug("Processed epConfig: " + td.Taskfile.Config.ToString());
+                    }
+                }
 
                 // 寻找章节
                 td.ChapterStatus = ChapterService.UpdateChapterStatus(td);

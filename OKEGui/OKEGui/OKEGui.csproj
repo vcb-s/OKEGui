@@ -117,6 +117,7 @@
     <Compile Include="Model\Info\Info.cs" />
     <Compile Include="Model\Info\VideoInfo.cs" />
     <Compile Include="Task\AddTaskService.cs" />
+    <Compile Include="Task\AddEpProfileService.cs" />
     <Compile Include="Task\ChapterService.cs" />
     <Compile Include="Task\EpisodeProfile.cs" />
     <Compile Include="Task\SubProcessService.cs" />
@@ -170,6 +171,7 @@
     <Compile Include="Utils\SafeProxy.cs" />
     <Compile Include="Utils\VapourSynthHelper.cs" />
     <Compile Include="Utils\WindowsUtil.cs" />
+    <Compile Include="Utils\SliceUtil.cs" />
     <Compile Include="Worker\NumaNode.cs" />
     <Compile Include="Worker\WorkerManager.cs" />
   </ItemGroup>
