@@ -299,10 +299,20 @@ namespace OKEGui
                 if (epConfig != null)
                 {
                     td.Taskfile.Config = epConfig.Clone() as EpisodeConfig;
-                    if (epConfig.EnableReEncode)
+                    td.Taskfile.isReEncode = epConfig.EnableReEncode;
+                    if (td.Taskfile.isReEncode)
                     {
                         Logger.Debug("Processed epConfig: " + td.Taskfile.Config.ToString());
+                        if (td.Taskfile.ContainerFormat != "MKV")
+                        {
+                            System.Windows.MessageBox.Show($"ReEncode项目暂时只支持mkv格式输出，{td.Taskfile.ContainerFormat}格式暂不支持", "封装格式不支持", MessageBoxButton.OK, MessageBoxImage.Error);
+                            continue;
+                        }
                     }
+                }
+                else
+                {
+                    td.Taskfile.isReEncode = false;
                 }
 
                 // 寻找章节

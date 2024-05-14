@@ -18,7 +18,7 @@ namespace OKEGui
         public X265Encoder(VideoJob job) : base()
         {
             this.job = job;
-            getInputProperties(job);
+            this.NumberOfFrames = job.NumberOfFrames;
 
             executable = Path.Combine(Environment.SystemDirectory, "cmd.exe");
 
@@ -58,7 +58,7 @@ namespace OKEGui
 
                 var result = rf.Split(line);
 
-                ulong reportedFrames = ulong.Parse(result[1]);
+                long reportedFrames = long.Parse(result[1]);
 
                 // 这里是平均速度
                 if (!base.setSpeed(result[3]))

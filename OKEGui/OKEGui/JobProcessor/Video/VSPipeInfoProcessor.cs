@@ -10,29 +10,29 @@ using OKEGui.Utils;
 
 namespace OKEGui
 {
-    public class VSPipeProcessor : CommandlineJobProcessor
+    public class VSPipeInfoProcessor : CommandlineJobProcessor
     {
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("VSPipeProcessor");
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("VSPipeInfoProcessor");
         private VSVideoInfo videoInfo;
         private bool videoInfoOk;
         private string lastStderrLine;
         private ManualResetEvent retrieved = new ManualResetEvent(false);
-        private VideoJob job;
+        private VideoInfoJob job;
         private bool isVSError = false;
         private string errorMsg;
 
-        public VSPipeProcessor(VideoInfoJob j) : base()
+        public VSPipeInfoProcessor(VideoInfoJob j) : base()
         {
             // 获取VSPipe路径
             executable = Initializer.Config.vspipePath;
             videoInfo = new VSVideoInfo();
             videoInfoOk = false;
-            job = j.vJob;
+            job = j;
 
             StringBuilder sb = new StringBuilder();
 
             sb.Append("--info");
-            foreach (string arg in j.Args)
+            foreach (string arg in j.VspipeArgs)
             {
                 sb.Append($" --arg \"{arg}\"");
             }
@@ -40,6 +40,32 @@ namespace OKEGui
             sb.Append(" -");
 
             commandLine = sb.ToString();
+        }
+
+        public void checkFps(VideoInfoJob j)
+        {
+            if (j.Vfr)
+            {
+                j.FpsNum = videoInfo.fpsNum;
+                j.FpsDen = videoInfo.fpsDen;
+                videoInfo.vfr = true;
+                videoInfo.fps = (double)videoInfo.fpsNum / videoInfo.fpsDen;
+                return;
+            }
+            else if (videoInfo.fpsNum == j.FpsNum && videoInfo.fpsDen == j.FpsDen)
+            {
+                videoInfo.vfr = false;
+                videoInfo.fps = (double)videoInfo.fpsNum / videoInfo.fpsDen;
+                return;
+            }
+            else
+            {
+                OKETaskException ex = new OKETaskException(Constants.fpsMismatchSmr);
+                ex.progress = 0.0;
+                ex.Data["SRC_FPS"] = ((double)j.FpsNum / j.FpsDen).ToString("F3");
+                ex.Data["DST_FPS"] = ((double)videoInfo.fpsNum / videoInfo.fpsDen).ToString("F3");
+                throw ex;
+            }
         }
 
         public override void ProcessLine(string line, StreamType stream)
@@ -103,8 +129,8 @@ namespace OKEGui
             else if (line.Contains("Frames"))
             {
                 var s = rFrames.Split(line);
-                int f;
-                int.TryParse(s[1], out f);
+                long f;
+                long.TryParse(s[1], out f);
                 if (f > 0)
                 {
                     videoInfo.numFrames = f;
@@ -118,14 +144,14 @@ namespace OKEGui
                 }
                 var s = rFPS.Split(line);
 
-                int n;
-                int.TryParse(s[1], out n);
+                long n;
+                long.TryParse(s[1], out n);
                 if (n > 0)
                 {
                     videoInfo.fpsNum = n;
                 }
 
-                int.TryParse(s[2], out n);
+                long.TryParse(s[2], out n);
                 if (n > 0)
                 {
                     videoInfo.fpsDen = n;

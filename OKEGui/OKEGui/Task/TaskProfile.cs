@@ -18,8 +18,8 @@ namespace OKEGui.Model
         public string EncoderParam;
         public string ContainerFormat;
         public double Fps;
-        public uint FpsNum;
-        public uint FpsDen;
+        public long FpsNum;
+        public long FpsDen;
         public List<AudioInfo> AudioTracks;
         public string InputScript;
         public List<Info> SubtitleTracks;
@@ -35,6 +35,8 @@ namespace OKEGui.Model
 
         public string WorkingPathPrefix;
         public string OutputPathPrefix;
+
+        public bool isReEncode;
 
         public Object Clone()
         {

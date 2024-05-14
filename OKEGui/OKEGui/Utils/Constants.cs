@@ -24,6 +24,12 @@ namespace OKEGui.Utils
         //x265
         public const string x265Path = ".\\tools\\x26x\\x265.exe";
 
+        //mkvmerge
+        public const string mkvmergePath = ".\\tools\\mkvtoolnix\\mkvmerge.exe";
+
+        //l-smash
+        public const string lsmashPath = ".\\tools\\l-smash\\muxer.exe";
+
         //rpchecker
         public const string rpcPath = ".\\tools\\rpc\\rpchecker.exe";
 

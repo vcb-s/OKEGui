@@ -19,7 +19,7 @@ namespace OKEGui
         public SVTAV1Encoder(VideoJob job) : base()
         {
             this.job = job;
-            getInputProperties(job);
+            this.NumberOfFrames = job.NumberOfFrames;
 
             executable = Path.Combine(Environment.SystemDirectory, "cmd.exe");
 
@@ -59,7 +59,7 @@ namespace OKEGui
 
                 var result = rf.Split(line);
 
-                ulong reportedFrames = ulong.Parse(result[1]);
+                long reportedFrames = long.Parse(result[1]);
 
                 Debugger.Log(0, "EncodeFinish", result[1] + " frames\n");
 
@@ -78,7 +78,7 @@ namespace OKEGui
                 var result = rf.Split(line);
                 if (result.Length < 2)
                     return;
-                ulong reportedFrames = ulong.Parse(result[1]);
+                long reportedFrames = long.Parse(result[1]);
                 Debugger.Log(0, "EncodeFinish", result[1] + " frames\n");
                 base.encodeFinish(reportedFrames);
                 expectTotalFrames = false;

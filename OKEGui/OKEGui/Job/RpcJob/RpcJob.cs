@@ -11,7 +11,7 @@ namespace OKEGui
     public class RpcJob : Job
     {
         public readonly string RippedFile;
-        public readonly ulong TotalFrame;
+        public readonly long TotalFrame;
         public readonly Dictionary<string, string> Args = new Dictionary<string, string>();
         public readonly string FailedRPCOutputFile;
         public RpcStatus RpcStatus
@@ -24,14 +24,14 @@ namespace OKEGui
                 }
             }
         }
-        public RpcJob(string sourceFile, VideoJob videoJob, string outputPath)
+        public RpcJob(string sourceFile, string outputPath, string rippedVideo, long numFrame, List<string> vspipeArgs)
         {
             Input = sourceFile;
             Output = Path.ChangeExtension(sourceFile, "rpc");
-            RippedFile = videoJob.Output;
             FailedRPCOutputFile = outputPath + ".rpc";
-            TotalFrame = videoJob.NumberOfFrames;
-            foreach (string arg in videoJob.VspipeArgs)
+            RippedFile = rippedVideo;
+            TotalFrame = numFrame;
+            foreach (string arg in vspipeArgs)
             {
                 int pos = arg.IndexOf('=');
                 string variable = arg.Substring(0, pos);

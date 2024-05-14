@@ -53,7 +53,7 @@ namespace OKEGui
 
         private const string TemplateFile = ".\\tools\\rpc\\RpcTemplate.vpy";
         private RpcJob job;
-        private ulong frameCount = 0;
+        private long frameCount = 0;
         private bool isVSError = false;
         private string errorMsg;
 

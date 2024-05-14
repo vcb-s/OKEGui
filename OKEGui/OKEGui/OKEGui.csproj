@@ -116,6 +116,7 @@
     <Compile Include="Model\Info\AudioInfo.cs" />
     <Compile Include="Model\Info\Info.cs" />
     <Compile Include="Model\Info\VideoInfo.cs" />
+    <Compile Include="Model\Info\VSPipeInfo.cs" />
     <Compile Include="Task\AddTaskService.cs" />
     <Compile Include="Task\AddEpProfileService.cs" />
     <Compile Include="Task\ChapterService.cs" />
@@ -132,7 +133,7 @@
     <Compile Include="JobProcessor\Audio\FFmpegPipeQAACEncoder.cs" />
     <Compile Include="JobProcessor\Muxer\AutoMuxer.cs" />
     <Compile Include="JobProcessor\Demuxer\EACDemuxer.cs" />
-    <Compile Include="JobProcessor\Video\VSPipeProcessor.cs" />
+    <Compile Include="JobProcessor\Video\VSPipeInfoProcessor.cs" />
     <Compile Include="Job\AudioJob\AudioJob.cs" />
     <Compile Include="Model\OKEFile.cs" />
     <Compile Include="Model\MediaFile.cs" />

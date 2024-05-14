@@ -5,8 +5,8 @@ namespace OKEGui.Utils
 {
     public class SliceInfo
     {
-        public int begin;
-        public int end;
+        public long begin;
+        public long end;
 
         public bool CheckIllegal()
         {

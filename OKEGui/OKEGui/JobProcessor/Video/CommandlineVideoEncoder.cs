@@ -12,11 +12,9 @@ namespace OKEGui
     {
         #region variables
 
-        public ulong NumberOfFrames { get; protected set; }
-        private ulong currentFrameNumber;
-        protected long fps_n = 0, fps_d = 0;
+        public long NumberOfFrames { get; protected set; }
+        private long currentFrameNumber;
 
-        protected bool usesSAR = false;
         protected double speed;
         protected double bitrate;
         protected string unit;
@@ -25,45 +23,10 @@ namespace OKEGui
 
         #endregion variables
 
-        #region helper methods
-
-        /// <summary>
-        /// tries to open the video source and gets the number of frames from it, or
-        /// exits with an error
-        /// </summary>
-        /// <param name="videoSource">the AviSynth script</param>
-        /// <param name="error">return parameter for all errors</param>
-        /// <returns>true if the file could be opened, false if not</returns>
-        protected void getInputProperties(VideoJob job)
-        {
-            //VapourSynthHelper vsHelper = new VapourSynthHelper();
-            //vsHelper.LoadScriptFile(job.Input);
-            VSPipeInfo vsHelper = new VSPipeInfo(job);
-            fps_n = vsHelper.FpsNum;
-            fps_d = vsHelper.FpsDen;
-            NumberOfFrames = (ulong)vsHelper.TotalFreams;
-            job.NumberOfFrames = NumberOfFrames;
-            if (fps_n == job.FpsNum && fps_d == job.FpsDen) return;
-            if (job.Vfr)
-            {
-                job.FpsNum = (uint)fps_n;
-                job.FpsDen = (uint)fps_d;
-                job.Fps = (fps_n + 0.0) / fps_d;
-                return;
-            }
-            OKETaskException ex = new OKETaskException(Constants.fpsMismatchSmr);
-            ex.progress = 0.0;
-            ex.Data["SRC_FPS"] = ((double)job.FpsNum / job.FpsDen).ToString("F3");
-            ex.Data["DST_FPS"] = ((double)fps_n / fps_d).ToString("F3");
-            throw ex;
-        }
-
-        #endregion helper methods
-
         protected bool setFrameNumber(string frameString, bool isUpdateSpeed = false)
         {
-            int currentFrame;
-            if (int.TryParse(frameString, out currentFrame))
+            long currentFrame;
+            if (long.TryParse(frameString, out currentFrame))
             {
                 if (currentFrame < 0)
                 {
@@ -72,7 +35,7 @@ namespace OKEGui
                 }
                 else
                 {
-                    currentFrameNumber = (ulong)currentFrame;
+                    currentFrameNumber = currentFrame;
                 }
 
                 Update();
@@ -166,7 +129,7 @@ namespace OKEGui
             return Math.Round(size * Math.Pow(10, digit)) / Math.Pow(10, digit) + " " + units[i];
         }
 
-        protected void encodeFinish(ulong reportedFrames)
+        protected void encodeFinish(long reportedFrames)
         {
             if (reportedFrames < NumberOfFrames)
             {

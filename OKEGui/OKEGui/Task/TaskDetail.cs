@@ -24,6 +24,7 @@ namespace OKEGui
 
         public string Tid;
         public long LengthInMiliSec;
+        public long NumberOfFrames;
 
         // 自动生成输出文件名
         public void UpdateOutputFileName()
