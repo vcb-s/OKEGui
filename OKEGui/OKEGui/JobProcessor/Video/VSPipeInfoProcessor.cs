@@ -42,8 +42,10 @@ namespace OKEGui
             commandLine = sb.ToString();
         }
 
-        public void checkFps(VideoInfoJob j)
+        public void CheckFps(VideoInfoJob j)
         {
+            j.NumberOfFrames = videoInfo.numFrames;
+
             if (j.Vfr)
             {
                 j.FpsNum = videoInfo.fpsNum;
@@ -97,7 +99,6 @@ namespace OKEGui
 
                     errorMsg += "\n" + line;
                     OKETaskException ex = new OKETaskException(Constants.vpyErrorSmr);
-                    ex.progress = 0.0;
                     ex.Data["VPY_ERROR"] = errorMsg;
                     throw ex;
                 }

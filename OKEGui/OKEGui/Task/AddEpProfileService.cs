@@ -57,7 +57,7 @@ namespace OKEGui
                 json.ReEncodeOldFile = oldFile.FullName;
 
                 // 检查切片序列
-                if (json.ReEncodeSliceArray == null)
+                if (json.ReEncodeSliceArray == null || json.ReEncodeSliceArray.Count == 0)
                 {
                     MessageBox.Show("ReEncode项目必须指定需要重压的切片序列", "未指定切片序列", MessageBoxButton.OK, MessageBoxImage.Error);
                     return null;

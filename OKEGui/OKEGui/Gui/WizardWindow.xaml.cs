@@ -299,8 +299,8 @@ namespace OKEGui
                 if (epConfig != null)
                 {
                     td.Taskfile.Config = epConfig.Clone() as EpisodeConfig;
-                    td.Taskfile.isReEncode = epConfig.EnableReEncode;
-                    if (td.Taskfile.isReEncode)
+                    td.Taskfile.IsReEncode = epConfig.EnableReEncode;
+                    if (td.Taskfile.IsReEncode)
                     {
                         Logger.Debug("Processed epConfig: " + td.Taskfile.Config.ToString());
                         if (td.Taskfile.ContainerFormat != "MKV")
@@ -312,7 +312,7 @@ namespace OKEGui
                 }
                 else
                 {
-                    td.Taskfile.isReEncode = false;
+                    td.Taskfile.IsReEncode = false;
                 }
 
                 // 寻找章节

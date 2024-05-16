@@ -134,6 +134,7 @@
     <Compile Include="JobProcessor\Muxer\AutoMuxer.cs" />
     <Compile Include="JobProcessor\Demuxer\EACDemuxer.cs" />
     <Compile Include="JobProcessor\Video\VSPipeInfoProcessor.cs" />
+    <Compile Include="JobProcessor\Video\IFrameInfoGenerator.cs" />
     <Compile Include="Job\AudioJob\AudioJob.cs" />
     <Compile Include="Model\OKEFile.cs" />
     <Compile Include="Model\MediaFile.cs" />

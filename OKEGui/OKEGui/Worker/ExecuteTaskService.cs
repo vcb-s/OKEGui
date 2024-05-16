@@ -86,9 +86,9 @@ namespace OKEGui.Worker
                     VideoInfo finalVideoInfo = DoPreparation(task, profile, vsInfo);
 
                     // 处理ReEncode任务
-                    if (profile.isReEncode)
+                    if (profile.IsReEncode)
                     {
-                        CheckReEncodeSlice(task, profile);
+                        CheckReEncodeSlice(task, profile, vsInfo.iFrameInfo);
                     }
                     // 处理常规压制任务
                     else
@@ -154,7 +154,7 @@ namespace OKEGui.Worker
             VideoInfoJob viJob = new VideoInfoJob();
             viJob.SetUpdate(task);
             viJob.Input = profile.InputScript;
-            viJob.IsReEncode = profile.isReEncode;
+            viJob.IsReEncode = profile.IsReEncode;
             viJob.Vfr = profile.TimeCode;
             viJob.FpsNum = profile.FpsNum;
             viJob.FpsDen = profile.FpsDen;
@@ -162,12 +162,22 @@ namespace OKEGui.Worker
             {
                 viJob.VspipeArgs.AddRange(profile.Config.VspipeArgs);
             }
+            if (profile.IsReEncode)
+            {
+                viJob.WorkingPath = profile.WorkingPathPrefix;
+                viJob.ReEncodeOldFile = profile.Config.ReEncodeOldFile;
+            }
 
             VSPipeInfo vsInfo = new VSPipeInfo(viJob);
             task.NumberOfFrames = vsInfo.videoInfo.numFrames;
 
             Logger.Info($"获取信息完成：VFR: {vsInfo.videoInfo.vfr}, FPS: {vsInfo.videoInfo.fps}, " +
                         $"FpsNum: {vsInfo.videoInfo.fpsNum}, FpsDen: {vsInfo.videoInfo.fpsDen}, NumFrames: {task.NumberOfFrames}");
+
+            if (profile.IsReEncode)
+            {
+                Logger.Info($"IFrame序列：{vsInfo.iFrameInfo}");
+            }
 
             return vsInfo;
         }
@@ -204,7 +214,7 @@ namespace OKEGui.Worker
             // 添加章节文件
             string qpFileName = null;
             string qpFile = null;
-            if (!profile.isReEncode)
+            if (!profile.IsReEncode)
             {
                 ChapterInfo chapterInfo = ChapterService.LoadChapter(task);
                 if (chapterInfo != null)
@@ -560,11 +570,33 @@ namespace OKEGui.Worker
         }
 
 
-        // 获取ReEncode旧成品的I帧序列，生成最终的切片序列
-        private void CheckReEncodeSlice(TaskDetail task, TaskProfile profile)
+        // 根据旧成品的I帧序列，生成最终的切片序列
+        private void CheckReEncodeSlice(TaskDetail task, TaskProfile profile, IFrameInfo iFrameInfo)
         {
-            Logger.Debug("DoCheckReEncodeSlice");
-            Logger.Debug("epConfig: " + profile.Config.ToString());
+            Logger.Debug("Raw ReEncode Slice: " + profile.Config.ReEncodeSliceArray.ToString());
+
+            var numFrames = iFrameInfo[iFrameInfo.Count - 1];
+
+            foreach (var s in profile.Config.ReEncodeSliceArray)
+            {
+                if (s.begin >= numFrames || s.end > numFrames)
+                {
+                    OKETaskException ex = new OKETaskException(Constants.reEncodeSliceErrorSmr);
+                    ex.Data["SLICE_ILLEGAL"] = $"[{s.begin}, {s.end}]";
+                    ex.Data["NUM_FRAMES"] = $"{numFrames}";
+                    throw ex;
+                }
+                if (s.end == -1)
+                {
+                    s.end = numFrames;
+                }
+                s.begin = iFrameInfo.FindNearestLeft(s.begin);
+                s.end = iFrameInfo.FindNearestRight(s.end);
+            }
+
+            profile.Config.ReEncodeSliceArray = profile.Config.ReEncodeSliceArray.Merge();
+
+            Logger.Debug("IFrame ReEncode Slice: " + profile.Config.ReEncodeSliceArray.ToString());
         }
     }
 }

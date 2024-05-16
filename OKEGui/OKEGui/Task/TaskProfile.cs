@@ -36,7 +36,7 @@ namespace OKEGui.Model
         public string WorkingPathPrefix;
         public string OutputPathPrefix;
 
-        public bool isReEncode;
+        public bool IsReEncode;
 
         public Object Clone()
         {

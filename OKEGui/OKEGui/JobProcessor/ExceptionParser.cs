@@ -125,6 +125,14 @@ namespace OKEGui.JobProcessor
                     msg.errorMsg = string.Format(Constants.rpcErrorMsg, ex.Data["RPC_ERROR"], task.InputFile);
                     break;
 
+                case Constants.reEncodeSliceErrorSmr:
+                    msg.errorMsg = string.Format(Constants.reEncodeSliceErrorMsg, ex.Data["SLICE_ILLEGAL"], ex.Data["NUM_FRAMES"], task.InputFile);
+                    break;
+
+                case Constants.reEncodeFramesErrorSmr:
+                    msg.errorMsg = string.Format(Constants.reEncodeFramesErrorMsg, ex.Data["VPY_FRAMES"], ex.Data["OLD_FRAMES"], task.InputFile);
+                    break;
+
                 case Constants.unknownErrorSmr:
                 default:
                     msg.errorMsg = string.Format(Constants.unknownErrorMsg, task.InputFile);
