@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using static OKEGui.RpChecker;
+using OKEGui.JobProcessor;
 
 namespace OKEGui
 {
@@ -252,7 +252,7 @@ namespace OKEGui
 
         public bool RpcButtonEnabled
         {
-            get { return rpcStatus == RpChecker.RpcStatus.未通过 || rpcStatus == RpChecker.RpcStatus.通过; }
+            get { return rpcStatus == JobProcessor.RpcStatus.未通过 || rpcStatus == JobProcessor.RpcStatus.通过; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

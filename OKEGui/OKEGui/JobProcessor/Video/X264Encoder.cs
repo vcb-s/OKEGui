@@ -1,37 +1,32 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using OKEGui.Utils;
-using OKEGui.JobProcessor;
 using System.Collections.Generic;
 
-namespace OKEGui
+namespace OKEGui.JobProcessor
 {
     public class X264Encoder : CommandlineVideoEncoder
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("X264Encoder");
-        private readonly string X264Path = "";
-        private readonly string VspipePath = "";
+        private readonly string x264Path = "";
+        private readonly string vspipePath = "";
 
-        public X264Encoder(VideoJob job) : base()
+        public X264Encoder(VideoJob vjob) : base(vjob)
         {
-            this.job = job;
-            this.NumberOfFrames = job.NumberOfFrames;
-
             executable = Path.Combine(Environment.SystemDirectory, "cmd.exe");
 
-            if (File.Exists(job.EncoderPath))
+            if (!File.Exists(VJob.EncoderPath))
             {
-                this.X264Path = job.EncoderPath;
+                throw new Exception("x264编码器不存在");
             }
 
-            // 获取VSPipe路径
-            this.VspipePath = Initializer.Config.vspipePath;
+            x264Path = VJob.EncoderPath;
+            vspipePath = Initializer.Config.vspipePath;
 
-            commandLine = BuildCommandline(job.EncodeParam, job.NumaNode, job.VspipeArgs);
+            commandLine = BuildCommandline();
         }
 
         public override void ProcessLine(string line, StreamType stream)
@@ -62,14 +57,14 @@ namespace OKEGui
                 long reportedFrames = long.Parse(result[1]);
 
                 // 这里是平均速度
-                if (!base.setSpeed(result[2]))
+                if (!SetSpeed(result[2]))
                 {
                     return;
                 }
 
                 Debugger.Log(0, "EncodeFinish", result[2] + "fps\n");
 
-                base.encodeFinish(reportedFrames);
+                EncodeFinish(reportedFrames);
             }
 
             Regex r = new Regex("([0-9]+) frames: ([0-9]+.[0-9]+) fps, ([0-9]+.[0-9]+) kb/s", RegexOptions.IgnoreCase);
@@ -81,20 +76,20 @@ namespace OKEGui
                 return;
             }
 
-            if (!base.setFrameNumber(status[1], true))
+            if (!SetFrameNumber(status[1], true))
             {
                 return;
             }
 
-            base.setBitrate(status[3], "kb/s");
+            SetBitrate(status[3], "kb/s");
 
-            if (!base.setSpeed(status[2]))
+            if (!SetSpeed(status[2]))
             {
                 return;
             }
         }
 
-        private string BuildCommandline(string extractParam, int numaNode, List<string> vspipeArgs)
+        private string BuildCommandline()
         {
             StringBuilder sb = new StringBuilder();
 
@@ -102,22 +97,26 @@ namespace OKEGui
             if (!Initializer.Config.singleNuma)
             {
                 sb.Append("/affinity 0xFFFFFFFFFFFFFFFF /node ");
-                sb.Append(numaNode.ToString());
+                sb.Append(VJob.NumaNode.ToString());
             }
             // 构建vspipe参数
-            sb.Append(" \"" + VspipePath + "\"");
+            sb.Append(" \"" + vspipePath + "\"");
             sb.Append(" --y4m");
-            foreach (string arg in vspipeArgs)
+            if (VJob.IsPartialEncode)
+            {
+                sb.Append($" -s {VJob.FrameRange.begin} -e {VJob.FrameRange.end - 1}");
+            }
+            foreach (string arg in VJob.VspipeArgs)
             {
                 sb.Append($" --arg \"{arg}\"");
             }
-            sb.Append(" \"" + job.Input + "\"");
+            sb.Append(" \"" + VJob.Input + "\"");
             sb.Append(" - |");
 
-            // 构建X264参数
-            sb.Append(" \"" + X264Path + "\"");
-            sb.Append(" --demuxer y4m " + extractParam + " -o");
-            sb.Append(" \"" + job.Output + "\" -");
+            // 构建x264参数
+            sb.Append(" \"" + x264Path + "\"");
+            sb.Append(" --demuxer y4m " + VJob.EncodeParam + " -o");
+            sb.Append(" \"" + VJob.Output + "\" -");
             sb.Append("\"");
 
             return sb.ToString();

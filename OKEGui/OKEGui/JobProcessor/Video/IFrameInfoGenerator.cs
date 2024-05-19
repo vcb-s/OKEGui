@@ -1,36 +1,33 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Collections.Generic;
-using OKEGui.JobProcessor;
 using OKEGui.Utils;
 using OKEGui.Model;
 
-namespace OKEGui
+namespace OKEGui.JobProcessor
 {
     public class IFrameInfoGenerator : CommandlineJobProcessor
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("IFrameInfoGenerator");
-        private ManualResetEvent retrieved = new ManualResetEvent(false);
         private IFrameInfo iFrameInfo;
-        private long numFrames;
-        private bool infoOk;
-        private string lastStderrLine;
         private bool isVSError = false;
         private string errorMsg;
 
-        public IFrameInfoGenerator(VideoInfoJob j) : base()
+        protected VideoInfoJob VIJob
+        {
+            get { return job as VideoInfoJob; }
+        }
+
+        public IFrameInfoGenerator(VideoInfoJob vijob) : base(vijob)
         {
             // 获取VSPipe路径
             executable = Initializer.Config.vspipePath;
             iFrameInfo = new IFrameInfo();
-            infoOk = false;
-            numFrames = j.NumberOfFrames;
 
-            string vpyFile = PrepareScript(j);
+            string vpyFile = PrepareScript();
 
             StringBuilder sb = new StringBuilder();
 
@@ -40,15 +37,15 @@ namespace OKEGui
             commandLine = sb.ToString();
         }
 
-        private string PrepareScript(VideoInfoJob j)
+        private string PrepareScript()
         {
             string vpyContent = "import sys\n" +
                                 "from vapoursynth import core\n" +
-                                $"a=R\"{j.ReEncodeOldFile}\"\n" +
+                                $"a=R\"{VIJob.ReEncodeOldFile}\"\n" +
                                 "src = core.lsmas.LWLibavSource(a, cache=0, framelist=True)\n" +
                                 "src.text.FrameProps(\"_IFrameList\").set_output(0)\n" +
                                 "print(f\"IFrameList: {src.get_frame(0).props._IFrameList}\", file=sys.stderr)\n";
-            string vpyFileName = j.WorkingPath + "_iframe.vpy";
+            string vpyFileName = VIJob.WorkingPath + "_iframe.vpy";
             File.WriteAllText(vpyFileName, vpyContent);
 
             return vpyFileName;
@@ -57,8 +54,6 @@ namespace OKEGui
         public override void ProcessLine(string line, StreamType stream)
         {
             Logger.Debug(line);
-            if (stream == StreamType.Stderr)
-                lastStderrLine = line;
             Regex rIFrame = new Regex("IFrameList: \\[([0-9, ]+)\\]");
             Regex rFrames = new Regex("Frames: ([0-9]+)");
 
@@ -92,23 +87,22 @@ namespace OKEGui
                 long.TryParse(s[1], out f);
 
                 // 旧版压制成品的帧数应该 <= 压制脚本最终输出帧数
-                if (f > numFrames)
+                if (f > VIJob.NumberOfFrames)
                 {
                     OKETaskException ex = new OKETaskException(Constants.reEncodeFramesErrorSmr);
-                    ex.Data["VPY_FRAMES"] = $"{numFrames}";
+                    ex.Data["VPY_FRAMES"] = $"{VIJob.NumberOfFrames}";
                     ex.Data["OLD_FRAMES"] = $"{f}";
                     throw ex;
                 }
 
                 Logger.Debug($"旧版压制成品帧数：{f}");
-                if (f != numFrames)
+                if (f != VIJob.NumberOfFrames)
                 {
-                    Logger.Warn($"旧版压制成品帧数({f})与压制脚本输出帧数({numFrames})不匹配，这不是ReEncode的标准用法，除非你非常清楚自己在做什么");
+                    Logger.Warn($"旧版压制成品帧数({f})与压制脚本输出帧数({VIJob.NumberOfFrames})不匹配，这不是ReEncode的标准用法，除非你非常清楚自己在做什么");
                 }
 
                 // 假设到这里已经获取完毕了
-                infoOk = true;
-                retrieved.Set();
+                SetFinish();
             }
             else if (line.Contains("IFrameList"))
             {
@@ -127,34 +121,17 @@ namespace OKEGui
                 {
                     iFrameInfo.Insert(0, 0);
                 }
-                if (!iFrameInfo.Contains(numFrames))
+                if (!iFrameInfo.Contains(VIJob.NumberOfFrames))
                 {
-                    iFrameInfo.Add(numFrames);
+                    iFrameInfo.Add(VIJob.NumberOfFrames);
                 }
-            }
-        }
-
-        public override void waitForFinish()
-        {
-            retrieved.WaitOne();
-        }
-
-        protected override void onExited(int exitCode)
-        {
-            if (exitCode != 0)
-            {
-                if (lastStderrLine == "")
-                    lastStderrLine = "exitcode is " + exitCode.ToString();
-                retrieved.Set();
             }
         }
 
         public IFrameInfo IFrameInfo
         {
             get {
-                retrieved.WaitOne();
-                if (!infoOk)
-                    throw new Exception("iframe info failed: " + lastStderrLine);
+                waitForFinish();
                 return iFrameInfo;
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using OKEGui.JobProcessor;
 
 namespace OKEGui.Model
 {
@@ -38,7 +39,7 @@ namespace OKEGui.Model
             VSPipeInfoProcessor processor = new VSPipeInfoProcessor(j);
             processor.start();
             videoInfo = processor.VideoInfo;
-            processor.CheckFps(j);
+            processor.CheckFps();
 
             if (j.IsReEncode)
             {

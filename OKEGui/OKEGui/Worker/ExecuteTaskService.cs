@@ -5,7 +5,6 @@ using System.IO;
 using OKEGui.Utils;
 using OKEGui.Model;
 using OKEGui.JobProcessor;
-using static OKEGui.RpChecker;
 using TChapter.Chapters;
 
 namespace OKEGui.Worker
@@ -100,7 +99,7 @@ namespace OKEGui.Worker
                         GenerateAudioJob(task, srcTracks);
 
                         // 新建视频处理工作
-                        GenerateVideoJob(task, profile, args.numaNode, finalVideoInfo);
+                        GenerateVideoJob(task, profile, args.numaNode, finalVideoInfo, new SliceInfo {end = -1});
 
                         // 添加字幕文件
                         AddSubtitle(task, srcTracks);
@@ -200,7 +199,7 @@ namespace OKEGui.Worker
                 }
                 catch (IOException ex)
                 {
-                    Logger.Info($"无法写入修正后timecode，将使用原文件\n{ex.Message}");
+                    Logger.Warn($"无法写入修正后timecode，将使用原文件\n{ex.Message}");
                     timeCodeFile = Path.ChangeExtension(task.InputFile, ".tcfile");
                 }
 
@@ -256,7 +255,7 @@ namespace OKEGui.Worker
             return info;
         }
 
-        // 抽取音轨
+        // 抽取音轨和字幕轨
         private MediaFile ExtractSource(TaskDetail task, TaskProfile profile)
         {
             FileInfo eacInfo = new FileInfo(Constants.eac3toWrapperPath);
@@ -315,7 +314,7 @@ namespace OKEGui.Worker
         }
 
         // 新建视频处理工作
-        private void GenerateVideoJob(TaskDetail task, TaskProfile profile, int numaNode, VideoInfo info, long begin = -1, long end = -1, int partId = -1)
+        private VideoJob GenerateVideoJob(TaskDetail task, TaskProfile profile, int numaNode, VideoInfo info, SliceInfo frameRange, int partId = -1)
         {
             VideoJob vJob = new VideoJob(info, profile.VideoFormat);
             vJob.SetUpdate(task);
@@ -324,11 +323,11 @@ namespace OKEGui.Worker
             vJob.EncoderPath = profile.Encoder;
             vJob.EncodeParam = profile.EncoderParam;
             vJob.NumaNode = numaNode;
-            vJob.IsPartialEncode = (end != -1);
-            vJob.FrameBegin = begin;
-            vJob.FrameEnd = end;
+            vJob.IsPartialEncode = (frameRange.end != -1);
+            vJob.FrameRange = frameRange;
+            vJob.PartId = partId;
             if (vJob.IsPartialEncode)
-                vJob.NumberOfFrames = end - begin;
+                vJob.NumberOfFrames = frameRange.end - frameRange.begin;
             else
                 vJob.NumberOfFrames = task.NumberOfFrames;
 
@@ -375,7 +374,8 @@ namespace OKEGui.Worker
             }
 
             task.JobQueue.Enqueue(vJob);
-            Logger.Info($"添加压制任务：numFrame: {vJob.NumberOfFrames}, begin: {vJob.FrameBegin}, end: {vJob.FrameEnd}, qpfile: {vJob.Info.QpFile}, output: {vJob.Output}");
+            Logger.Info($"添加压制任务：numFrame: {vJob.NumberOfFrames}, begin: {vJob.FrameRange.begin}, end: {vJob.FrameRange.end}, qpfile: {vJob.Info.QpFile}, output: {vJob.Output}");
+            return vJob;
         }
 
         // 添加字幕文件
@@ -418,24 +418,14 @@ namespace OKEGui.Worker
                         if (srcFmt == "FLAC" && aJob.CodecString == "AAC")
                         {
                             task.CurrentStatus = "音频转码中";
-
-                            QAACEncoder qaac = new QAACEncoder(aJob, (double progress) =>
-                            {
-                                task.ProgressValue = progress;
-                            }, info.Bitrate);
-
+                            QAACEncoder qaac = new QAACEncoder(aJob);
                             qaac.start();
                             qaac.waitForFinish();
                         }
                         else if (srcFmt != "FLAC" && aJob.CodecString == "AAC" && info.Lossy)
                         {
                             task.CurrentStatus = "音频转码中";
-
-                            FFmpegPipeQAACEncoder qaac = new FFmpegPipeQAACEncoder(aJob, (double progress) =>
-                            {
-                                task.ProgressValue = progress;
-                            }, info.Bitrate);
-
+                            FFmpegPipeQAACEncoder qaac = new FFmpegPipeQAACEncoder(aJob);
                             qaac.start();
                             qaac.waitForFinish();
                         }
@@ -486,7 +476,7 @@ namespace OKEGui.Worker
                         }
 
                         // 开始压制
-                        task.CurrentStatus = "压制中";
+                        task.CurrentStatus = vJob.IsPartialEncode ? $"Part {vJob.PartId + 1}/{task.ReEncodeVideoSlices.Count} 压制中" : "压制中";
                         task.ProgressValue = 0.0;
                         processor.start();
                         processor.waitForFinish();

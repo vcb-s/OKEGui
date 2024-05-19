@@ -1,60 +1,56 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows.Forms;
-using OKEGui.JobProcessor;
 using OKEGui.Utils;
 
-namespace OKEGui
+namespace OKEGui.JobProcessor
 {
     public class VSPipeInfoProcessor : CommandlineJobProcessor
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("VSPipeInfoProcessor");
         private VSVideoInfo videoInfo;
-        private bool videoInfoOk;
-        private string lastStderrLine;
-        private ManualResetEvent retrieved = new ManualResetEvent(false);
-        private VideoInfoJob job;
         private bool isVSError = false;
         private string errorMsg;
 
-        public VSPipeInfoProcessor(VideoInfoJob j) : base()
+        protected VideoInfoJob VIJob
+        {
+            get { return job as VideoInfoJob; }
+        }
+
+        public VSPipeInfoProcessor(VideoInfoJob vijob) : base(vijob)
         {
             // 获取VSPipe路径
             executable = Initializer.Config.vspipePath;
             videoInfo = new VSVideoInfo();
-            videoInfoOk = false;
-            job = j;
 
             StringBuilder sb = new StringBuilder();
 
             sb.Append("--info");
-            foreach (string arg in j.VspipeArgs)
+            foreach (string arg in VIJob.VspipeArgs)
             {
                 sb.Append($" --arg \"{arg}\"");
             }
-            sb.Append(" \"" + j.Input + "\"");
+            sb.Append(" \"" + VIJob.Input + "\"");
             sb.Append(" -");
 
             commandLine = sb.ToString();
         }
 
-        public void CheckFps(VideoInfoJob j)
+        public void CheckFps()
         {
-            j.NumberOfFrames = videoInfo.numFrames;
+            VIJob.NumberOfFrames = videoInfo.numFrames;
 
-            if (j.Vfr)
+            if (VIJob.Vfr)
             {
-                j.FpsNum = videoInfo.fpsNum;
-                j.FpsDen = videoInfo.fpsDen;
+                VIJob.FpsNum = videoInfo.fpsNum;
+                VIJob.FpsDen = videoInfo.fpsDen;
                 videoInfo.vfr = true;
                 videoInfo.fps = (double)videoInfo.fpsNum / videoInfo.fpsDen;
                 return;
             }
-            else if (videoInfo.fpsNum == j.FpsNum && videoInfo.fpsDen == j.FpsDen)
+            else if (videoInfo.fpsNum == VIJob.FpsNum && videoInfo.fpsDen == VIJob.FpsDen)
             {
                 videoInfo.vfr = false;
                 videoInfo.fps = (double)videoInfo.fpsNum / videoInfo.fpsDen;
@@ -64,7 +60,7 @@ namespace OKEGui
             {
                 OKETaskException ex = new OKETaskException(Constants.fpsMismatchSmr);
                 ex.progress = 0.0;
-                ex.Data["SRC_FPS"] = ((double)j.FpsNum / j.FpsDen).ToString("F3");
+                ex.Data["SRC_FPS"] = ((double)VIJob.FpsNum / VIJob.FpsDen).ToString("F3");
                 ex.Data["DST_FPS"] = ((double)videoInfo.fpsNum / videoInfo.fpsDen).ToString("F3");
                 throw ex;
             }
@@ -73,8 +69,6 @@ namespace OKEGui
         public override void ProcessLine(string line, StreamType stream)
         {
             Logger.Debug(line);
-            if (stream == StreamType.Stderr)
-                lastStderrLine = line;
             Regex rWidth = new Regex("Width: ([0-9]+)");
             Regex rHeight = new Regex("Height: ([0-9]+)");
             Regex rFrames = new Regex("Frames: ([0-9]+)");
@@ -186,8 +180,7 @@ namespace OKEGui
                 }
 
                 // 假设到这里已经获取完毕了
-                videoInfoOk = true;
-                retrieved.Set();
+                SetFinish();
             }
             else if (line.Contains("SubSampling"))
             {
@@ -196,33 +189,15 @@ namespace OKEGui
             else if (rlwiProgress.IsMatch(line))
             {
                 var s = rlwiProgress.Split(line);
-                int p;
-                int.TryParse(s[1], out p);
-                job.Progress = p;
-            }
-        }
-
-        public override void waitForFinish()
-        {
-            retrieved.WaitOne();
-        }
-
-        protected override void onExited(int exitCode)
-        {
-            if (exitCode != 0)
-            {
-                if (lastStderrLine == "")
-                    lastStderrLine = "exitcode is " + exitCode.ToString();
-                retrieved.Set();
+                int.TryParse(s[1], out int p);
+                VIJob.Progress = p;
             }
         }
 
         public VSVideoInfo VideoInfo
         {
             get {
-                retrieved.WaitOne();
-                if (!videoInfoOk)
-                    throw new Exception("vspipe -i failed: " + lastStderrLine);
+                waitForFinish();
                 return videoInfo;
             }
         }

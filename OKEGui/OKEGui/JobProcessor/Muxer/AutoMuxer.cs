@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using OKEGui.Model;
 
-namespace OKEGui
+namespace OKEGui.JobProcessor
 {
     public class AutoMuxer
     {

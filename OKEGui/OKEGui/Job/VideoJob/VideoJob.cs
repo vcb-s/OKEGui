@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using OKEGui.Model;
+using OKEGui.Utils;
 
 namespace OKEGui
 {
@@ -11,9 +12,9 @@ namespace OKEGui
         public List<string> VspipeArgs = new List<string>();
         public int NumaNode;
         public long NumberOfFrames;
-        public long FrameBegin;
-        public long FrameEnd;
+        public SliceInfo FrameRange;
         public bool IsPartialEncode;
+        public int PartId;
 
         public VideoJob(VideoInfo info, string codec) : base(codec)
         {

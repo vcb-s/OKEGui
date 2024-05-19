@@ -2,7 +2,7 @@
 using System.IO;
 using OKEGui.Model;
 
-namespace OKEGui
+namespace OKEGui.JobProcessor
 {
     public partial class EACDemuxer
     {

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
 using OKEGui.Utils;
-using OKEGui.JobProcessor;
 using System.Diagnostics;
 
-namespace OKEGui
+namespace OKEGui.JobProcessor
 {
     public delegate void EncoderOutputCallback(string line, int type);
 
@@ -12,18 +11,24 @@ namespace OKEGui
     {
         #region variables
 
-        public long NumberOfFrames { get; protected set; }
         private long currentFrameNumber;
 
         protected double speed;
         protected double bitrate;
         protected string unit;
 
-        protected VideoJob job;
+        protected VideoJob VJob
+        {
+            get { return job as VideoJob; }
+        }
 
         #endregion variables
 
-        protected bool setFrameNumber(string frameString, bool isUpdateSpeed = false)
+        public CommandlineVideoEncoder(VideoJob vjob) : base(vjob)
+        {
+        }
+
+        protected bool SetFrameNumber(string frameString, bool isUpdateSpeed = false)
         {
             long currentFrame;
             if (long.TryParse(frameString, out currentFrame))
@@ -44,7 +49,7 @@ namespace OKEGui
             return false;
         }
 
-        protected bool setSpeed(string speed, string unit = "fps")
+        protected bool SetSpeed(string speed, string unit = "fps")
         {
             double fps, factor = 1;
             if (unit == "fpm")
@@ -67,7 +72,7 @@ namespace OKEGui
             return false;
         }
 
-        protected bool setBitrate(string bitrate, string unit)
+        protected bool SetBitrate(string bitrate, string unit)
         {
             double rate;
             this.unit = unit;
@@ -93,26 +98,24 @@ namespace OKEGui
         {
             if (speed == 0)
             {
-                job.TimeRemain = TimeSpan.FromDays(30);
+                VJob.TimeRemain = TimeSpan.FromDays(30);
             }
             else
             {
-                job.TimeRemain = TimeSpan.FromSeconds((double)(NumberOfFrames - currentFrameNumber) / speed);
+                VJob.TimeRemain = TimeSpan.FromSeconds((double)(VJob.NumberOfFrames - currentFrameNumber) / speed);
             }
 
-            job.Speed = speed.ToString("0.00") + " fps";
-            job.Progress = (double)currentFrameNumber / (double)NumberOfFrames * 100;
+            VJob.Speed = speed.ToString("0.00") + " fps";
+            VJob.Progress = (double)currentFrameNumber / (double)VJob.NumberOfFrames * 100;
 
             if (bitrate == 0)
             {
-                job.BitRate = "未知";
+                VJob.BitRate = "未知";
             }
             else
             {
-                job.BitRate = bitrate.ToString("0.00") + " " + unit;
+                VJob.BitRate = bitrate.ToString("0.00") + " " + unit;
             }
-
-            // su.NbFramesDone = currentFrameNumber;
         }
 
         public static String HumanReadableFilesize(double size, int digit)
@@ -129,21 +132,21 @@ namespace OKEGui
             return Math.Round(size * Math.Pow(10, digit)) / Math.Pow(10, digit) + " " + units[i];
         }
 
-        protected void encodeFinish(long reportedFrames)
+        protected void EncodeFinish(long reportedFrames)
         {
-            if (reportedFrames < NumberOfFrames)
+            if (reportedFrames < VJob.NumberOfFrames)
             {
                 OKETaskException ex = new OKETaskException(Constants.vsCrashSmr);
                 throw ex;
             }
-            job.TimeRemain = TimeSpan.Zero;
-            job.Progress = 100;
-            job.Status = "压制完成";
+            VJob.TimeRemain = TimeSpan.Zero;
+            VJob.Progress = 100;
+            VJob.Status = "压制完成";
 
             // TODO: 计算最终码率
             // 这里显示文件最终大小
-            FileInfo vinfo = new FileInfo(job.Output);
-            job.BitRate = HumanReadableFilesize(vinfo.Length, 2);
+            FileInfo vinfo = new FileInfo(VJob.Output);
+            VJob.BitRate = HumanReadableFilesize(vinfo.Length, 2);
 
             base.SetFinish();
         }
