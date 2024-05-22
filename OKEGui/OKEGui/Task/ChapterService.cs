@@ -88,7 +88,7 @@ namespace OKEGui
 
         public static bool FindChapterFile(TaskDetail task)
         {
-            if (!string.IsNullOrEmpty(task.ChapterFileName))
+            if (!string.IsNullOrEmpty(task.ChapterFileName) && File.Exists(task.ChapterFileName))
                 return true;
             FileInfo inputFile = new FileInfo(task.InputFile);
             string inputPath = Path.GetFullPath(inputFile.FullName);
@@ -117,7 +117,10 @@ namespace OKEGui
             switch (task.ChapterStatus)
             {
                 case ChapterStatus.Yes:
-                    if (!FindChapterFile(task)) return null;
+                    if (!FindChapterFile(task))
+                    {
+                        throw new Exception($"{task.InputFile} 检测到使用外挂章节，但压制时未找到对应章节 {task.ChapterFileName}");
+                    }
                     chapterInfo = new OGMParser().Parse(task.ChapterFileName).FirstOrDefault();
                     break;
                 case ChapterStatus.Maybe:
@@ -135,10 +138,12 @@ namespace OKEGui
 
             if (chapterInfo == null) return null;
 
+            // 丢弃末尾1秒的章节
             chapterInfo.Chapters.Sort((a, b) => a.Time.CompareTo(b.Time));
             chapterInfo.Chapters = chapterInfo.Chapters
                 .Where(x => task.LengthInMiliSec - x.Time.TotalMilliseconds > 1001).ToList();
 
+            // 章节重命名
             if (task.Taskfile.RenumberChapters)
             {
                 for (int i = 0; i < chapterInfo.Chapters.Count; i++)
@@ -147,11 +152,22 @@ namespace OKEGui
                 }
             }
 
+            // 处理开头的重复章节（一般来自mkvmerge切割）
+            if (chapterInfo.Chapters.Count >= 2 && chapterInfo.Chapters[0].Time.Ticks == 0 && 
+                    chapterInfo.Chapters[1].Time.TotalMilliseconds - chapterInfo.Chapters[0].Time.TotalMilliseconds < 100)
+            {
+                chapterInfo.Chapters.RemoveAt(1);
+            }
+
             if (chapterInfo.Chapters.Count > 1 ||
                 chapterInfo.Chapters.Count == 1 && chapterInfo.Chapters[0].Time.Ticks > 0)
             {
                 double lastChapterInMiliSec = chapterInfo.Chapters[chapterInfo.Chapters.Count - 1].Time.TotalMilliseconds;
                 if (task.LengthInMiliSec - lastChapterInMiliSec < 3003)
+                {
+                    task.ChapterStatus = ChapterStatus.Warn;
+                }
+                if (chapterInfo.Chapters[0].Time.Ticks != 0)
                 {
                     task.ChapterStatus = ChapterStatus.Warn;
                 }
