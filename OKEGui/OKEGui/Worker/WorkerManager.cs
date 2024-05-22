@@ -99,6 +99,15 @@ namespace OKEGui.Worker
             }
         }
 
+        public void Stop()
+        {
+            lock (o)
+            {
+                StopAllWorker();
+                IsRunning = false;
+            }
+        }
+
         public bool CreateWorker(string name)
         {
             BackgroundWorker worker = new BackgroundWorker();
@@ -185,29 +194,39 @@ namespace OKEGui.Worker
 
         public bool DeleteWorker(string name)
         {
-            if (IsRunning)
-            {
-                return false;
-            }
-
             lock (o)
             {
-                bgworkerlist.TryRemove(name, out BackgroundWorker v);
-                workerType.TryRemove(name, out WorkerType w);
-                return workerList.Remove(name);
+                if (bgworkerlist.ContainsKey(name))
+                {
+                    return false;
+                }
+                else
+                {
+                    workerType.TryRemove(name, out WorkerType w);
+                    return workerList.Remove(name);
+                }
             }
         }
 
         public void StopWorker(string name)
         {
-            // TODO
-            IsRunning = false;
-
-            if (bgworkerlist.ContainsKey(name))
+            lock (o)
             {
-                if (bgworkerlist[name].IsBusy)
+                if (bgworkerlist.ContainsKey(name))
                 {
                     bgworkerlist[name].CancelAsync();
+                    bgworkerlist.TryRemove(name, out BackgroundWorker v);
+                }
+            }
+        }
+
+        public void StopAllWorker()
+        {
+            lock (o)
+            {
+                foreach (var w in workerList)
+                {
+                    StopWorker(w);
                 }
             }
         }

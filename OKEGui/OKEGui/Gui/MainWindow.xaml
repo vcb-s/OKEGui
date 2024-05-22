@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Closing="MainWindow_Closing"
-        Title="OKEGui" Height="700" Width="1100" WindowStartupLocation="CenterScreen" Icon="App.ico" FontFamily="Segoe UI, Microsoft YaHei">
+        Title="OKEGui" Height="700" Width="1200" WindowStartupLocation="CenterScreen" Icon="App.ico" FontFamily="Segoe UI, Microsoft YaHei">
     <Window.Resources>
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -52,7 +52,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="状态" Width="75">
+                    <GridViewColumn Header="状态" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock TextAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Path=CurrentStatus}"></TextBlock>
@@ -87,6 +87,13 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock TextAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Path=TimeRemainStr}"></TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="任务类型" Width="75">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Path=TaskType}"></TextBlock>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -131,20 +138,22 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="0" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnNew"  Click="BtnNew_Click" Content="新建任务" />
             <Button Grid.Column="1" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnRun"  Click="BtnRun_Click" Content="运行" />
-            <Button Grid.Column="2" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnPause"  Click="BtnPause_Click" Content="暂停" />
-            <Button Grid.Column="3" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnResume"  Click="BtnResume_Click" Content="恢复" />
-            <Button Grid.Column="4" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnChap"  Click="BtnChap_Click" Content="检查章节" />
-            <Button Grid.Column="5" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveUp"  Click="BtnMoveUp_Click" Content="上移" />
-            <Button Grid.Column="6" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveDown"  Click="BtnMoveDown_Click" Content="下移" />
-            <Button Grid.Column="7" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveTop"  Click="BtnMoveTop_Click" Content="置顶" />
-            <Button Grid.Column="8" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnDelete"  Click="BtnDelete_Click" Content="删除" />
-            <Button Grid.Column="9" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnEmpty"  Click="BtnEmpty_Click" Content="清空" />
-            <TextBlock Margin="0,0,6,0" VerticalAlignment="Center" Grid.Column="10" Grid.Row="0" Name="WorkerNumber"></TextBlock>
-            <Button Grid.Column="11" Grid.Row="0" Margin="0,0,0,0" x:Name="BtnNewWorker"  Click="BtnNewWorker_Click" Content="新建工作单元" Width="100" />
+            <Button Grid.Column="2" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnStop"  Click="BtnStop_Click" Content="终止" />
+            <Button Grid.Column="3" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnPause"  Click="BtnPause_Click" Content="暂停" />
+            <Button Grid.Column="4" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnResume"  Click="BtnResume_Click" Content="恢复" />
+            <Button Grid.Column="5" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnChap"  Click="BtnChap_Click" Content="更新章节" />
+            <Button Grid.Column="6" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveUp"  Click="BtnMoveUp_Click" Content="上移" />
+            <Button Grid.Column="7" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveDown"  Click="BtnMoveDown_Click" Content="下移" />
+            <Button Grid.Column="8" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnMoveTop"  Click="BtnMoveTop_Click" Content="置顶" />
+            <Button Grid.Column="9" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnDelete"  Click="BtnDelete_Click" Content="删除" />
+            <Button Grid.Column="10" Grid.Row="0" Margin="0,0,6,0" x:Name="BtnEmpty"  Click="BtnEmpty_Click" Content="清空" />
+            <TextBlock Margin="0,0,6,0" VerticalAlignment="Center" Grid.Column="11" Grid.Row="0" Name="WorkerNumber" Width="100"></TextBlock>
+            <Button Grid.Column="12" Grid.Row="0" Margin="0,0,0,0" x:Name="BtnNewWorker"  Click="BtnNewWorker_Click" Content="新建工作单元" Width="100" />
         </Grid>
 
         <Grid Margin="10, 0, 10, 10" VerticalAlignment="Bottom">

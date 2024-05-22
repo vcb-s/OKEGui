@@ -317,6 +317,13 @@ namespace OKEGui
 
                 // 寻找章节
                 td.ChapterStatus = ChapterService.UpdateChapterStatus(td);
+
+                // 任务类型
+                if (td.Taskfile.IsReEncode)
+                    td.TaskType = TaskStatus.TaskTypeEnum.ReEncode;
+                else
+                    td.TaskType = TaskStatus.TaskTypeEnum.Normal;
+
                 workerManager.AddTask(td);
             }
           }

@@ -19,8 +19,11 @@ namespace OKEGui
             get { return isEnabled; }
             set
             {
-                isEnabled = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsEnabled"));
+                if (Progress != TaskProgress.RUNNING)
+                {
+                    isEnabled = value;
+                    OnPropertyChanged(new PropertyChangedEventArgs("IsEnabled"));
+                }
             }
         }
 
@@ -207,6 +210,21 @@ namespace OKEGui
             {
                 timeRemainStr = value;
                 OnPropertyChanged(new PropertyChangedEventArgs("TimeRemainStr"));
+            }
+        }
+
+        /// <summary>
+        /// 任务类型
+        /// </summary>
+        public enum TaskTypeEnum : int { Normal = 0, ReEncode }
+        private TaskTypeEnum taskType;
+        public TaskTypeEnum TaskType
+        {
+            get { return taskType; }
+            set
+            {
+                taskType = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("TaskType"));
             }
         }
 

@@ -17,9 +17,10 @@ namespace OKEGui.Worker
 
         private void DisableButtonsAfterFinish(MainWindow window)
         {
+            window.BtnStop.IsEnabled = false;
             window.BtnPause.IsEnabled = false;
             window.BtnResume.IsEnabled = false;
-            window.BtnEmpty.IsEnabled = true;
+            window.BtnChap.IsEnabled = false;
             window.BtnMoveDown.IsEnabled = false;
             window.BtnMoveUp.IsEnabled = false;
             window.BtnMoveTop.IsEnabled = false;
@@ -36,15 +37,15 @@ namespace OKEGui.Worker
                 // 检查是否已经完成全部任务
                 if (task == null)
                 {
-                    Logger.Debug("所有任务已经完成");
-                    Action<MainWindow> disableButtonsAction = new Action<MainWindow>(DisableButtonsAfterFinish);
-                    MainWindow.Dispatcher.BeginInvoke(disableButtonsAction, MainWindow);
+                    Logger.Debug("没有待运行的任务");
                     lock (o)
                     {
                         bgworkerlist.TryRemove(args.Name, out BackgroundWorker v);
                         if (bgworkerlist.Count == 0)
                         {
                             IsRunning = false;
+                            Action<MainWindow> disableButtonsAction = new Action<MainWindow>(DisableButtonsAfterFinish);
+                            MainWindow.Dispatcher.BeginInvoke(disableButtonsAction, MainWindow);
 
                             if (args.taskManager.AllSuccess())
                             {
