@@ -88,7 +88,23 @@ namespace OKEGui.Worker
                     // 处理ReEncode任务
                     if (profile.IsReEncode)
                     {
+                        // 根据旧成品的I帧序列，生成最终的切片序列
                         CheckReEncodeSlice(task, profile, vsInfo.iFrameInfo);
+
+                        // 新建各个切片的压制和封装处理工作
+                        GenerateReEncodeJob(task, profile, args.numaNode, finalVideoInfo);
+
+                        // 执行音频和视频处理工作
+                        DoAllJobs(task, profile);
+
+                        // 最终封装
+                        GenerateMuxJob(task, profile, profile.Config.ReEncodeOldFile);
+
+                        // 执行最终封装工作
+                        DoAllJobs(task, profile);
+
+                        // RPC检查
+                        DoRPCheck(task, profile);
                     }
                     // 处理常规压制任务
                     else
@@ -100,7 +116,7 @@ namespace OKEGui.Worker
                         GenerateAudioJob(task, srcTracks);
 
                         // 新建视频处理工作
-                        GenerateVideoJob(task, profile, args.numaNode, finalVideoInfo, new SliceInfo {end = -1});
+                        GenerateVideoJob(task, profile, args.numaNode, finalVideoInfo, false);
 
                         // 添加字幕文件
                         AddSubtitle(task, srcTracks);
@@ -315,27 +331,35 @@ namespace OKEGui.Worker
         }
 
         // 新建视频处理工作
-        private VideoJob GenerateVideoJob(TaskDetail task, TaskProfile profile, int numaNode, VideoInfo info, SliceInfo frameRange, int partId = -1)
+        private VideoJob GenerateVideoJob(TaskDetail task, TaskProfile profile, int numaNode, VideoInfo info, bool isPartialEncode)
         {
             VideoJob vJob = new VideoJob(info, profile.VideoFormat);
             vJob.SetUpdate(task);
+
+            VideoSliceInfo sliceInfo = isPartialEncode ? info as VideoSliceInfo : null;
 
             vJob.Input = profile.InputScript;
             vJob.EncoderPath = profile.Encoder;
             vJob.EncodeParam = profile.EncoderParam;
             vJob.NumaNode = numaNode;
-            vJob.IsPartialEncode = (frameRange.end != -1);
-            vJob.FrameRange = frameRange;
-            vJob.PartId = partId;
+            vJob.IsPartialEncode = isPartialEncode;
             if (vJob.IsPartialEncode)
-                vJob.NumberOfFrames = frameRange.end - frameRange.begin;
+            {
+                vJob.NumberOfFrames = sliceInfo.FrameRange.end - sliceInfo.FrameRange.begin;
+                vJob.FrameRange = sliceInfo.FrameRange;
+                vJob.PartId = sliceInfo.PartId;
+            }
             else
+            {
                 vJob.NumberOfFrames = task.NumberOfFrames;
+                vJob.FrameRange = new SliceInfo {end = -1};
+                vJob.PartId = -1;
+            }
 
             if (profile.Config != null)
                 vJob.VspipeArgs.AddRange(profile.Config.VspipeArgs);
 
-            vJob.Output = profile.WorkingPathPrefix + (vJob.IsPartialEncode ? $"_part{partId}" : "");
+            vJob.Output = profile.WorkingPathPrefix + (vJob.IsPartialEncode ? $"_part{vJob.PartId}" : "");
             if (profile.VideoFormat == "HEVC")
             {
                 vJob.Output += ".hevc";
@@ -366,7 +390,7 @@ namespace OKEGui.Worker
             }
 
             // 添加qpfile参数
-            if (!vJob.IsPartialEncode && vJob.Info.QpFile != null)
+            if (vJob.Info.QpFile != null)
             {
                 if (vJob.CodecString == "AV1")
                     vJob.EncodeParam += $" --force-key-frames \"{vJob.Info.QpFile}\"";
@@ -377,6 +401,49 @@ namespace OKEGui.Worker
             task.JobQueue.Enqueue(vJob);
             Logger.Info($"添加压制任务：numFrame: {vJob.NumberOfFrames}, begin: {vJob.FrameRange.begin}, end: {vJob.FrameRange.end}, qpfile: {vJob.Info.QpFile}, output: {vJob.Output}");
             return vJob;
+        }
+
+        // 新建封装处理工作
+        private void GenerateMuxJob(TaskDetail task, TaskProfile profile, string inputFile, SliceInfo frameRange, int partId)
+        {
+            MuxJob mJob = new MuxJob(MuxType.SingleVideo, profile.ContainerFormat);
+            mJob.SetUpdate(task);
+
+            mJob.IsPartialMux = (frameRange.end != -1);
+            mJob.FrameRange = frameRange;
+            mJob.PartId = partId;
+            mJob.Input = inputFile;
+            mJob.Output = profile.WorkingPathPrefix + $"_part{partId}.{mJob.CodecString.ToLower()}";
+
+            task.JobQueue.Enqueue(mJob);
+            Logger.Info($"添加Mux任务：muxType: {mJob.MuxType}, begin: {mJob.FrameRange.begin}, end: {mJob.FrameRange.end}, input: {mJob.Input}, output: {mJob.Output}");
+        }
+
+        private void GenerateMuxJob(TaskDetail task, TaskProfile profile, VideoInfo info)
+        {
+            MuxJob mJob = new MuxJob(MuxType.AppendVideo, profile.ContainerFormat, info);
+            mJob.SetUpdate(task);
+
+            mJob.TimeCodeFile = info.TimeCodeFile;
+            mJob.VideoSlices.AddRange(task.ReEncodeVideoSlices);
+            mJob.Output = profile.WorkingPathPrefix + $"_all.{mJob.CodecString.ToLower()}";
+
+            task.JobQueue.Enqueue(mJob);
+            Logger.Info($"添加Mux任务：muxType: {mJob.MuxType}, timeCodeFile: {mJob.TimeCodeFile}, output: {mJob.Output}");
+        }
+
+        private void GenerateMuxJob(TaskDetail task, TaskProfile profile, string reEncodeOldFile)
+        {
+            MuxJob mJob = new MuxJob(MuxType.MergeOldRemux, profile.ContainerFormat);
+            mJob.SetUpdate(task);
+
+            mJob.TimeCodeFile = (task.MediaOutFile.VideoTrack.Info as VideoInfo).TimeCodeFile;
+            mJob.ReEncodeOldFile = reEncodeOldFile;
+            mJob.Input = task.MediaOutFile.VideoTrack.File.GetFullPath();
+            mJob.Output = Path.Combine(Path.GetDirectoryName(profile.OutputPathPrefix), task.OutputFile);
+
+            task.JobQueue.Enqueue(mJob);
+            Logger.Info($"添加Mux任务：muxType: {mJob.MuxType}, timeCodeFile: {mJob.TimeCodeFile}, input: {mJob.Input}, output: {mJob.Output}");
         }
 
         // 添加字幕文件
@@ -489,6 +556,56 @@ namespace OKEGui.Worker
 
                         break;
                     }
+                    case MuxJob mJob:
+                    {
+                        MkvmergeMuxer muxer;
+                        switch (mJob.MuxType)
+                        {
+                            case MuxType.SingleVideo:
+                            {
+                                muxer = new SingleVideoMuxer(mJob);
+                                task.CurrentStatus = $"Part {mJob.PartId + 1}/{task.ReEncodeVideoSlices.Count} 封装中";
+                                break;
+                            }
+                            case MuxType.AppendVideo:
+                            {
+                                muxer = new AppendVideoMuxer(mJob);
+                                task.CurrentStatus = "视频拼接中";
+                                break;
+                            }
+                            case MuxType.MergeOldRemux:
+                            {
+                                muxer = new MergeOldRemuxer(mJob);
+                                task.CurrentStatus = "最终封装中";
+                                break;
+                            }
+                            default:
+                                throw new Exception($"unknown mux type: {mJob.MuxType}");
+                        }
+
+                        // 开始封装
+                        task.ProgressValue = 0.0;
+                        muxer.start();
+                        muxer.waitForFinish();
+
+                        if (mJob.MuxType == MuxType.SingleVideo)
+                        {
+                            task.ReEncodeVideoSlices[mJob.PartId].File = new OKEFile(mJob.Output);
+                        }
+                        else if (mJob.MuxType == MuxType.AppendVideo)
+                        {
+                            task.MediaOutFile.AddTrack(new VideoTrack(new OKEFile(mJob.Output), mJob.Info));
+                        }
+                        else if (mJob.MuxType == MuxType.MergeOldRemux)
+                        {
+                            OKEFile outFile = new OKEFile(mJob.Output);
+                            outFile.AddCRC32();
+                            task.OutputFile = outFile.GetFileName();
+                            task.BitRate = CommandlineVideoEncoder.HumanReadableFilesize(outFile.GetFileSize(), 2);
+                        }
+
+                        break;
+                    }
                     default:
                         // 不支持的工作
                         break;
@@ -589,5 +706,61 @@ namespace OKEGui.Worker
 
             Logger.Debug("IFrame ReEncode Slice: " + profile.Config.ReEncodeSliceArray.ToString());
         }
+
+        // 新建各个切片的压制和封装处理工作
+        private void GenerateReEncodeJob(TaskDetail task, TaskProfile profile, int numaNode, VideoInfo info)
+        {
+            List<VideoSliceInfo> reEncodeInfoList = new List<VideoSliceInfo>();
+            SliceInfo curr_s;
+            long prev_end = 0;
+            int partId = 0;
+
+            // 生成各切片的信息
+            for (int i = 0; i < profile.Config.ReEncodeSliceArray.Count; i++)
+            {
+                curr_s = profile.Config.ReEncodeSliceArray[i];
+                if (i == 0)
+                {
+                    if (curr_s.begin != 0)
+                        reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo {begin = 0, end = curr_s.begin}, partId++, null, info));
+                }
+                else
+                {
+                    reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo {begin = prev_end, end = curr_s.begin}, partId++, null, info));
+                }
+                reEncodeInfoList.Add(new VideoSliceInfo(true, curr_s, partId++, null, info));
+                prev_end = curr_s.end;
+            }
+            if (prev_end != task.NumberOfFrames)
+            {
+                reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo {begin = prev_end, end = task.NumberOfFrames}, partId++, null, info));
+            }
+
+            foreach (var reInfo in reEncodeInfoList)
+            {
+                Logger.Debug($"ReEncode Slice Info: PartId: {reInfo.PartId}, IsReEncode: {reInfo.IsReEncode}, FrameRange: [{reInfo.FrameRange.begin}, {reInfo.FrameRange.end}]");
+            }
+
+            // 各切片的压制和封装工作
+            task.ReEncodeVideoSlices = new List<VideoSliceTrack>();
+            foreach (var reInfo in reEncodeInfoList)
+            {
+                VideoJob vJob;
+                if (reInfo.IsReEncode)
+                {
+                    vJob = GenerateVideoJob(task, profile, numaNode, reInfo, true);
+                    GenerateMuxJob(task, profile, vJob.Output, new SliceInfo {end = -1}, reInfo.PartId);
+                }
+                else
+                {
+                    GenerateMuxJob(task, profile, profile.Config.ReEncodeOldFile, reInfo.FrameRange, reInfo.PartId);
+                }
+                task.ReEncodeVideoSlices.Add(new VideoSliceTrack(null, reInfo));
+            }
+
+            // 拼接各切片的工作
+            GenerateMuxJob(task, profile, info);
+        }
+
     }
 }

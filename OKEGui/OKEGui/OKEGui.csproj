@@ -119,6 +119,7 @@
     <Compile Include="Job\AudioJob\AudioJob.cs" />
     <Compile Include="Job\VideoJob\VideoJob.cs" />
     <Compile Include="Job\VideoJob\VideoInfoJob.cs" />
+    <Compile Include="Job\MuxJob\MuxJob.cs" />
     <Compile Include="Job\RpcJob\RpcJob.cs" />
     <Compile Include="Job\Job.cs" />
     <Compile Include="Job\StatusUpdate.cs" />
@@ -128,6 +129,10 @@
     <Compile Include="JobProcessor\Demuxer\EACDemuxer.cs" />
     <Compile Include="JobProcessor\Demuxer\TrackInfo.cs" />
     <Compile Include="JobProcessor\Muxer\AutoMuxer.cs" />
+    <Compile Include="JobProcessor\Muxer\MkvmergeMuxer.cs" />
+    <Compile Include="JobProcessor\Muxer\SingleVideoMuxer.cs" />
+    <Compile Include="JobProcessor\Muxer\AppendVideoMuxer.cs" />
+    <Compile Include="JobProcessor\Muxer\MergeOldRemuxer.cs" />
     <Compile Include="JobProcessor\RpChecker\RpChecker.cs" />
     <Compile Include="JobProcessor\Video\CommandlineVideoEncoder.cs" />
     <Compile Include="JobProcessor\Video\X264Encoder.cs" />
@@ -141,12 +146,14 @@
     <Compile Include="Model\Info\Info.cs" />
     <Compile Include="Model\Info\AudioInfo.cs" />
     <Compile Include="Model\Info\VideoInfo.cs" />
+    <Compile Include="Model\Info\VideoSliceInfo.cs" />
     <Compile Include="Model\Info\VSPipeInfo.cs" />
     <Compile Include="Model\Track\Track.cs" />
     <Compile Include="Model\Track\AudioTrack.cs" />
     <Compile Include="Model\Track\ChapterTrack.cs" />
     <Compile Include="Model\Track\SubtitleTrack.cs" />
     <Compile Include="Model\Track\VideoTrack.cs" />
+    <Compile Include="Model\Track\VideoSliceTrack.cs" />
     <Compile Include="Model\OKEFile.cs" />
     <Compile Include="Model\MediaFile.cs" />
     <Compile Include="Task\AddTaskService.cs" />

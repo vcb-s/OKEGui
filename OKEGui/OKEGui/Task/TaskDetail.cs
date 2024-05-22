@@ -22,6 +22,9 @@ namespace OKEGui
         public MediaFile MediaOutFile;
         public MediaFile MkaOutFile;
 
+        // ReEncode任务各切片输出视频轨道
+        public List<VideoSliceTrack> ReEncodeVideoSlices;
+
         public string Tid;
         public long LengthInMiliSec;
         public long NumberOfFrames;
