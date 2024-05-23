@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.IO;
 using OKEGui.Utils;
 using OKEGui.Model;
@@ -228,48 +229,57 @@ namespace OKEGui.Worker
             }
 
             // 添加章节文件
+            IFrameInfo chapterIFrameInfo = null;
             string qpFileName = null;
             string qpFile = null;
-            if (!profile.IsReEncode)
+            ChapterInfo chapterInfo = ChapterService.LoadChapter(task);
+            if (chapterInfo != null)
             {
-                ChapterInfo chapterInfo = ChapterService.LoadChapter(task);
-                if (chapterInfo != null)
+                if (task.ChapterStatus == ChapterStatus.Maybe || task.ChapterStatus == ChapterStatus.MKV)
                 {
-                    if (task.ChapterStatus == ChapterStatus.Maybe || task.ChapterStatus == ChapterStatus.MKV)
-                    {
-                        task.ChapterStatus = ChapterStatus.Added;
-                    }
-
-                    FileInfo outputChapterFile = new FileInfo(Path.ChangeExtension(task.Taskfile.WorkingPathPrefix, ".txt"));
-                    chapterInfo.Save(ChapterTypeEnum.OGM, outputChapterFile.FullName);
-                    outputChapterFile.Refresh();
-                    OKEFile chapterFile = new OKEFile(outputChapterFile);
-                    task.MediaOutFile.AddTrack(new ChapterTrack(chapterFile));
-                    task.MediaOutFile.ChapterLanguage = task.ChapterLanguage;
-
-                    // 用章节文件生成qpfile
-                    qpFileName = Path.ChangeExtension(task.Taskfile.WorkingPathPrefix, ".qpf");
-                    qpFile = vsInfo.videoInfo.vfr
-                        ? ChapterService.GenerateQpFile(chapterInfo, timecode)
-                        : ChapterService.GenerateQpFile(chapterInfo, vsInfo.videoInfo.fps);
-                    if (profile.VideoFormat == "AV1")
-                    {
-                        qpFile = String.Join(",", qpFile.Replace(" I", "f").Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries));
-                    }
-                    else
-                    {
-                        File.WriteAllText(qpFileName, qpFile);
-                        qpFile = qpFileName;
-                    }
+                    task.ChapterStatus = ChapterStatus.Added;
                 }
-                else
-                    task.ChapterStatus = ChapterStatus.No;
-            }
 
-            VideoInfo info = new VideoInfo(vsInfo.videoInfo.fpsNum, vsInfo.videoInfo.fpsDen, timeCodeFile, qpFile);
+                FileInfo outputChapterFile = new FileInfo(Path.ChangeExtension(task.Taskfile.WorkingPathPrefix, ".txt"));
+                chapterInfo.Save(ChapterTypeEnum.OGM, outputChapterFile.FullName);
+                outputChapterFile.Refresh();
+                OKEFile chapterFile = new OKEFile(outputChapterFile);
+                task.MediaOutFile.AddTrack(new ChapterTrack(chapterFile));
+                task.MediaOutFile.ChapterLanguage = task.ChapterLanguage;
+
+                // 用章节文件生成qpfile
+                qpFileName = Path.ChangeExtension(task.Taskfile.WorkingPathPrefix, ".qpf");
+
+                chapterIFrameInfo = vsInfo.videoInfo.vfr
+                    ? ChapterService.GetChapterIFrameInfo(chapterInfo, timecode)
+                    : ChapterService.GetChapterIFrameInfo(chapterInfo, vsInfo.videoInfo.fps);
+                qpFile = GenerateQpFile(chapterIFrameInfo, qpFileName, profile.VideoFormat);
+            }
+            else
+                task.ChapterStatus = ChapterStatus.No;
+
+            VideoInfo info = new VideoInfo(vsInfo.videoInfo.fpsNum, vsInfo.videoInfo.fpsDen, timeCodeFile, qpFile, chapterIFrameInfo);
             Logger.Info($"准备时间码和章节文件完成：timeCodeFile: {timeCodeFile}, qpFile: {qpFile}");
+            Logger.Info($"chapterIFrameInfo: {info.ChapterIFrameInfo}");
 
             return info;
+        }
+
+        private string GenerateQpFile(IFrameInfo chapterIFrameInfo, string qpFileName, string videoFormat)
+        {
+            string qpFile = ChapterService.GenerateQpFile(chapterIFrameInfo);
+
+            if (videoFormat == "AV1")
+            {
+                qpFile = String.Join(",", qpFile.Replace(" I", "f").Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries));
+            }
+            else
+            {
+                File.WriteAllText(qpFileName, qpFile);
+                qpFile = qpFileName;
+            }
+
+            return qpFile;
         }
 
         // 抽取音轨和字幕轨
@@ -722,23 +732,38 @@ namespace OKEGui.Worker
                 if (i == 0)
                 {
                     if (curr_s.begin != 0)
-                        reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo {begin = 0, end = curr_s.begin}, partId++, null, info));
+                        reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo {begin = 0, end = curr_s.begin}, partId++, null, null, info));
                 }
                 else
                 {
-                    reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo {begin = prev_end, end = curr_s.begin}, partId++, null, info));
+                    reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo {begin = prev_end, end = curr_s.begin}, partId++, null, null, info));
                 }
-                reEncodeInfoList.Add(new VideoSliceInfo(true, curr_s, partId++, null, info));
+
+                IFrameInfo newChapterSlice = null;
+                string qpFileName = profile.WorkingPathPrefix + $"_part{partId}.qpf";
+                string qpFile = null;
+                if (info.ChapterIFrameInfo != null)
+                {
+                    SliceInfo index = info.ChapterIFrameInfo.FindInRangeIndex(curr_s);
+                    if (index != null)
+                    {
+                        newChapterSlice = new IFrameInfo(info.ChapterIFrameInfo.GetRange((int)index.begin, (int)(index.end - index.begin + 1)));
+                        newChapterSlice = new IFrameInfo(newChapterSlice.Select(x => x -= curr_s.begin));
+                        qpFile = GenerateQpFile(newChapterSlice, qpFileName, profile.VideoFormat);
+                    }
+                }
+                reEncodeInfoList.Add(new VideoSliceInfo(true, curr_s, partId++, qpFile, newChapterSlice, info));
                 prev_end = curr_s.end;
             }
             if (prev_end != task.NumberOfFrames)
             {
-                reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo {begin = prev_end, end = task.NumberOfFrames}, partId++, null, info));
+                reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo {begin = prev_end, end = task.NumberOfFrames}, partId++, null, null, info));
             }
 
             foreach (var reInfo in reEncodeInfoList)
             {
-                Logger.Debug($"ReEncode Slice Info: PartId: {reInfo.PartId}, IsReEncode: {reInfo.IsReEncode}, FrameRange: [{reInfo.FrameRange.begin}, {reInfo.FrameRange.end}]");
+                Logger.Debug($"ReEncode Slice Info: PartId: {reInfo.PartId}, IsReEncode: {reInfo.IsReEncode}, FrameRange: [{reInfo.FrameRange.begin}, {reInfo.FrameRange.end}], " +
+                             $"qpfile: {reInfo.QpFile}, chapterIFrameInfo: {reInfo.ChapterIFrameInfo}");
             }
 
             // 各切片的压制和封装工作

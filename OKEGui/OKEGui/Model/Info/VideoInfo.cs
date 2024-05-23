@@ -10,6 +10,7 @@ namespace OKEGui.Model
     {
         public long FpsNum;
         public long FpsDen = 1;
+        public IFrameInfo ChapterIFrameInfo;
         public string TimeCodeFile;
         public string QpFile;
 
@@ -17,8 +18,9 @@ namespace OKEGui.Model
         {
             InfoType = InfoType.Video;
         }
-        public VideoInfo(long fpsNum, long fpsDen, string timeCodeFile, string qpFile) : this()
+        public VideoInfo(long fpsNum, long fpsDen, string timeCodeFile, string qpFile, IFrameInfo chapterIFrameInfo) : this()
         {
+            ChapterIFrameInfo = chapterIFrameInfo;
             TimeCodeFile = timeCodeFile;
             QpFile = qpFile;
             FpsNum = fpsNum;

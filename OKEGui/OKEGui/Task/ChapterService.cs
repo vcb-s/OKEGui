@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OKEGui.Utils;
+using OKEGui.Model;
 using TChapter.Chapters;
 using TChapter.Parsing;
 using MediaInfo;
@@ -196,27 +197,39 @@ namespace OKEGui
             return null;
         }
 
-        public static string GenerateQpFile(ChapterInfo chapterInfo, double fps)
+        public static IFrameInfo GetChapterIFrameInfo(ChapterInfo chapterInfo, double fps)
         {
-            StringBuilder qpFile = new StringBuilder();
+            IFrameInfo iFrameInfo = new IFrameInfo();
 
             foreach (var chapter in chapterInfo.Chapters)
             {
                 long miliSec = (long)chapter.Time.TotalMilliseconds;
-                int frameNo = (int)(miliSec / 1000.0 * fps + 0.5);
-                qpFile.AppendLine($"{frameNo} I");
+                long frameNo = (long)(miliSec / 1000.0 * fps + 0.5);
+                iFrameInfo.Add(frameNo);
             }
 
-            return qpFile.ToString();
+            return iFrameInfo;
         }
 
-        public static string GenerateQpFile(ChapterInfo chapterInfo, Timecode timecode)
+        public static IFrameInfo GetChapterIFrameInfo(ChapterInfo chapterInfo, Timecode timecode)
         {
-            StringBuilder qpFile = new StringBuilder();
+            IFrameInfo iFrameInfo = new IFrameInfo();
 
             foreach (var chapter in chapterInfo.Chapters)
             {
-                qpFile.AppendLine($"{timecode.GetFrameNumberFromTimeSpan(chapter.Time)} I");
+                iFrameInfo.Add(timecode.GetFrameNumberFromTimeSpan(chapter.Time));
+            }
+
+            return iFrameInfo;
+        }
+
+        public static string GenerateQpFile(IFrameInfo chapterIFrameInfo)
+        {
+            StringBuilder qpFile = new StringBuilder();
+
+            foreach (var frame in chapterIFrameInfo)
+            {
+                qpFile.AppendLine($"{frame} I");
             }
 
             return qpFile.ToString();

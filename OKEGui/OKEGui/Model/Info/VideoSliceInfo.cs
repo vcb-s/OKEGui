@@ -15,12 +15,13 @@ namespace OKEGui.Model
             FpsNum = info.FpsNum;
             FpsDen = info.FpsDen;
         }
-        public VideoSliceInfo(bool isReEncode, SliceInfo frameRange, int partId, string qpFile, VideoInfo info) : this(info)
+        public VideoSliceInfo(bool isReEncode, SliceInfo frameRange, int partId, string qpFile, IFrameInfo chapterIFrameInfo, VideoInfo info) : this(info)
         {
             IsReEncode = isReEncode;
             FrameRange = frameRange;
             PartId = partId;
             QpFile = qpFile;
+            ChapterIFrameInfo = chapterIFrameInfo;
         }
     }
 }
