@@ -66,7 +66,7 @@ namespace OKEGui
                 {
                     if (s.CheckIllegal())
                     {
-                        MessageBox.Show($"切片[{s.begin}, {s.end}]不合法", "切片不合法", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"切片{s}不合法", "切片不合法", MessageBoxButton.OK, MessageBoxImage.Error);
                         return null;
                     }
                 }

@@ -355,14 +355,14 @@ namespace OKEGui.Worker
             vJob.IsPartialEncode = isPartialEncode;
             if (vJob.IsPartialEncode)
             {
-                vJob.NumberOfFrames = sliceInfo.FrameRange.end - sliceInfo.FrameRange.begin;
+                vJob.NumberOfFrames = sliceInfo.FrameRange.GetLength();
                 vJob.FrameRange = sliceInfo.FrameRange;
                 vJob.PartId = sliceInfo.PartId;
             }
             else
             {
                 vJob.NumberOfFrames = task.NumberOfFrames;
-                vJob.FrameRange = new SliceInfo {end = -1};
+                vJob.FrameRange = new SliceInfo(0, -1);
                 vJob.PartId = -1;
             }
 
@@ -409,7 +409,7 @@ namespace OKEGui.Worker
             }
 
             task.JobQueue.Enqueue(vJob);
-            Logger.Info($"添加压制任务：numFrame: {vJob.NumberOfFrames}, begin: {vJob.FrameRange.begin}, end: {vJob.FrameRange.end}, qpfile: {vJob.Info.QpFile}, output: {vJob.Output}");
+            Logger.Info($"添加压制任务：numFrame: {vJob.NumberOfFrames}, frameRange: {vJob.FrameRange}, qpfile: {vJob.Info.QpFile}, output: {vJob.Output}");
             return vJob;
         }
 
@@ -426,7 +426,7 @@ namespace OKEGui.Worker
             mJob.Output = profile.WorkingPathPrefix + $"_part{partId}.{mJob.CodecString.ToLower()}";
 
             task.JobQueue.Enqueue(mJob);
-            Logger.Info($"添加Mux任务：muxType: {mJob.MuxType}, begin: {mJob.FrameRange.begin}, end: {mJob.FrameRange.end}, input: {mJob.Input}, output: {mJob.Output}");
+            Logger.Info($"添加Mux任务：muxType: {mJob.MuxType}, frameRange: {mJob.FrameRange}, input: {mJob.Input}, output: {mJob.Output}");
         }
 
         private void GenerateMuxJob(TaskDetail task, TaskProfile profile, VideoInfo info)
@@ -700,7 +700,7 @@ namespace OKEGui.Worker
                 if (s.begin >= numFrames || s.end > numFrames)
                 {
                     OKETaskException ex = new OKETaskException(Constants.reEncodeSliceErrorSmr);
-                    ex.Data["SLICE_ILLEGAL"] = $"[{s.begin}, {s.end}]";
+                    ex.Data["SLICE_ILLEGAL"] = $"{s}";
                     ex.Data["NUM_FRAMES"] = $"{numFrames}";
                     throw ex;
                 }
@@ -732,11 +732,11 @@ namespace OKEGui.Worker
                 if (i == 0)
                 {
                     if (curr_s.begin != 0)
-                        reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo {begin = 0, end = curr_s.begin}, partId++, null, null, info));
+                        reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo(0, curr_s.begin), partId++, null, null, info));
                 }
                 else
                 {
-                    reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo {begin = prev_end, end = curr_s.begin}, partId++, null, null, info));
+                    reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo(prev_end, curr_s.begin), partId++, null, null, info));
                 }
 
                 IFrameInfo newChapterSlice = null;
@@ -747,7 +747,7 @@ namespace OKEGui.Worker
                     SliceInfo index = info.ChapterIFrameInfo.FindInRangeIndex(curr_s);
                     if (index != null)
                     {
-                        newChapterSlice = new IFrameInfo(info.ChapterIFrameInfo.GetRange((int)index.begin, (int)(index.end - index.begin + 1)));
+                        newChapterSlice = new IFrameInfo(info.ChapterIFrameInfo.GetRange((int)index.begin, (int)(index.GetLength() + 1)));
                         newChapterSlice = new IFrameInfo(newChapterSlice.Select(x => x -= curr_s.begin));
                         qpFile = GenerateQpFile(newChapterSlice, qpFileName, profile.VideoFormat);
                     }
@@ -757,12 +757,12 @@ namespace OKEGui.Worker
             }
             if (prev_end != task.NumberOfFrames)
             {
-                reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo {begin = prev_end, end = task.NumberOfFrames}, partId++, null, null, info));
+                reEncodeInfoList.Add(new VideoSliceInfo(false, new SliceInfo(prev_end, task.NumberOfFrames), partId++, null, null, info));
             }
 
             foreach (var reInfo in reEncodeInfoList)
             {
-                Logger.Debug($"ReEncode Slice Info: PartId: {reInfo.PartId}, IsReEncode: {reInfo.IsReEncode}, FrameRange: [{reInfo.FrameRange.begin}, {reInfo.FrameRange.end}], " +
+                Logger.Debug($"ReEncode Slice Info: PartId: {reInfo.PartId}, IsReEncode: {reInfo.IsReEncode}, FrameRange: {reInfo.FrameRange}, " +
                              $"qpfile: {reInfo.QpFile}, chapterIFrameInfo: {reInfo.ChapterIFrameInfo}");
             }
 
@@ -774,7 +774,7 @@ namespace OKEGui.Worker
                 if (reInfo.IsReEncode)
                 {
                     vJob = GenerateVideoJob(task, profile, numaNode, reInfo, true);
-                    GenerateMuxJob(task, profile, vJob.Output, new SliceInfo {end = -1}, reInfo.PartId);
+                    GenerateMuxJob(task, profile, vJob.Output, new SliceInfo(0, -1), reInfo.PartId);
                 }
                 else
                 {

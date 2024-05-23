@@ -8,6 +8,16 @@ namespace OKEGui.Utils
         public long begin;
         public long end;
 
+        public SliceInfo()
+        {
+        }
+
+        public SliceInfo(long begin, long end)
+        {
+            this.begin = begin;
+            this.end = end;
+        }
+
         public bool CheckIllegal()
         {
             if (begin >= 0 && (end >= 0 && begin < end || end == -1))
@@ -26,6 +36,16 @@ namespace OKEGui.Utils
                 return 1;
             else
                 return -1;
+        }
+
+        public long GetLength()
+        {
+            return end - begin;
+        }
+
+        public override string ToString()
+        {
+            return $"[{begin}, {end}]";
         }
     }
 
@@ -61,18 +81,12 @@ namespace OKEGui.Utils
                         prev_s.end = this[i].end;
                     else
                     {
-                        res.Add(new SliceInfo{
-                            begin = prev_s.begin,
-                            end = prev_s.end
-                        });
+                        res.Add(new SliceInfo(prev_s.begin, prev_s.end));
                         prev_s = this[i];
                     }
                 }
             }
-            res.Add(new SliceInfo{
-                begin = prev_s.begin,
-                end = prev_s.end
-            });
+            res.Add(new SliceInfo(prev_s.begin, prev_s.end));
 
             // 后处理 -1 的情况
             res.ForEach( x => {
@@ -98,18 +112,12 @@ namespace OKEGui.Utils
                         prev_s.end = this[i].end;
                     else
                     {
-                        res.Add(new SliceInfo{
-                            begin = prev_s.begin,
-                            end = prev_s.end
-                        });
+                        res.Add(new SliceInfo(prev_s.begin, prev_s.end));
                         prev_s = this[i];
                     }
                 }
             }
-            res.Add(new SliceInfo{
-                begin = prev_s.begin,
-                end = prev_s.end
-            });
+            res.Add(new SliceInfo(prev_s.begin, prev_s.end));
             return res;
         }
 
@@ -118,7 +126,7 @@ namespace OKEGui.Utils
             string str = "[ ";
             foreach (var s in this)
             {
-                str += $"[{s.begin}, {s.end}], ";
+                str += $"{s}, ";
             }
             str += "]";
             return str;

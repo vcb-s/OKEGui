@@ -49,7 +49,7 @@ namespace OKEGui.Model
                 else
                     break;
             }
-            return new SliceInfo {begin = begin, end = end};
+            return new SliceInfo(begin, end);
         }
 
         public override string ToString()
