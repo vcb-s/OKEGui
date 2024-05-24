@@ -246,3 +246,6 @@ ModelManifest.xml
 
 dist/windows/OKEGui*.exe
 dist/windows/tools/
+
+# Visual Studio Code config files
+.vscode/
