@@ -163,7 +163,7 @@ namespace OKEGui
                 // 找出下一个可用任务
                 foreach (var task in taskStatus)
                 {
-                    if (task.IsEnabled)
+                    if (task.IsEnabled && task.Progress == TaskStatus.TaskProgress.WAITING)
                     {
                         task.IsEnabled = false;
                         return task;
@@ -181,7 +181,7 @@ namespace OKEGui
                 // 找出下一个可用任务
                 foreach (var task in taskStatus)
                 {
-                    if (task.IsEnabled)
+                    if (task.IsEnabled && task.Progress == TaskStatus.TaskProgress.WAITING)
                     {
                         return true;
                     }
@@ -199,13 +199,75 @@ namespace OKEGui
 
                 foreach (var task in taskStatus)
                 {
-                    if (task.IsEnabled)
+                    if (task.IsEnabled && task.Progress == TaskStatus.TaskProgress.WAITING)
                     {
                         activeTaskCount++;
                     }
                 }
 
                 return activeTaskCount;
+            }
+        }
+
+        public List<TaskDetail> GetNotRunningTasks()
+        {
+            lock (o)
+            {
+                List<TaskDetail> notRunningTasks = new List<TaskDetail>();
+
+                foreach (var task in taskStatus)
+                {
+                    if (task.IsEnabled && task.Progress != TaskStatus.TaskProgress.RUNNING)
+                    {
+                        notRunningTasks.Add(task);
+                    }
+                }
+
+                return notRunningTasks;
+            }
+        }
+
+        public List<TaskDetail> GetRunningTasks()
+        {
+            lock (o)
+            {
+                List<TaskDetail> runningTasks = new List<TaskDetail>();
+
+                foreach (var task in taskStatus)
+                {
+                    if (task.Progress == TaskStatus.TaskProgress.RUNNING)
+                    {
+                        runningTasks.Add(task);
+                    }
+                }
+
+                return runningTasks;
+            }
+        }
+
+        public int GetEnabledTaskCount()
+        {
+            lock (o)
+            {
+                int enabledTaskCount = 0;
+
+                foreach (var task in taskStatus)
+                {
+                    if (task.IsEnabled)
+                    {
+                        enabledTaskCount++;
+                    }
+                }
+
+                return enabledTaskCount;
+            }
+        }
+
+        public int GetTaskCount()
+        {
+            lock (o)
+            {
+                return taskStatus.Count;
             }
         }
 
@@ -216,7 +278,7 @@ namespace OKEGui
                 // 找出下一个可用任务
                 foreach (TaskDetail task in taskStatus)
                 {
-                    if (task.IsEnabled)
+                    if (task.IsEnabled && task.Progress == TaskStatus.TaskProgress.WAITING)
                     {
                         task.ChapterStatus = ChapterService.UpdateChapterStatus(task);
                     }

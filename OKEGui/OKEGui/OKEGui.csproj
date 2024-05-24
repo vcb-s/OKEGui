@@ -103,65 +103,79 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Gui\ConfigPanel.xaml.cs">
       <DependentUpon>ConfigPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="JobProcessor\Audio\FFmpegVolumeChecker.cs" />
-    <Compile Include="JobProcessor\Demuxer\TrackInfo.cs" />
-    <Compile Include="JobProcessor\ExceptionParser.cs" />
-    <Compile Include="JobProcessor\RpChecker\RpChecker.cs" />
-    <Compile Include="JobProcessor\Video\svtav1Encoder.cs" />
-    <Compile Include="JobProcessor\Video\X264Encoder.cs" />
-    <Compile Include="Job\RpcJob\RpcJob.cs" />
-    <Compile Include="Model\Info\AudioInfo.cs" />
-    <Compile Include="Model\Info\Info.cs" />
-    <Compile Include="Model\Info\VideoInfo.cs" />
-    <Compile Include="Task\AddTaskService.cs" />
-    <Compile Include="Task\ChapterService.cs" />
-    <Compile Include="Task\EpisodeProfile.cs" />
-    <Compile Include="Task\SubProcessService.cs" />
-    <Compile Include="Task\TaskProfile.cs" />
-    <Compile Include="Model\Track\AudioTrack.cs" />
-    <Compile Include="Model\Track\ChapterTrack.cs" />
-    <Compile Include="Model\Track\Track.cs" />
-    <Compile Include="Model\Track\SubtitleTrack.cs" />
-    <Compile Include="Model\Track\VideoTrack.cs" />
-    <Compile Include="Task\TaskManager.cs" />
-    <Compile Include="JobProcessor\Audio\QAACEncoder.cs" />
-    <Compile Include="JobProcessor\Audio\FFmpegPipeQAACEncoder.cs" />
-    <Compile Include="JobProcessor\Muxer\AutoMuxer.cs" />
-    <Compile Include="JobProcessor\Demuxer\EACDemuxer.cs" />
-    <Compile Include="JobProcessor\Video\VSPipeProcessor.cs" />
-    <Compile Include="Job\AudioJob\AudioJob.cs" />
-    <Compile Include="Model\OKEFile.cs" />
-    <Compile Include="Model\MediaFile.cs" />
-    <Compile Include="Job\VideoJob\VideoInfoJob.cs" />
     <Compile Include="Gui\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Gui\WizardWindow.xaml.cs">
       <DependentUpon>WizardWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="JobProcessor\CommandlineJobProcessor.cs" />
-    <Compile Include="JobProcessor\Video\CommandlineVideoEncoder.cs" />
-    <Compile Include="JobProcessor\IJobProcessor.cs" />
-    <Compile Include="JobProcessor\Video\X265Encoder.cs" />
+    <Compile Include="Job\AudioJob\AudioJob.cs" />
+    <Compile Include="Job\VideoJob\VideoJob.cs" />
+    <Compile Include="Job\VideoJob\VideoInfoJob.cs" />
+    <Compile Include="Job\MuxJob\MuxJob.cs" />
+    <Compile Include="Job\RpcJob\RpcJob.cs" />
     <Compile Include="Job\Job.cs" />
     <Compile Include="Job\StatusUpdate.cs" />
-    <Compile Include="Job\VideoJob\VideoJob.cs" />
+    <Compile Include="JobProcessor\Audio\FFmpegPipeQAACEncoder.cs" />
+    <Compile Include="JobProcessor\Audio\FFmpegVolumeChecker.cs" />
+    <Compile Include="JobProcessor\Audio\QAACEncoder.cs" />
+    <Compile Include="JobProcessor\Demuxer\EACDemuxer.cs" />
+    <Compile Include="JobProcessor\Demuxer\TrackInfo.cs" />
+    <Compile Include="JobProcessor\Muxer\MkvmergeMuxer.cs" />
+    <Compile Include="JobProcessor\Muxer\NewMkvEpisodeMuxer.cs" />
+    <Compile Include="JobProcessor\Muxer\SingleVideoMuxer.cs" />
+    <Compile Include="JobProcessor\Muxer\AppendVideoMuxer.cs" />
+    <Compile Include="JobProcessor\Muxer\MergeOldRemuxer.cs" />
+    <Compile Include="JobProcessor\Muxer\LSmashMuxer.cs" />
+    <Compile Include="JobProcessor\Muxer\NewMp4EpisodeMuxer.cs" />
+    <Compile Include="JobProcessor\RpChecker\RpChecker.cs" />
+    <Compile Include="JobProcessor\Video\CommandlineVideoEncoder.cs" />
+    <Compile Include="JobProcessor\Video\X264Encoder.cs" />
+    <Compile Include="JobProcessor\Video\X265Encoder.cs" />
+    <Compile Include="JobProcessor\Video\SVTAV1Encoder.cs" />
+    <Compile Include="JobProcessor\Video\VSPipeInfoProcessor.cs" />
+    <Compile Include="JobProcessor\Video\IFrameInfoGenerator.cs" />
+    <Compile Include="JobProcessor\CommandlineJobProcessor.cs" />
+    <Compile Include="JobProcessor\IJobProcessor.cs" />
+    <Compile Include="JobProcessor\ExceptionParser.cs" />
+    <Compile Include="Model\Info\Info.cs" />
+    <Compile Include="Model\Info\AudioInfo.cs" />
+    <Compile Include="Model\Info\VideoInfo.cs" />
+    <Compile Include="Model\Info\VideoSliceInfo.cs" />
+    <Compile Include="Model\Info\VSPipeInfo.cs" />
+    <Compile Include="Model\Track\Track.cs" />
+    <Compile Include="Model\Track\AudioTrack.cs" />
+    <Compile Include="Model\Track\ChapterTrack.cs" />
+    <Compile Include="Model\Track\SubtitleTrack.cs" />
+    <Compile Include="Model\Track\VideoTrack.cs" />
+    <Compile Include="Model\Track\VideoSliceTrack.cs" />
+    <Compile Include="Model\OKEFile.cs" />
+    <Compile Include="Model\MediaFile.cs" />
+    <Compile Include="Task\AddTaskService.cs" />
+    <Compile Include="Task\AddEpProfileService.cs" />
+    <Compile Include="Task\ChapterService.cs" />
+    <Compile Include="Task\EpisodeProfile.cs" />
+    <Compile Include="Task\SubProcessService.cs" />
+    <Compile Include="Task\TaskManager.cs" />
     <Compile Include="Task\TaskDetail.cs" />
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Task\TaskProfile.cs" />
+    <Compile Include="Task\TaskStatus.cs" />
+    <Compile Include="Worker\ExecuteTaskService.cs" />
+    <Compile Include="Worker\NumaNode.cs" />
+    <Compile Include="Worker\WorkerManager.cs" />
     <Compile Include="Utils\PathUtils.cs" />
     <Compile Include="Utils\RegistryStorage.cs" />
     <Compile Include="Utils\SystemMenu.cs" />
     <Compile Include="Utils\TChapterExtension.cs" />
     <Compile Include="Utils\Timecode.cs" />
     <Compile Include="Utils\WmiUtils.cs" />
-    <Compile Include="Worker\ExecuteTaskService.cs" />
-    <Compile Include="Task\TaskStatus.cs" />
     <Compile Include="Utils\Cleaner.cs" />
     <Compile Include="Utils\Initializer.cs" />
     <Compile Include="Utils\Constants.cs" />
@@ -170,8 +184,7 @@
     <Compile Include="Utils\SafeProxy.cs" />
     <Compile Include="Utils\VapourSynthHelper.cs" />
     <Compile Include="Utils\WindowsUtil.cs" />
-    <Compile Include="Worker\NumaNode.cs" />
-    <Compile Include="Worker\WorkerManager.cs" />
+    <Compile Include="Utils\SliceUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OKEGui.Utils;
+using OKEGui.Model;
 using TChapter.Chapters;
 using TChapter.Parsing;
 using MediaInfo;
@@ -88,7 +89,7 @@ namespace OKEGui
 
         public static bool FindChapterFile(TaskDetail task)
         {
-            if (!string.IsNullOrEmpty(task.ChapterFileName))
+            if (!string.IsNullOrEmpty(task.ChapterFileName) && File.Exists(task.ChapterFileName))
                 return true;
             FileInfo inputFile = new FileInfo(task.InputFile);
             string inputPath = Path.GetFullPath(inputFile.FullName);
@@ -117,7 +118,10 @@ namespace OKEGui
             switch (task.ChapterStatus)
             {
                 case ChapterStatus.Yes:
-                    if (!FindChapterFile(task)) return null;
+                    if (!FindChapterFile(task))
+                    {
+                        throw new Exception($"{task.InputFile} 检测到使用外挂章节，但压制时未找到对应章节 {task.ChapterFileName}");
+                    }
                     chapterInfo = new OGMParser().Parse(task.ChapterFileName).FirstOrDefault();
                     break;
                 case ChapterStatus.Maybe:
@@ -135,23 +139,48 @@ namespace OKEGui
 
             if (chapterInfo == null) return null;
 
+            // 丢弃末尾1秒的章节
             chapterInfo.Chapters.Sort((a, b) => a.Time.CompareTo(b.Time));
             chapterInfo.Chapters = chapterInfo.Chapters
                 .Where(x => task.LengthInMiliSec - x.Time.TotalMilliseconds > 1001).ToList();
 
-            if (task.Taskfile.RenumberChapters)
+            // 处理开头的重复章节（一般来自mkvmerge切割）
+            bool removeBegin = false;
+            if (chapterInfo.Chapters.Count >= 2 && chapterInfo.Chapters[0].Time.Ticks == 0 && 
+                    chapterInfo.Chapters[1].Time.TotalMilliseconds - chapterInfo.Chapters[0].Time.TotalMilliseconds < 100)
+            {
+                chapterInfo.Chapters.RemoveAt(1);
+                removeBegin = true;
+            }
+
+            // 章节重命名
+            if (task.Taskfile.RenumberChapters || removeBegin)
             {
                 for (int i = 0; i < chapterInfo.Chapters.Count; i++)
                 {
                     chapterInfo.Chapters[i].Name = string.Format("Chapter {0,2:0#}", i+1);
                 }
+                task.ChapterLanguage = "en";
             }
+
+            if (task.ChapterStatus == ChapterStatus.Yes && removeBegin)
+            {
+                Logger.Warn($"{task.InputFile} 使用外挂章节，但触发了开头章节去重，这可能导致章节内容和语言不符合预期，请注意检查。");
+            }
+
+            // 章节序号重排序
+            // 对应章节文件中 CHAPTERxx= / CHAPTERxxNAME=
+            chapterInfo.UpdateInfo(0);
 
             if (chapterInfo.Chapters.Count > 1 ||
                 chapterInfo.Chapters.Count == 1 && chapterInfo.Chapters[0].Time.Ticks > 0)
             {
                 double lastChapterInMiliSec = chapterInfo.Chapters[chapterInfo.Chapters.Count - 1].Time.TotalMilliseconds;
                 if (task.LengthInMiliSec - lastChapterInMiliSec < 3003)
+                {
+                    task.ChapterStatus = ChapterStatus.Warn;
+                }
+                if (chapterInfo.Chapters[0].Time.Ticks != 0)
                 {
                     task.ChapterStatus = ChapterStatus.Warn;
                 }
@@ -180,27 +209,39 @@ namespace OKEGui
             return null;
         }
 
-        public static string GenerateQpFile(ChapterInfo chapterInfo, double fps)
+        public static IFrameInfo GetChapterIFrameInfo(ChapterInfo chapterInfo, double fps)
         {
-            StringBuilder qpFile = new StringBuilder();
+            IFrameInfo iFrameInfo = new IFrameInfo();
 
             foreach (var chapter in chapterInfo.Chapters)
             {
                 long miliSec = (long)chapter.Time.TotalMilliseconds;
-                int frameNo = (int)(miliSec / 1000.0 * fps + 0.5);
-                qpFile.AppendLine($"{frameNo} I");
+                long frameNo = (long)(miliSec / 1000.0 * fps + 0.5);
+                iFrameInfo.Add(frameNo);
             }
 
-            return qpFile.ToString();
+            return iFrameInfo;
         }
 
-        public static string GenerateQpFile(ChapterInfo chapterInfo, Timecode timecode)
+        public static IFrameInfo GetChapterIFrameInfo(ChapterInfo chapterInfo, Timecode timecode)
         {
-            StringBuilder qpFile = new StringBuilder();
+            IFrameInfo iFrameInfo = new IFrameInfo();
 
             foreach (var chapter in chapterInfo.Chapters)
             {
-                qpFile.AppendLine($"{timecode.GetFrameNumberFromTimeSpan(chapter.Time)} I");
+                iFrameInfo.Add(timecode.GetFrameNumberFromTimeSpan(chapter.Time));
+            }
+
+            return iFrameInfo;
+        }
+
+        public static string GenerateQpFile(IFrameInfo chapterIFrameInfo)
+        {
+            StringBuilder qpFile = new StringBuilder();
+
+            foreach (var frame in chapterIFrameInfo)
+            {
+                qpFile.AppendLine($"{frame} I");
             }
 
             return qpFile.ToString();

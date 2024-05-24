@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using OKEGui.Utils;
 
-namespace OKEGui
+namespace OKEGui.JobProcessor
 {
     class FFmpegVolumeChecker : CommandlineJobProcessor
     {
@@ -16,7 +16,7 @@ namespace OKEGui
         private Regex rmsLevelRegex = new Regex(@"RMS level dB: (-?(?:\d+\.\d+|inf))");
         private Regex peakLevelRegex = new Regex(@"Peak level dB: (-?(?:\d+\.\d+|inf))");
 
-        public FFmpegVolumeChecker(string inputFile)
+        public FFmpegVolumeChecker(string inputFile) : base(null)
         {
             executable = Constants.ffmpegPath;
             commandLine = $"-i \"{inputFile}\" -af astats=measure_perchannel=none -f null /dev/null";

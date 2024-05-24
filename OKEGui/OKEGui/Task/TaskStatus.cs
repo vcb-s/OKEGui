@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using static OKEGui.RpChecker;
+using OKEGui.JobProcessor;
 
 namespace OKEGui
 {
@@ -19,8 +19,11 @@ namespace OKEGui
             get { return isEnabled; }
             set
             {
-                isEnabled = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsEnabled"));
+                if (Progress != TaskProgress.RUNNING)
+                {
+                    isEnabled = value;
+                    OnPropertyChanged(new PropertyChangedEventArgs("IsEnabled"));
+                }
             }
         }
 
@@ -211,6 +214,21 @@ namespace OKEGui
         }
 
         /// <summary>
+        /// 任务类型
+        /// </summary>
+        public enum TaskTypeEnum : int { Normal = 0, ReEncode }
+        private TaskTypeEnum taskType;
+        public TaskTypeEnum TaskType
+        {
+            get { return taskType; }
+            set
+            {
+                taskType = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("TaskType"));
+            }
+        }
+
+        /// <summary>
         /// 正在执行的工作单元名称
         /// </summary>
         private string workerName;
@@ -252,7 +270,7 @@ namespace OKEGui
 
         public bool RpcButtonEnabled
         {
-            get { return rpcStatus == RpChecker.RpcStatus.未通过 || rpcStatus == RpChecker.RpcStatus.通过; }
+            get { return rpcStatus == JobProcessor.RpcStatus.未通过 || rpcStatus == JobProcessor.RpcStatus.通过; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

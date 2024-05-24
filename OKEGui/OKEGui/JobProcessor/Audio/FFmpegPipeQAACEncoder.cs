@@ -4,32 +4,28 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 using OKEGui.Utils;
-using OKEGui.JobProcessor;
 
-namespace OKEGui
+namespace OKEGui.JobProcessor
 {
     internal class FFmpegPipeQAACEncoder : CommandlineJobProcessor
     {
-        private ManualResetEvent retrieved = new ManualResetEvent(false);
-        private Action<double> _progressCallback;
         private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("FFmpegPipeQAACEncoder");
-        private readonly int audioLength;
 
-        // TODO: 变更编码参数
-        public FFmpegPipeQAACEncoder(AudioJob j, Action<double> progressCallback, int bitrate = Constants.QAACBitrate) : base()
+        protected AudioJob AJob
         {
-            _progressCallback = progressCallback;
+            get { return job as AudioJob; }
+        }
 
-            this.audioLength = j.Info.Length;
-
+        public FFmpegPipeQAACEncoder(AudioJob ajob) : base(ajob)
+        {
             executable = Path.Combine(Environment.SystemDirectory, "cmd.exe");
             FileInfo ffmpegPath = new FileInfo(Constants.ffmpegPath);
             FileInfo QAACPath = new FileInfo(Constants.QAACPath);
 
             commandLine = "/c \"start \"qaacenc\" /b /wait ";
-            commandLine += $"\"{ffmpegPath.FullName}\" -i \"{j.Input}\" -vn -sn -dn -f wav -v warning -";
+            commandLine += $"\"{ffmpegPath.FullName}\" -i \"{AJob.Input}\" -vn -sn -dn -f wav -v warning -";
             commandLine += " | ";
-            commandLine += $"\"{QAACPath.FullName}\" -i -v {bitrate} -q 2 --no-delay --threading -o \"{j.Output}\" -";
+            commandLine += $"\"{QAACPath.FullName}\" -i -v {AJob.Info.Bitrate} -q 2 --no-delay --threading -o \"{AJob.Output}\" -";
             commandLine += "\"";
         }
 
@@ -46,11 +42,11 @@ namespace OKEGui
                 int hour = int.Parse(match[1]);
                 int minute = int.Parse(match[2]);
                 int second = int.Parse(match[3]);
-                p = (hour * 3600 + minute * 60 + second) * 1.0 / this.audioLength * 100;
-                Logger.Trace($"{hour * 3600 + minute * 60 + second}, {this.audioLength}, {p}\n");
+                p = (hour * 3600 + minute * 60 + second) * 1.0 / AJob.Info.Length * 100;
+                Logger.Trace($"{hour * 3600 + minute * 60 + second}, {AJob.Info.Length}, {p}\n");
                 if (p > 1)
                 {
-                    _progressCallback(p);
+                    AJob.Progress = p;
                 }
             }
             else if (rAnalyze2.IsMatch(line))
@@ -58,11 +54,11 @@ namespace OKEGui
                 string[] match = rAnalyze2.Split(line);
                 int minute = int.Parse(match[1]);
                 int second = int.Parse(match[2]);
-                p = (minute * 60 + second) * 1.0 / this.audioLength * 100;
-                Logger.Trace($"{minute * 60 + second}, {this.audioLength}, {p}\n");
+                p = (minute * 60 + second) * 1.0 / AJob.Info.Length * 100;
+                Logger.Trace($"{minute * 60 + second}, {AJob.Info.Length}, {p}\n");
                 if (p > 1)
                 {
-                    _progressCallback(p);
+                    AJob.Progress = p;
                 }
             }
             else
@@ -70,7 +66,7 @@ namespace OKEGui
                 Logger.Debug(line);
                 if (line.Contains(".done"))
                 {
-                    _progressCallback(100);
+                    AJob.Progress = 100;
                     SetFinish();
                 }
                 if (line.Contains("ERROR"))

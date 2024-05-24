@@ -8,17 +8,21 @@ namespace OKEGui.Model
 {
     public class VideoInfo : Info
     {
-        public uint FpsNum;
-        public uint FpsDen = 1;
+        public long FpsNum;
+        public long FpsDen = 1;
+        public IFrameInfo ChapterIFrameInfo;
         public string TimeCodeFile;
+        public string QpFile;
 
         public VideoInfo() : base()
         {
             InfoType = InfoType.Video;
         }
-        public VideoInfo(uint fpsNum, uint fpsDen, string timeCodeFile) : this()
+        public VideoInfo(long fpsNum, long fpsDen, string timeCodeFile, string qpFile, IFrameInfo chapterIFrameInfo) : this()
         {
+            ChapterIFrameInfo = chapterIFrameInfo;
             TimeCodeFile = timeCodeFile;
+            QpFile = qpFile;
             FpsNum = fpsNum;
             FpsDen = fpsDen;
         }

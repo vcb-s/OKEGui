@@ -5,11 +5,10 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using OKEGui.JobProcessor;
 using OKEGui.Model;
 using OKEGui.Utils;
 
-namespace OKEGui
+namespace OKEGui.JobProcessor
 {
     public enum EACProgressType
     {

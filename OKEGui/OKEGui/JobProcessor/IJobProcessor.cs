@@ -1,7 +1,5 @@
-﻿namespace OKEGui
+﻿namespace OKEGui.JobProcessor
 {
-    public delegate void JobProcessingStatusUpdateCallback(StatusUpdate su);
-
     /// <summary>
     /// 任务处理。可执行单元
     /// </summary>
@@ -36,7 +34,5 @@
         /// changes the priority of the encoding process/thread
         /// </summary>
         void changePriority(ProcessPriority priority);
-
-        event JobProcessingStatusUpdateCallback StatusUpdate;
     }
 }

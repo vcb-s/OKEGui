@@ -44,9 +44,7 @@ namespace OKEGui.Model
         public VideoTrack VideoTrack = null;
         public List<AudioTrack> AudioTracks = new List<AudioTrack>();
         public List<SubtitleTrack> SubtitleTracks = new List<SubtitleTrack>();
-
         public ChapterTrack ChapterTrack = null;
-        public string ChapterLanguage = null;
 
         /// <summary>
         /// 插入多媒体轨道
@@ -93,6 +91,22 @@ namespace OKEGui.Model
                     throw new ArgumentException("Multiple Chapter tracks are being added!");
                 }
             }
+        }
+
+        public long GetTotalFileSize()
+        {
+            long TotalFileSize = 0;
+
+            if (VideoTrack != null)
+            {
+                TotalFileSize += VideoTrack.File.GetFileSize();
+            }
+            foreach (var Audio in AudioTracks)
+            {
+                TotalFileSize += Audio.File.GetFileSize();
+            }
+
+            return TotalFileSize;
         }
     }
 }

@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
-using OKEGui.JobProcessor;
 using OKEGui.Utils;
 
-namespace OKEGui
+namespace OKEGui.JobProcessor
 {
     // To be deprecated.
     public class LogBuffer
@@ -26,10 +25,17 @@ namespace OKEGui
         public LogBuffer Logs = new LogBuffer();
     }
 
+    public enum RpcStatus
+    {
+        等待中,
+        跳过,
+        错误,
+        未通过,
+        通过
+    };
+
     public class RpChecker : CommandlineJobProcessor
     {
-        public enum RpcStatus { 等待中, 跳过, 错误, 未通过, 通过 };
-
         private static readonly NLog.Logger Logger = NLog.LogManager.GetLogger("RpChecker");
         private static readonly double psnr_threashold = 30.0;
         private static readonly double psnrUV_threshold = 40.0;
@@ -52,32 +58,35 @@ namespace OKEGui
         private RpcResult3 result3 = new RpcResult3();
 
         private const string TemplateFile = ".\\tools\\rpc\\RpcTemplate.vpy";
-        private RpcJob job;
-        private ulong frameCount = 0;
+        private long frameCount = 0;
         private bool isVSError = false;
         private string errorMsg;
 
-        public RpChecker(RpcJob job) : base()
+        protected RpcJob RJob
         {
-            executable = Initializer.Config.vspipePath;
-            commandLine = $" \"{GetRpcScript(job)}\" .";
-            this.job = job;
-            result.FileNamePair = (job.Input, job.RippedFile);
+            get { return job as RpcJob; }
         }
 
-        public string GetRpcScript(RpcJob job)
+        public RpChecker(RpcJob rjob) : base(rjob)
+        {
+            executable = Initializer.Config.vspipePath;
+            commandLine = $" \"{GetRpcScript()}\" .";
+            result.FileNamePair = (RJob.Input, RJob.RippedFile);
+        }
+
+        public string GetRpcScript()
         {
             string argsClauses = "";
-            foreach (KeyValuePair<string, string> itr in job.Args)
+            foreach (KeyValuePair<string, string> itr in RJob.Args)
             {
                 argsClauses += $"setattr(mod, '{itr.Key}', b'{itr.Value}')" + Environment.NewLine;
             }
             string scriptContent = File.ReadAllText(TemplateFile);
             scriptContent = scriptContent
-                .Replace("OKE:SOURCE_SCRIPT", job.Input)
-                .Replace("OKE:VIDEO_FILE", job.RippedFile)
+                .Replace("OKE:SOURCE_SCRIPT", RJob.Input)
+                .Replace("OKE:VIDEO_FILE", RJob.RippedFile)
                 .Replace("OKE:VSPIPE_ARGS", argsClauses);
-            string fileName = job.RippedFile.Replace(Path.GetExtension(job.RippedFile), "_rpc.vpy");
+            string fileName = RJob.RippedFile.Replace(Path.GetExtension(RJob.RippedFile), "_rpc.vpy");
             File.WriteAllText(fileName, scriptContent);
 
             return fileName;
@@ -114,7 +123,7 @@ namespace OKEGui
             else if (line.Contains("RPCOUT:"))
             {
                 frameCount++;
-                job.Progress = 100.0 * frameCount / job.TotalFrame;
+                RJob.Progress = 100.0 * frameCount / RJob.TotalFrame;
                 string[] strNumbers = line.Substring(8).Split(new char[] { ' ' });
                 int frameNo = int.Parse(strNumbers[0]);
                 double psnr = double.Parse(strNumbers[1]), psnrU = psnrUV_threshold, psnrV = psnrUV_threshold;
@@ -144,17 +153,17 @@ namespace OKEGui
         public override void waitForFinish()
         {
             base.waitForFinish();
-            job.RpcStatus = Status;
+            RJob.RpcStatus = Status;
             JsonSerializer serializer = new JsonSerializer
             {
                 Formatting = Formatting.None
             };
             if (Status != RpcStatus.通过)
             {
-                job.Output = job.FailedRPCOutputFile;
+                RJob.Output = RJob.FailedRPCOutputFile;
             }
-            job.Output = job.Output.Replace(".rpc", $"-{Status.ToString()}.rpc");
-            using (StreamWriter fileWriter = new StreamWriter(job.Output))
+            RJob.Output = RJob.Output.Replace(".rpc", $"-{Status}.rpc");
+            using (StreamWriter fileWriter = new StreamWriter(RJob.Output))
             using (JsonTextWriter writer = new JsonTextWriter(fileWriter))
             {
                 if (result.Data.Count > 0)

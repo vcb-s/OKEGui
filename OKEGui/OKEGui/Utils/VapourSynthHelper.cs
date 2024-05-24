@@ -42,16 +42,17 @@ namespace OKEGui
         public long fpsDen;
         public int width;
         public int height;
-        public int numFrames; /* api 3.2 - no longer allowed to be 0 */
+        public long numFrames; /* api 3.2 - no longer allowed to be 0 */
         public int flags;
 
         // extra
+        public bool vfr;
         public double fps;
     }
 
     public class VapourSynthHelper
     {
-        private int totalFrames;
+        private long totalFrames;
         private long fpsNum;
         private long fpsDen;
         private int width;
@@ -134,7 +135,7 @@ namespace OKEGui
 
         #region Getter
 
-        public int TotalFreams
+        public long TotalFreams
         {
             get { return totalFrames; }
         }
@@ -203,67 +204,5 @@ namespace OKEGui
         }
 
         #endregion Getter
-    }
-
-    public class VSPipeInfo
-    {
-        private int totalFrames;
-        private double fps;
-        private long fpsNum;
-        private long fpsDen;
-        private int width;
-        private int height;
-        private VSVideoInfo videoInfo;
-
-        public VSPipeInfo(VideoJob vjob)
-        {
-            VideoInfoJob j = new VideoInfoJob(vjob);
-
-            VSPipeProcessor processor = new VSPipeProcessor(j);
-            processor.start();
-
-            videoInfo = processor.VideoInfo;
-            UpdateVideoInfo();
-        }
-
-        public void UpdateVideoInfo()
-        {
-            totalFrames = videoInfo.numFrames;
-            fps = videoInfo.fps;
-            fpsNum = videoInfo.fpsNum;
-            fpsDen = videoInfo.fpsDen;
-            width = videoInfo.width;
-            height = videoInfo.height;
-        }
-
-        public int TotalFreams
-        {
-            get { return totalFrames; }
-        }
-
-        public double Fps
-        {
-            get { return fps; }
-        }
-
-        public long FpsNum
-        {
-            get { return fpsNum; }
-        }
-
-        public long FpsDen
-        {
-            get { return fpsDen; }
-        }
-
-        public int Width
-        {
-            get { return width; }
-        }
-
-        public int Height
-        {
-            get { return height; }
-        }
     }
 }

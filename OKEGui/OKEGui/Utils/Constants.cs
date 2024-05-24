@@ -24,6 +24,12 @@ namespace OKEGui.Utils
         //x265
         public const string x265Path = ".\\tools\\x26x\\x265.exe";
 
+        //mkvmerge
+        public const string mkvmergePath = ".\\tools\\mkvtoolnix\\mkvmerge.exe";
+
+        //l-smash
+        public const string lsmashPath = ".\\tools\\l-smash\\muxer.exe";
+
         //rpchecker
         public const string rpcPath = ".\\tools\\rpc\\rpchecker.exe";
 
@@ -41,16 +47,16 @@ namespace OKEGui.Utils
         public const string fpsMismatchMsg = "输出FPS和指定FPS不一致。json里指定帧率为{0}，vs输出帧率为{1}。该文件{2}将跳过处理。请转告技术总监复查。";
         public const string fpsMismatchSmr = "FPS不一致";
 
-        public const string x264ErrorMsg = "x264出错:{0}。该文件{1}将跳过处理。请转告技术总监复查。";
+        public const string x264ErrorMsg = "x264出错: {0}。该文件{1}将跳过处理。请转告技术总监复查。";
         public const string x264ErrorSmr = "x264出错";
 
-        public const string x265ErrorMsg = "x265出错:{0}。该文件{1}将跳过处理。请转告技术总监复查。";
+        public const string x265ErrorMsg = "x265出错: {0}。该文件{1}将跳过处理。请转告技术总监复查。";
         public const string x265ErrorSmr = "x265出错";
 
-        public const string svtav1ErrorMsg = "svt-av1出错:{0}。该文件{1}将跳过处理。请转告技术总监复查。";
+        public const string svtav1ErrorMsg = "svt-av1出错: {0}。该文件{1}将跳过处理。请转告技术总监复查。";
         public const string svtav1ErrorSmr = "svt-av1出错";
 
-        public const string vpyErrorMsg = "vpy出错:{0}。\n该文件{1}将跳过处理。请转告技术总监复查。";
+        public const string vpyErrorMsg = "vpy出错: {0}。\n该文件{1}将跳过处理。请转告技术总监复查。";
         public const string vpyErrorSmr = "vpy出错";
 
         public const string unknownErrorMsg = "未知错误。该文件{0}将跳过处理。请转告技术总监复查。";
@@ -74,8 +80,14 @@ namespace OKEGui.Utils
         public const string audioFormatMistachMsg = "无法将{0}格式的音轨转为{1}格式。该文件{2}将跳过处理。请转告技术总监复查。";
         public const string audioFormatMistachSmr = "音轨格式不匹配";
 
-        public const string rpcErrorMsg = "RPC出错:{0}。\n请手动检查{1}，并请转告技术总监复查。";
+        public const string rpcErrorMsg = "RPC出错: {0}。\n请手动检查{1}，并请转告技术总监复查。";
         public const string rpcErrorSmr = "RPC出错";
+
+        public const string reEncodeSliceErrorMsg = "切片不合法: {0}，视频长度为{1}。该文件{2}将跳过处理。请转告技术总监复查。";
+        public const string reEncodeSliceErrorSmr = "切片不合法";
+
+        public const string reEncodeFramesErrorMsg = "帧数错误: 脚本输出帧数为{0}，但旧版压制成品帧数为{1}。该文件{2}将跳过处理。请转告技术总监复查。";
+        public const string reEncodeFramesErrorSmr = "帧数错误";
 
         //Application configuration file
         public const string configFile = "OKEGuiConfig.json";
