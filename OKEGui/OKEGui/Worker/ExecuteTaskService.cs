@@ -520,15 +520,17 @@ namespace OKEGui.Worker
                         string srcFmt = Path.GetExtension(aJob.Input).ToUpper().Remove(0, 1);
                         if (srcFmt == "FLAC" && aJob.CodecString == "AAC")
                         {
-                            task.CurrentStatus = "音频转码中";
                             QAACEncoder qaac = new QAACEncoder(aJob);
+                            task.CurrentStatus = "音频转码中";
+                            task.ProgressValue = 0.0;
                             qaac.start();
                             qaac.waitForFinish();
                         }
                         else if (srcFmt != "FLAC" && aJob.CodecString == "AAC" && info.Lossy)
                         {
-                            task.CurrentStatus = "音频转码中";
                             FFmpegPipeQAACEncoder qaac = new FFmpegPipeQAACEncoder(aJob);
+                            task.CurrentStatus = "音频转码中";
+                            task.ProgressValue = 0.0;
                             qaac.start();
                             qaac.waitForFinish();
                         }
@@ -672,7 +674,6 @@ namespace OKEGui.Worker
                 if (profile.Config != null)
                     vspipeArgs.AddRange(profile.Config.VspipeArgs);
 
-                task.CurrentStatus = "RPC中";
                 RpcJob rpcJob = new RpcJob(
                     profile.InputScript,
                     profile.OutputPathPrefix,
@@ -683,6 +684,8 @@ namespace OKEGui.Worker
                 rpcJob.SetUpdate(task);
 
                 RpChecker checker = new RpChecker(rpcJob);
+                task.CurrentStatus = "RPC中";
+                task.ProgressValue = 0.0;
                 checker.start();
                 checker.waitForFinish();
                 task.RpcOutput = rpcJob.Output;
