@@ -92,16 +92,12 @@ namespace OKEGui.Worker
                         // 根据旧成品的I帧序列，生成最终的切片序列
                         CheckReEncodeSlice(task, profile, vsInfo.iFrameInfo);
 
-                        // 新建各个切片的压制和封装处理工作
+                        // 执行各个切片的压制和封装处理工作
                         GenerateReEncodeJob(task, profile, args.numaNode, finalVideoInfo);
-
-                        // 执行音频和视频处理工作
                         DoAllJobs(task, profile);
 
-                        // 最终封装
-                        GenerateMuxJob(task, profile, profile.Config.ReEncodeOldFile);
-
                         // 执行最终封装工作
+                        GenerateMuxJob(task, profile, profile.Config.ReEncodeOldFile);
                         DoAllJobs(task, profile);
 
                         // RPC检查
@@ -116,17 +112,26 @@ namespace OKEGui.Worker
                         // 新建音频处理工作
                         GenerateAudioJob(task, srcTracks);
 
-                        // 新建视频处理工作
-                        GenerateVideoJob(task, profile, args.numaNode, finalVideoInfo, false);
-
                         // 添加字幕文件
                         AddSubtitle(task, srcTracks);
 
-                        // 执行音频和视频处理工作
+                        // 执行音频处理工作
                         DoAllJobs(task, profile);
 
-                        // 最终封装
-                        DoFinalMux(task, profile);
+                        // 执行MKA封装工作
+                        if (task.MkaOutFile.Tracks.Count > 0)
+                        {
+                            GenerateMuxJob(task, profile, task.MkaOutFile, "MKA");
+                            DoAllJobs(task, profile);
+                        }
+
+                        // 执行视频处理工作
+                        GenerateVideoJob(task, profile, args.numaNode, finalVideoInfo, false);
+                        DoAllJobs(task, profile);
+
+                        // 执行最终封装工作
+                        GenerateMuxJob(task, profile, task.MediaOutFile, profile.ContainerFormat);
+                        DoAllJobs(task, profile);
 
                         // RPC检查
                         DoRPCheck(task, profile);
@@ -244,8 +249,7 @@ namespace OKEGui.Worker
                 chapterInfo.Save(ChapterTypeEnum.OGM, outputChapterFile.FullName);
                 outputChapterFile.Refresh();
                 OKEFile chapterFile = new OKEFile(outputChapterFile);
-                task.MediaOutFile.AddTrack(new ChapterTrack(chapterFile));
-                task.MediaOutFile.ChapterLanguage = task.ChapterLanguage;
+                task.MediaOutFile.AddTrack(new ChapterTrack(chapterFile, task.ChapterLanguage));
 
                 // 用章节文件生成qpfile
                 qpFileName = Path.ChangeExtension(task.Taskfile.WorkingPathPrefix, ".qpf");
@@ -456,6 +460,27 @@ namespace OKEGui.Worker
             Logger.Info($"添加Mux任务：muxType: {mJob.MuxType}, timeCodeFile: {mJob.TimeCodeFile}, input: {mJob.Input}, output: {mJob.Output}");
         }
 
+        private void GenerateMuxJob(TaskDetail task, TaskProfile profile, MediaFile mediaOutFile, string containerFormat)
+        {
+            MuxType muxType;
+            if (containerFormat == "MKV" || containerFormat == "MKA")
+                muxType = MuxType.NewMkvEpisode;
+            else
+                muxType = MuxType.NewMp4Episode;
+            MuxJob mJob = new MuxJob(muxType, containerFormat);
+            mJob.SetUpdate(task);
+
+            mJob.MediaOutFile = mediaOutFile;
+            if (containerFormat == "MKA")
+                mJob.Output = profile.OutputPathPrefix + ".mka";
+            else
+                mJob.Output = Path.Combine(Path.GetDirectoryName(profile.OutputPathPrefix), task.OutputFile);
+            mJob.TotalFileSize = mediaOutFile.GetTotalFileSize();
+
+            task.JobQueue.Enqueue(mJob);
+            Logger.Info($"添加Mux任务：muxType: {mJob.MuxType}, totalFileSize, {mJob.TotalFileSize}, output: {mJob.Output}");
+        }
+
         // 添加字幕文件
         private void AddSubtitle(TaskDetail task, MediaFile srcTracks)
         {
@@ -568,9 +593,21 @@ namespace OKEGui.Worker
                     }
                     case MuxJob mJob:
                     {
-                        MkvmergeMuxer muxer;
+                        CommandlineJobProcessor muxer;
                         switch (mJob.MuxType)
                         {
+                            case MuxType.NewMkvEpisode:
+                            {
+                                muxer = new NewMkvEpisodeMuxer(mJob);
+                                task.CurrentStatus = mJob.CodecString == "MKA" ? "封装MKA中" : "最终封装中";
+                                break;
+                            }
+                            case MuxType.NewMp4Episode:
+                            {
+                                muxer = new NewMp4EpisodeMuxer(mJob);
+                                task.CurrentStatus = "最终封装中";
+                                break;
+                            }
                             case MuxType.SingleVideo:
                             {
                                 muxer = new SingleVideoMuxer(mJob);
@@ -606,12 +643,15 @@ namespace OKEGui.Worker
                         {
                             task.MediaOutFile.AddTrack(new VideoTrack(new OKEFile(mJob.Output), mJob.Info));
                         }
-                        else if (mJob.MuxType == MuxType.MergeOldRemux)
+                        else if (mJob.MuxType == MuxType.NewMkvEpisode || mJob.MuxType == MuxType.NewMp4Episode || mJob.MuxType == MuxType.MergeOldRemux)
                         {
                             OKEFile outFile = new OKEFile(mJob.Output);
                             outFile.AddCRC32();
-                            task.OutputFile = outFile.GetFileName();
-                            task.BitRate = CommandlineVideoEncoder.HumanReadableFilesize(outFile.GetFileSize(), 2);
+                            if (mJob.CodecString != "MKA")
+                            {
+                                task.OutputFile = outFile.GetFileName();
+                                task.BitRate = CommandlineVideoEncoder.HumanReadableFilesize(outFile.GetFileSize(), 2);
+                            }
                         }
 
                         break;
@@ -620,40 +660,6 @@ namespace OKEGui.Worker
                         // 不支持的工作
                         break;
                 }
-            }
-        }
-
-        // 最终封装
-        private void DoFinalMux(TaskDetail task, TaskProfile profile)
-        {
-            FileInfo mkvInfo = new FileInfo(Constants.mkvmergePath);
-            FileInfo lsmash = new FileInfo(Constants.lsmashPath);
-            if (!mkvInfo.Exists)
-                throw new Exception("mkvmerge不存在");
-            if (!lsmash.Exists)
-                throw new Exception("l-smash 封装工具不存在");
-
-            if (profile.ContainerFormat != "")
-            {
-                task.CurrentStatus = "封装中";
-                AutoMuxer muxer = new AutoMuxer(mkvInfo.FullName, lsmash.FullName);
-                muxer.ProgressChanged += (progress => task.ProgressValue = progress);
-
-                OKEFile outFile = muxer.StartMuxing(
-                    Path.Combine(Path.GetDirectoryName(profile.OutputPathPrefix), task.OutputFile),
-                    task.MediaOutFile
-                );
-                task.OutputFile = outFile.GetFileName();
-                task.BitRate = CommandlineVideoEncoder.HumanReadableFilesize(outFile.GetFileSize(), 2);
-            }
-            if (task.MkaOutFile.Tracks.Count > 0)
-            {
-                task.CurrentStatus = "封装MKA中";
-                AutoMuxer muxer = new AutoMuxer(mkvInfo.FullName, lsmash.FullName);
-                muxer.ProgressChanged += (progress => task.ProgressValue = progress);
-
-                string mkaOutputFile = profile.OutputPathPrefix + ".mka";
-                muxer.StartMuxing(mkaOutputFile, task.MkaOutFile);
             }
         }
 

@@ -6,6 +6,8 @@ namespace OKEGui
 {
     public enum MuxType
     {
+        NewMkvEpisode,
+        NewMp4Episode,
         SingleVideo,
         AppendVideo,
         MergeOldRemux
@@ -15,6 +17,8 @@ namespace OKEGui
     {
         public readonly MuxType MuxType;
         public readonly VideoInfo Info;
+        public MediaFile MediaOutFile;
+        public long TotalFileSize;
         public List<VideoSliceTrack> VideoSlices = new List<VideoSliceTrack>();
         public string TimeCodeFile;
         public string ReEncodeOldFile;

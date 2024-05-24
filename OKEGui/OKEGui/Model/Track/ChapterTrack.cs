@@ -8,9 +8,10 @@ namespace OKEGui.Model
 {
     public class ChapterTrack : Track
     {
-        public ChapterTrack(OKEFile file) : base(file, new Info())
+        public ChapterTrack(OKEFile file, string language) : base(file, new Info())
         {
             TrackType = TrackType.Chapter;
+            Info.Language = language;
         }
     }
 }

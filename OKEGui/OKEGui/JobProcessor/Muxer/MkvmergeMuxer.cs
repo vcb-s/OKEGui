@@ -35,7 +35,7 @@ namespace OKEGui.JobProcessor
         {
             Logger.Debug(line);
 
-            Regex rProgress = new Regex(@"Progress: (\d*?)%");
+            Regex rProgress = new Regex(@"Progress: (\d*?)%", RegexOptions.Compiled);
             double p = 0;
 
             if (line.Contains("Progress: "))
