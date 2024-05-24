@@ -10,6 +10,7 @@ namespace OKEGui.Task
 
         // 用于 Re-Encode 功能
         public bool EnableReEncode = false;
+        public bool ReExtractSource = false;
         public string ReEncodeOldFile;
         public SliceInfoArray ReEncodeSliceArray;
 

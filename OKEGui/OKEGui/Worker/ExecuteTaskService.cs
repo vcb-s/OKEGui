@@ -86,25 +86,13 @@ namespace OKEGui.Worker
                     // 准备时间码/章节文件/qpfile
                     VideoInfo finalVideoInfo = DoPreparation(task, profile, vsInfo);
 
-                    // 处理ReEncode任务
+                    // 根据旧成品的I帧序列，生成最终的切片序列
                     if (profile.IsReEncode)
                     {
-                        // 根据旧成品的I帧序列，生成最终的切片序列
                         CheckReEncodeSlice(task, profile, vsInfo.iFrameInfo);
-
-                        // 执行各个切片的压制和封装处理工作
-                        GenerateReEncodeJob(task, profile, args.numaNode, finalVideoInfo);
-                        DoAllJobs(task, profile);
-
-                        // 执行最终封装工作
-                        GenerateMuxJob(task, profile, profile.Config.ReEncodeOldFile);
-                        DoAllJobs(task, profile);
-
-                        // RPC检查
-                        DoRPCheck(task, profile);
                     }
-                    // 处理常规压制任务
-                    else
+
+                    if (!profile.IsReEncode || profile.IsReEncode && profile.Config.ReExtractSource)
                     {
                         // 抽取音轨和字幕轨
                         MediaFile srcTracks = ExtractSource(task, profile);
@@ -124,23 +112,43 @@ namespace OKEGui.Worker
                             GenerateMuxJob(task, profile, task.MkaOutFile, "MKA");
                             DoAllJobs(task, profile);
                         }
-
-                        // 执行视频处理工作
-                        GenerateVideoJob(task, profile, args.numaNode, finalVideoInfo, false);
-                        DoAllJobs(task, profile);
-
-                        // 执行最终封装工作
-                        GenerateMuxJob(task, profile, task.MediaOutFile, profile.ContainerFormat);
-                        DoAllJobs(task, profile);
-
-                        // RPC检查
-                        DoRPCheck(task, profile);
                     }
 
-                    Logger.Info("任务完成");
+                    // 执行视频处理工作
+                    if (profile.IsReEncode)
+                    {
+                        // 执行各个切片的压制和封装处理工作
+                        GenerateReEncodeJob(task, profile, args.numaNode, finalVideoInfo);
+                        DoAllJobs(task, profile);
+                    }
+                    else
+                    {
+                        // 执行常规视频处理工作
+                        GenerateVideoJob(task, profile, args.numaNode, finalVideoInfo, false);
+                        DoAllJobs(task, profile);
+                    }
+
+                    // 执行最终封装工作
+                    if (profile.IsReEncode && !profile.Config.ReExtractSource)
+                    {
+                        GenerateMuxJob(task, profile, profile.Config.ReEncodeOldFile);
+                        DoAllJobs(task, profile);
+                    }
+                    else
+                    {
+                        GenerateMuxJob(task, profile, task.MediaOutFile, profile.ContainerFormat);
+                        DoAllJobs(task, profile);
+                    }
+
+                    // RPC检查
+                    DoRPCheck(task, profile);
+
                     task.CurrentStatus = "完成";
-                    task.Progress = TaskStatus.TaskProgress.FINISHED;
                     task.ProgressValue = 100;
+                    task.Progress = TaskStatus.TaskProgress.FINISHED;
+
+                    Logger.Info("任务完成");
+                    Logger.Info("-------------------------------------------------------------------");
                 }
                 catch (OKETaskException ex)
                 {

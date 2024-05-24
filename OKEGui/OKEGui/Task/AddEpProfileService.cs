@@ -28,7 +28,7 @@ namespace OKEGui
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString(), filePath + "json文件写错了诶", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(e.ToString(), filePath + " json文件写错了诶", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
 
@@ -55,6 +55,14 @@ namespace OKEGui
                     return null;
                 }
                 json.ReEncodeOldFile = oldFile.FullName;
+
+                // 检查是否重新抽流其他轨道
+                string oldFileExtension = oldFile.Extension.ToLower();
+                if (!json.ReExtractSource && oldFileExtension != ".mkv")
+                {
+                    MessageBox.Show("需要从旧版压制成品获取非视频轨道，但旧版压制成品不为mkv格式", "旧版压制成品格式不支持", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return null;
+                }
 
                 // 检查切片序列
                 if (json.ReEncodeSliceArray == null || json.ReEncodeSliceArray.Count == 0)
