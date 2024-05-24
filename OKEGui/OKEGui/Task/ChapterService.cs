@@ -144,21 +144,33 @@ namespace OKEGui
             chapterInfo.Chapters = chapterInfo.Chapters
                 .Where(x => task.LengthInMiliSec - x.Time.TotalMilliseconds > 1001).ToList();
 
+            // 处理开头的重复章节（一般来自mkvmerge切割）
+            bool removeBegin = false;
+            if (chapterInfo.Chapters.Count >= 2 && chapterInfo.Chapters[0].Time.Ticks == 0 && 
+                    chapterInfo.Chapters[1].Time.TotalMilliseconds - chapterInfo.Chapters[0].Time.TotalMilliseconds < 100)
+            {
+                chapterInfo.Chapters.RemoveAt(1);
+                removeBegin = true;
+            }
+
             // 章节重命名
-            if (task.Taskfile.RenumberChapters)
+            if (task.Taskfile.RenumberChapters || removeBegin)
             {
                 for (int i = 0; i < chapterInfo.Chapters.Count; i++)
                 {
                     chapterInfo.Chapters[i].Name = string.Format("Chapter {0,2:0#}", i+1);
                 }
+                task.ChapterLanguage = "en";
             }
 
-            // 处理开头的重复章节（一般来自mkvmerge切割）
-            if (chapterInfo.Chapters.Count >= 2 && chapterInfo.Chapters[0].Time.Ticks == 0 && 
-                    chapterInfo.Chapters[1].Time.TotalMilliseconds - chapterInfo.Chapters[0].Time.TotalMilliseconds < 100)
+            if (task.ChapterStatus == ChapterStatus.Yes && removeBegin)
             {
-                chapterInfo.Chapters.RemoveAt(1);
+                Logger.Warn($"{task.InputFile} 使用外挂章节，但触发了开头章节去重，这可能导致章节内容和语言不符合预期，请注意检查。");
             }
+
+            // 章节序号重排序
+            // 对应章节文件中 CHAPTERxx= / CHAPTERxxNAME=
+            chapterInfo.UpdateInfo(0);
 
             if (chapterInfo.Chapters.Count > 1 ||
                 chapterInfo.Chapters.Count == 1 && chapterInfo.Chapters[0].Time.Ticks > 0)
