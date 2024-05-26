@@ -66,9 +66,9 @@ namespace OKEGui
             for (int i = 0; i < numaCount; i++)
             {
                 WorkerCount++;
-                wm.AddWorker("工作单元-" + WorkerCount.ToString());
+                wm.AddWorker(WorkerCount);
             }
-            WorkerNumber.Text = "工作单元数量: " + WorkerCount.ToString();
+            UpdateWorkerCount();
 
             if (Initializer.Config.memoryTotal == WmiUtils.GetTotalPhysicalMemory())
             {
@@ -76,7 +76,7 @@ namespace OKEGui
             }
         }
 
-        private void UpdatedActiveRelatedButtons()
+        private void UpdateActiveRelatedButtons()
         {
             int activeTaskCount = tm.GetActiveTaskCount();
             BtnRun.IsEnabled = activeTaskCount > 0 && !wm.IsRunning;
@@ -86,16 +86,21 @@ namespace OKEGui
             BtnMoveTop.IsEnabled = activeTaskCount > 0;
         }
 
-        private void UpdatedCountRelatedButtons()
+        private void UpdateCountRelatedButtons()
         {
             int taskCount = tm.GetTaskCount();
             BtnDelete.IsEnabled = taskCount > 0;
             BtnEmpty.IsEnabled = taskCount > 0;
         }
 
+        private void UpdateWorkerCount()
+        {
+            WorkerNumber.Text = $"工作单元数量: {WorkerCount}({wm.GetBGWorkerCount()})";
+        }
+
         private void Checkbox_Changed(object sender, RoutedEventArgs e)
         {
-            UpdatedActiveRelatedButtons();
+            UpdateActiveRelatedButtons();
         }
 
         private void BtnRpc_Click(object sender, RoutedEventArgs e)
@@ -133,8 +138,9 @@ namespace OKEGui
                 {
                     var wizard = new WizardWindow(wm);
                     wizard.ShowDialog();
-                    UpdatedActiveRelatedButtons();
-                    UpdatedCountRelatedButtons();
+                    UpdateActiveRelatedButtons();
+                    UpdateCountRelatedButtons();
+                    UpdateWorkerCount();
                 }
                 catch (Exception ex)
                 {
@@ -189,6 +195,7 @@ namespace OKEGui
                 BtnRun.IsEnabled = false;
                 BtnStop.IsEnabled = true;
                 BtnPause.IsEnabled = true;
+                UpdateWorkerCount();
             }
             catch (Exception ex)
             {
@@ -213,12 +220,14 @@ namespace OKEGui
             {
                 wm.Stop();
                 SubProcessService.KillAll();
+                UpdateWorkerCount();
             }
             catch (Exception ex)
             {
                 Logger.Error(ex.StackTrace);
                 MessageBox.Show("无法终止任务！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
                 BtnStop.IsEnabled = true;
+                UpdateWorkerCount();
                 return;
             }
 
@@ -310,8 +319,8 @@ namespace OKEGui
                 return;
             }
 
-            UpdatedActiveRelatedButtons();
-            UpdatedCountRelatedButtons();
+            UpdateActiveRelatedButtons();
+            UpdateCountRelatedButtons();
         }
 
         private void BtnEmpty_Click(object sender, RoutedEventArgs e)
@@ -332,16 +341,16 @@ namespace OKEGui
                 }
             }
 
-            UpdatedActiveRelatedButtons();
-            UpdatedCountRelatedButtons();
+            UpdateActiveRelatedButtons();
+            UpdateCountRelatedButtons();
         }
 
         private void BtnNewWorker_Click(object sender, RoutedEventArgs e)
         {
-            if (wm.AddWorker("工作单元-" + (WorkerCount + 1).ToString()))
+            if (wm.AddWorker(WorkerCount + 1))
             {
                 WorkerCount++;
-                WorkerNumber.Text = "工作单元数量: " + WorkerCount.ToString();
+                UpdateWorkerCount();
             }
         }
 
@@ -352,14 +361,14 @@ namespace OKEGui
                 MessageBox.Show("工作单元删除失败！", "只有一个工作单元了", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            if (wm.DeleteWorker("工作单元-" + WorkerCount.ToString()))
+            if (wm.DeleteWorker(WorkerCount.ToString()))
             {
                 WorkerCount--;
-                WorkerNumber.Text = "工作单元数量: " + WorkerCount.ToString();
+                UpdateWorkerCount();
             }
             else
             {
-                MessageBox.Show("工作单元删除失败！", $"工作单元-{WorkerCount}正在运行中", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("工作单元删除失败！", $"删除工作单元-{WorkerCount}失败，请重试", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

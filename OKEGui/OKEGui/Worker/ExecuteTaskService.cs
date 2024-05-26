@@ -25,6 +25,12 @@ namespace OKEGui.Worker
             window.BtnMoveDown.IsEnabled = false;
             window.BtnMoveUp.IsEnabled = false;
             window.BtnMoveTop.IsEnabled = false;
+            window.WorkerNumber.Text = $"工作单元数量: {window.WorkerCount}({window.wm.GetBGWorkerCount()})";
+        }
+
+        private void UpdateWorkerCountAfterFinish(MainWindow window)
+        {
+            window.WorkerNumber.Text = $"工作单元数量: {window.WorkerCount}({window.wm.GetBGWorkerCount()})";
         }
 
         private void WorkerDoWork(object sender, DoWorkEventArgs e)
@@ -33,6 +39,19 @@ namespace OKEGui.Worker
 
             while (IsRunning)
             {
+                // 检查Wid，超过指定工作单元数量的Worker在结束当前任务后直接退出
+                if (args.Wid > MainWindow.WorkerCount)
+                {
+                    Logger.Debug($"检测到Wid超过指定工作单元数量，结束当前工作单元{args.Wid}");
+                    lock (o)
+                    {
+                        bgworkerlist.TryRemove(args.Name, out BackgroundWorker v);
+                        Action<MainWindow> updateWorkerAction = new Action<MainWindow>(UpdateWorkerCountAfterFinish);
+                        MainWindow.Dispatcher.BeginInvoke(updateWorkerAction, MainWindow);
+                    }
+                    return;
+                }
+
                 TaskDetail task = args.taskManager.GetNextTask();
 
                 // 检查是否已经完成全部任务
@@ -42,6 +61,9 @@ namespace OKEGui.Worker
                     lock (o)
                     {
                         bgworkerlist.TryRemove(args.Name, out BackgroundWorker v);
+                        Action<MainWindow> updateWorkerAction = new Action<MainWindow>(UpdateWorkerCountAfterFinish);
+                        MainWindow.Dispatcher.BeginInvoke(updateWorkerAction, MainWindow);
+
                         if (bgworkerlist.Count == 0)
                         {
                             IsRunning = false;
@@ -112,6 +134,15 @@ namespace OKEGui.Worker
                             GenerateMuxJob(task, profile, task.MkaOutFile, "MKA");
                             DoAllJobs(task, profile);
                         }
+                    }
+
+                    // 检查是否被OKE主线程取消
+                    if (args.bgWorker.CancellationPending)
+                    {
+                        task.Progress = TaskStatus.TaskProgress.ERROR;
+                        task.CurrentStatus = "已终止";
+                        e.Cancel = true;
+                        return;
                     }
 
                     // 执行视频处理工作

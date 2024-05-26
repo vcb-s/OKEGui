@@ -11,8 +11,16 @@ namespace OKEGui.Worker
         Temporary,
     }
 
+    public class Worker
+    {
+        public int Wid;
+        public string Name;
+        public WorkerType WType;
+    }
+
     public struct WorkerArgs
     {
+        public int Wid;
         public string Name;
         public WorkerType RunningType;
         public TaskManager taskManager;
@@ -27,8 +35,7 @@ namespace OKEGui.Worker
         public MainWindow MainWindow;
         public TaskManager tm;
 
-        private List<string> workerList;
-        private ConcurrentDictionary<string, WorkerType> workerType;
+        private ConcurrentDictionary<string, Worker> workerList;
 
         // dummy object for locking.
         private object o = new object();
@@ -43,9 +50,8 @@ namespace OKEGui.Worker
 
         public WorkerManager(MainWindow mainWindow, TaskManager taskManager)
         {
-            workerList = new List<string>();
+            workerList = new ConcurrentDictionary<string, Worker>();
             bgworkerlist = new ConcurrentDictionary<string, BackgroundWorker>();
-            workerType = new ConcurrentDictionary<string, WorkerType>();
             MainWindow = mainWindow;
             tm = taskManager;
             IsRunning = false;
@@ -55,18 +61,7 @@ namespace OKEGui.Worker
         public void AddTask(TaskDetail detail)
         {
             tm.AddTask(detail);
-            if (IsRunning)
-            {
-                foreach (string worker in workerList)
-                {
-                    if (!bgworkerlist.ContainsKey(worker))
-                    {
-                        CreateWorker(worker);
-                        StartWorker(worker);
-                        break;
-                    }
-                }
-            }
+            TryStartNewWorker();
         }
 
         public bool Start()
@@ -78,22 +73,8 @@ namespace OKEGui.Worker
                     return false;
                 }
 
-                int activeTaskCount = tm.GetActiveTaskCount();
                 IsRunning = true;
-
-                foreach (string worker in workerList)
-                {
-                    if (activeTaskCount == 0)
-                    {
-                        break;
-                    }
-                    if (!bgworkerlist.ContainsKey(worker))
-                    {
-                        CreateWorker(worker);
-                        StartWorker(worker);
-                        activeTaskCount--;
-                    }
-                }
+                TryStartNewWorker();
 
                 return true;
             }
@@ -108,6 +89,34 @@ namespace OKEGui.Worker
             }
         }
 
+        public bool TryStartNewWorker()
+        {
+            if (!IsRunning)
+            {
+                return false;
+            }
+
+            int activeTaskCount = tm.GetActiveTaskCount();
+            bool startNew = false;
+
+            foreach (var worker in workerList)
+            {
+                if (activeTaskCount == 0)
+                {
+                    break;
+                }
+                if (!bgworkerlist.ContainsKey(worker.Value.Name))
+                {
+                    CreateWorker(worker.Value.Name);
+                    StartWorker(worker.Value);
+                    activeTaskCount--;
+                    startNew = true;
+                }
+            }
+
+            return startNew;
+        }
+
         public bool CreateWorker(string name)
         {
             BackgroundWorker worker = new BackgroundWorker();
@@ -120,24 +129,25 @@ namespace OKEGui.Worker
             return bgworkerlist.TryAdd(name, worker);
         }
 
-        public bool StartWorker(string name)
+        public bool StartWorker(Worker worker)
         {
-            if (!bgworkerlist.ContainsKey(name))
+            if (!bgworkerlist.ContainsKey(worker.Name))
             {
                 return false;
             }
 
-            var worker = bgworkerlist[name];
+            var bgWorker = bgworkerlist[worker.Name];
 
             WorkerArgs args;
-            args.Name = name;
-            args.RunningType = workerType[name];
+            args.Wid = worker.Wid;
+            args.Name = worker.Name;
+            args.RunningType = worker.WType;
             args.taskManager = tm;
-            args.bgWorker = worker;
+            args.bgWorker = bgWorker;
             args.numaNode = NumaNode.NextNuma();
-            Logger.Trace(name + "所拥有的Numa Node编号是" + args.numaNode.ToString());
+            Logger.Trace(args.Name + "所拥有的Numa Node编号是" + args.numaNode.ToString());
 
-            worker.RunWorkerAsync(args);
+            bgWorker.RunWorkerAsync(args);
             return true;
         }
 
@@ -149,45 +159,57 @@ namespace OKEGui.Worker
             }
         }
 
+        public int GetBGWorkerCount()
+        {
+            lock (o)
+            {
+                return bgworkerlist.Count;
+            }
+        }
+
         public string AddTempWorker()
         {
             // 临时Worker只运行一次任务
             tempCounter++;
             string name = "Temp-" + tempCounter.ToString();
+            Worker tmpWorker = new Worker{
+                Wid = tempCounter,
+                Name = name,
+                WType = WorkerType.Temporary
+            };
 
             lock (o)
             {
-                workerList.Add(name);
-                workerType.TryAdd(name, WorkerType.Temporary);
+                workerList.TryAdd(name, tmpWorker);
             }
 
             if (IsRunning)
             {
                 CreateWorker(name);
-                StartWorker(name);
+                StartWorker(tmpWorker);
             }
 
             return name;
         }
 
-        public bool AddWorker(string name)
+        public bool AddWorker(int Wid)
         {
+            Worker worker = new Worker{
+                Wid = Wid,
+                Name = $"工作单元-{Wid}",
+                WType = WorkerType.Normal
+            };
+
             lock (o)
             {
-                if (workerList.Contains(name))
+                if (workerList.ContainsKey(Wid.ToString()))
                 {
                     return false;
                 }
-
-                workerList.Add(name);
-                workerType.TryAdd(name, WorkerType.Normal);
+                workerList.TryAdd(Wid.ToString(), worker);
             }
 
-            if (IsRunning)
-            {
-                CreateWorker(name);
-                StartWorker(name);
-            }
+            TryStartNewWorker();
 
             return true;
         }
@@ -196,14 +218,13 @@ namespace OKEGui.Worker
         {
             lock (o)
             {
-                if (bgworkerlist.ContainsKey(name))
+                if (!workerList.ContainsKey(name))
                 {
-                    return false;
+                    return true;
                 }
                 else
                 {
-                    workerType.TryRemove(name, out WorkerType w);
-                    return workerList.Remove(name);
+                    return workerList.TryRemove(name, out Worker w);
                 }
             }
         }
@@ -215,7 +236,9 @@ namespace OKEGui.Worker
                 if (bgworkerlist.ContainsKey(name))
                 {
                     bgworkerlist[name].CancelAsync();
+                    bgworkerlist[name].Dispose();
                     bgworkerlist.TryRemove(name, out BackgroundWorker v);
+                    Logger.Debug($"已终止{name}");
                 }
             }
         }
@@ -224,9 +247,9 @@ namespace OKEGui.Worker
         {
             lock (o)
             {
-                foreach (var w in workerList)
+                foreach (var w in bgworkerlist)
                 {
-                    StopWorker(w);
+                    StopWorker(w.Key);
                 }
             }
         }
