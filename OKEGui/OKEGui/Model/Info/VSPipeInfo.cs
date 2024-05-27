@@ -66,16 +66,17 @@ namespace OKEGui.Model
 
     public class VSPipeInfo
     {
-        public VSVideoInfo videoInfo;
+        public readonly VSVideoInfo videoInfo;
 
-        public IFrameInfo iFrameInfo;
+        public readonly IFrameInfo iFrameInfo;
 
         public VSPipeInfo(VideoInfoJob j)
         {
             VSPipeInfoProcessor processor = new VSPipeInfoProcessor(j);
             processor.start();
-            videoInfo = processor.VideoInfo;
+            processor.waitForFinish();
             processor.CheckFps();
+            videoInfo = processor.VideoInfo;
 
             if (j.IsReEncode)
             {

@@ -35,7 +35,7 @@ namespace OKEGui
         public string colorFamilyName;
     }
 
-    public struct VSVideoInfo
+    public class VSVideoInfo
     {
         public VSFormat format;
         public long fpsNum;
