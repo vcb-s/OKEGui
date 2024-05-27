@@ -38,6 +38,12 @@ namespace OKEGui.JobProcessor
             Regex rProgress = new Regex(@"Progress: (\d*?)%", RegexOptions.Compiled);
             double p = 0;
 
+            if (line.Contains("Error: "))
+            {
+                OKETaskException ex = new OKETaskException(Constants.mmgErrorSmr);
+                ex.Data["MMG_ERROR"] = line.Substring(7);
+                throw ex;
+            }
             if (line.Contains("Progress: "))
             {
                 string[] match = rProgress.Split(line);

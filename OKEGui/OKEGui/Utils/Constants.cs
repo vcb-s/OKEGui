@@ -59,6 +59,12 @@ namespace OKEGui.Utils
         public const string vpyErrorMsg = "vpy出错: {0}。\n该文件{1}将跳过处理。请转告技术总监复查。";
         public const string vpyErrorSmr = "vpy出错";
 
+        public const string mmgErrorMsg = "mkvmerge出错: {0}。该文件{1}将跳过处理。请转告技术总监复查。";
+        public const string mmgErrorSmr = "mkvmerge出错";
+
+        public const string lsmashErrorMsg = "l-smash出错: {0}。该文件{1}将跳过处理。请转告技术总监复查。";
+        public const string lsmashErrorSmr = "l-smash出错";
+
         public const string unknownErrorMsg = "未知错误。该文件{0}将跳过处理。请转告技术总监复查。";
         public const string unknownErrorSmr = "未知错误";
 

@@ -97,6 +97,14 @@ namespace OKEGui.JobProcessor
                     msg.errorMsg = string.Format(Constants.vpyErrorMsg, ex.Data["VPY_ERROR"], task.InputFile);
                     break;
 
+                case Constants.mmgErrorSmr:
+                    msg.errorMsg = string.Format(Constants.mmgErrorMsg, ex.Data["MMG_ERROR"], task.InputFile);
+                    break;
+
+                case Constants.lsmashErrorSmr:
+                    msg.errorMsg = string.Format(Constants.lsmashErrorMsg, ex.Data["LSMASH_ERROR"], task.InputFile);
+                    break;
+
                 case Constants.vsCrashSmr:
                     msg.errorMsg = string.Format(Constants.vsCrashMsg, task.InputFile);
                     break;
