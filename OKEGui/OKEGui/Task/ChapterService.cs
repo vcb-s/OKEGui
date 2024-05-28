@@ -165,6 +165,7 @@ namespace OKEGui
 
             if (task.ChapterStatus == ChapterStatus.Yes && removeBegin)
             {
+                task.ChapterStatus = ChapterStatus.Warn;
                 Logger.Warn($"{task.InputFile} 使用外挂章节，但触发了开头章节去重，这可能导致章节内容和语言不符合预期，请注意检查。");
             }
 
