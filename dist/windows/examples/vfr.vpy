@@ -27,8 +27,8 @@ res = core.std.AssumeFPS(res, fpsnum=27000, fpsden=1001)
 #OKE:DEBUG
 Debug = 0
 if Debug:
-	res=core.std.Interleave([src16, res])
-	res=mvf.ToRGB(res,full=False,depth=8)
+    res=core.std.Interleave([src16, res])
+    res=mvf.ToRGB(res,full=False,depth=8)
 else: res = mvf.Depth(res, 10)
 
 res.set_output()

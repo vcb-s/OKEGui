@@ -2,5 +2,18 @@
     "VspipeArgs" : [
         "op_start=8000",
         "op_end=16000"
-    ]
+    ],
+    "EnableReEncode" : true,
+    "ReExtractSource" : false,
+    "ReEncodeOldFile" : "output\\BDMV\\STREAM\\00002.m2ts [6BB45BA9].mkv",
+    "ReEncodeSliceArray" : [{
+        "begin" : 2400,
+        "end" : 2900
+    },{
+        "begin" : 4500,
+        "end" : -1
+    },{
+        "begin" : 40,
+        "end" : 2400
+    }]
 }
