@@ -213,7 +213,7 @@ namespace OKEGui
             if (runningTasks.Count == 0)
             {
                 MessageBox.Show("没有正在运行的任务", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Information);
-                BtnStop.IsEnabled = true;
+                UpdateActiveRelatedButtons();
                 return;
             }
             try
