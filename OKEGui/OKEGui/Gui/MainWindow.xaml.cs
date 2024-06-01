@@ -136,7 +136,10 @@ namespace OKEGui
                 // 新建任务。具体实现请见Gui/wizardWindow
                 try
                 {
-                    var wizard = new WizardWindow(wm);
+                    var wizard = new WizardWindow(wm)
+                    {
+                        Owner = this
+                    };
                     wizard.ShowDialog();
                     UpdateActiveRelatedButtons();
                     UpdateCountRelatedButtons();
@@ -427,7 +430,10 @@ namespace OKEGui
 
         private void BtnConfig_Click(object sender, RoutedEventArgs e)
         {
-            Window config = new ConfigPanel();
+            Window config = new ConfigPanel
+            {
+                Owner = this
+            };
             config.ShowDialog();
         }
 
