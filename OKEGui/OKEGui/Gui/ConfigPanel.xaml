@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:OKEGui"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         mc:Ignorable="d"
-        Title="设置" Height="300" Width="500" FontFamily="Segoe UI, Microsoft YaHei">
+        Title="设置" Height="300" Width="500" WindowStartupLocation="CenterScreen" FontFamily="Segoe UI, Microsoft YaHei">
     <Window.Resources>
         <Style TargetType="DataGridCell">
             <Setter Property="HorizontalContentAlignment" Value="Left" />
