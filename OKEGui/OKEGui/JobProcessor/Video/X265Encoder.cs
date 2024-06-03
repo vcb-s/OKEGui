@@ -31,12 +31,11 @@ namespace OKEGui.JobProcessor
 
         public override void ProcessLine(string line, StreamType stream)
         {
-            if (line.Contains("x265 [error]:"))
+            if (line.Contains("x265 [error]:") || line.Contains("unknown option"))
             {
                 Logger.Error(line);
                 OKETaskException ex = new OKETaskException(Constants.x265ErrorSmr);
-                ex.progress = 0.0;
-                ex.Data["X265_ERROR"] = line.Substring(14);
+                ex.Data["X265_ERROR"] = line;
                 throw ex;
             }
 
