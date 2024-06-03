@@ -24,6 +24,9 @@ namespace OKEGui.JobProcessor
         protected ManualResetEvent finishMre = new ManualResetEvent(false);
         protected List<string> tempFiles = new List<string>();
         protected bool bWaitForExit = false;
+        protected Exception ex = null;
+        // dummy object for locking.
+        private object o = new object();
 
         #endregion variables
 
@@ -56,6 +59,29 @@ namespace OKEGui.JobProcessor
             return;
         }
 
+        #region handle Exception in stdout/stderr reading
+
+        protected void ThrowException(Exception ex)
+        {
+            lock (o)
+            {
+                if (this.ex == null)
+                {
+                    this.ex = ex;
+                }
+            }
+        }
+
+        protected Exception GetException()
+        {
+            lock (o)
+            {
+                return this.ex;
+            }
+        }
+
+        #endregion handle Exception in stdout/stderr reading
+
         #region IJobProcessor overridden Members
 
         // TODO: 默认优先级
@@ -82,7 +108,15 @@ namespace OKEGui.JobProcessor
                 if (!string.IsNullOrEmpty(e.Data))
                 {
                     mre.WaitOne();
-                    ProcessLine(e.Data, StreamType.Stdout);
+                    try
+                    {
+                        ProcessLine(e.Data, StreamType.Stdout);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Warn(ex.Message + ex.StackTrace);
+                        ThrowException(ex);
+                    }
                 }
             });
             proc.ErrorDataReceived += ((sender, e) =>
@@ -90,7 +124,15 @@ namespace OKEGui.JobProcessor
                 if (!string.IsNullOrEmpty(e.Data))
                 {
                     mre.WaitOne();
-                    ProcessLine(e.Data, StreamType.Stderr);
+                    try
+                    {
+                        ProcessLine(e.Data, StreamType.Stderr);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Warn(ex.Message + ex.StackTrace);
+                        ThrowException(ex);
+                    }
                 }
             });
             bWaitForExit = false;
@@ -154,6 +196,11 @@ namespace OKEGui.JobProcessor
         public virtual void waitForFinish()
         {
             proc.WaitForExit();
+            Exception hasEx = GetException();
+            if (hasEx != null)
+            {
+                throw hasEx;
+            }
             finishMre.WaitOne();
         }
 
