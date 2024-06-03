@@ -57,9 +57,10 @@ namespace OKEGui.JobProcessor
 
                 long reportedFrames = long.Parse(result[1]);
 
-                Debugger.Log(0, "EncodeFinish", result[1] + " frames\n");
+                Logger.Debug($"EncodeFinish {result[1]} frames");
 
                 EncodeFinish(reportedFrames);
+                return;
             }
             if (line.StartsWith("Total Frames\t"))
             {
@@ -75,9 +76,11 @@ namespace OKEGui.JobProcessor
                 if (result.Length < 2)
                     return;
                 long reportedFrames = long.Parse(result[1]);
-                Debugger.Log(0, "EncodeFinish", result[1] + " frames\n");
+                Logger.Debug($"EncodeFinish {result[1]} frames");
+
                 EncodeFinish(reportedFrames);
                 expectTotalFrames = false;
+                return;
             }
 
             Regex regOfficial = new Regex("Encoding frame *([0-9]+) *([0-9]+.[0-9]+) *kbps *([0-9]+.[0-9]+) *(fp[sm])", RegexOptions.IgnoreCase);

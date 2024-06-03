@@ -53,6 +53,10 @@ namespace OKEGui.JobProcessor
                 Regex rf = new Regex("encoded ([0-9]+) frames, ([0-9]+.[0-9]+) fps, ([0-9]+.[0-9]+) kb/s");
 
                 var result = rf.Split(line);
+                if (result.Length <= 2)
+                {
+                    return;
+                }
 
                 long reportedFrames = long.Parse(result[1]);
 
@@ -62,9 +66,10 @@ namespace OKEGui.JobProcessor
                     return;
                 }
 
-                Debugger.Log(0, "EncodeFinish", result[2] + "fps\n");
+                Logger.Debug($"EncodeFinish {result[2]} fps");
 
                 EncodeFinish(reportedFrames);
+                return;
             }
 
             Regex r = new Regex("([0-9]+) frames: ([0-9]+.[0-9]+) fps, ([0-9]+.[0-9]+) kb/s", RegexOptions.IgnoreCase);
