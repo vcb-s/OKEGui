@@ -102,7 +102,7 @@ namespace OKEGui.JobProcessor
             }
             else if (isVSError)
             {
-                Regex rExit = new Regex("^([a-zA-Z]*)(Error|Exception|Exit|Interrupt|Iteration|Warning)");
+                Regex rExit = new Regex(@"^([a-zA-Z_.]*)(Error|Exception|Exit|Interrupt|Iteration|Warning)(.*)");
                 if (rExit.IsMatch(line))
                 {
                     string[] match = rExit.Split(line);
