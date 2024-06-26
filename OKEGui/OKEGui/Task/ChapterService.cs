@@ -139,6 +139,8 @@ namespace OKEGui
 
             if (chapterInfo == null) return null;
 
+            Logger.Debug($"chapter: {string.Join(", ", chapterInfo.Chapters.Select(x => x.Time.TotalMilliseconds))}");
+
             // 丢弃末尾1秒的章节
             chapterInfo.Chapters.Sort((a, b) => a.Time.CompareTo(b.Time));
             chapterInfo.Chapters = chapterInfo.Chapters
@@ -153,8 +155,36 @@ namespace OKEGui
                 removeBegin = true;
             }
 
+            // 删除相同的章节
+            bool removeDup = false;
+            List<Chapter> newChapters = new List<Chapter>();
+            List<int> removeIndex = new List<int>();
+            if (chapterInfo.Chapters.Count >= 2)
+            {
+                for (int i = 0; i < chapterInfo.Chapters.Count - 1; i++)
+                {
+                    if (Equals(chapterInfo.Chapters[i].Time, chapterInfo.Chapters[i + 1].Time))
+                    {
+                        removeIndex.Add(i);
+                    }
+                    else
+                    {
+                        newChapters.Add(chapterInfo.Chapters[i]);
+                    }
+                }
+                newChapters.Add(chapterInfo.Chapters[chapterInfo.Chapters.Count - 1]);
+                if (removeIndex.Count > 0)
+                {
+                    removeDup = true;
+                    chapterInfo.Chapters = newChapters;
+                    Logger.Debug($"章节去重：{string.Join(", ", removeIndex)}");
+                }
+            }
+
+            Logger.Debug($"chapter: {string.Join(", ", chapterInfo.Chapters.Select(x => x.Time.TotalMilliseconds))}");
+
             // 章节重命名
-            if (task.Taskfile.RenumberChapters || removeBegin)
+            if (task.Taskfile.RenumberChapters || removeBegin || removeDup)
             {
                 for (int i = 0; i < chapterInfo.Chapters.Count; i++)
                 {
@@ -163,10 +193,10 @@ namespace OKEGui
                 task.ChapterLanguage = "en";
             }
 
-            if (task.ChapterStatus == ChapterStatus.Yes && removeBegin)
+            if (task.ChapterStatus == ChapterStatus.Yes && (removeBegin || removeDup))
             {
                 task.ChapterStatus = ChapterStatus.Warn;
-                Logger.Warn($"{task.InputFile} 使用外挂章节，但触发了开头章节去重，这可能导致章节内容和语言不符合预期，请注意检查。");
+                Logger.Warn($"{task.InputFile} 使用外挂章节，但触发了章节去重，这可能导致章节内容和语言不符合预期，请注意检查。");
             }
 
             // 章节序号重排序
