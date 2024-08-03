@@ -126,8 +126,8 @@ namespace OKEGui.JobProcessor
                 }
                 else
                 {
-                    proc.WaitForExit();
                     readStream(proc.StandardOutput);
+                    proc.WaitForExit();
                 }
             }
             catch (Exception e) { throw e; }
