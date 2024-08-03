@@ -272,7 +272,15 @@ namespace OKEGui
                 {
                     inputSuffixPath = Regex.Replace(inputSuffixPath, @"[/\\]" + Regex.Escape(comp) + @"[/\\]", "\\");
                 }
+                string[] inputSuffixComponents = inputSuffixPath.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+                if (inputSuffixComponents.Length > 3)
+                {
+                    string[] newInputSuffixComponents = new string[] {inputSuffixComponents[0], inputSuffixComponents[inputSuffixComponents.Length - 2], inputSuffixComponents[inputSuffixComponents.Length - 1]};
+                    inputSuffixPath = string.Join("\\", newInputSuffixComponents);
+                }
+                Logger.Debug("inputSuffixPathComponents: " + string.Join(", ", inputSuffixComponents));
                 Logger.Debug("Transformed input path: " + inputSuffixPath);
+
                 string newPath = new DirectoryInfo(wizardInfo.ProjectFile).Parent.FullName + "/" + inputSuffixPath;
                 Directory.CreateDirectory(new DirectoryInfo(newPath).Parent.FullName);
                 string outPath = Regex.Replace(newPath, @"[/\\]._[/\\]", "\\output\\");
