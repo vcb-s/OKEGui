@@ -28,6 +28,8 @@ namespace OKEGui.Model
         public bool Rpc;
         public bool TimeCode;
         public bool RenumberChapters;
+        public bool SkipAllAudioTracks;
+        public bool SkipAllSubtitleTracks;
 
         //后续任务中填写的参数
         public string VideoFormat;

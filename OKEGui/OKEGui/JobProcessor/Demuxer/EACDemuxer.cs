@@ -57,6 +57,8 @@ namespace OKEGui.JobProcessor
         private List<Info> JobSub;
         private int length;
         private string WorkingPathPrefix;
+        private bool SkipAllAudioTracks;
+        private bool SkipAllSubtitleTracks;
 
         private static List<EacOutputTrackType> s_eacOutputs = new List<EacOutputTrackType> {
             new EacOutputTrackType(TrackCodec.RAW_PCM,    "RAW/PCM",            "flac",    true,  TrackType.Audio),
@@ -86,16 +88,20 @@ namespace OKEGui.JobProcessor
             _eacPath = eacPath;
             sourceFile = fileName;
             JobAudio = new List<AudioInfo>();
-            if (jobProfile.AudioTracks != null)
+            if (jobProfile.AudioTracks != null && !jobProfile.SkipAllAudioTracks)
             {
                 JobAudio.AddRange(jobProfile.AudioTracks);
             }
             JobSub = new List<Info>();
-            if (jobProfile.SubtitleTracks != null)
+            if (jobProfile.SubtitleTracks != null && !jobProfile.SkipAllSubtitleTracks)
             {
                 JobSub.AddRange(jobProfile.SubtitleTracks);
             }
             WorkingPathPrefix = jobProfile.WorkingPathPrefix;
+            SkipAllAudioTracks = jobProfile.SkipAllAudioTracks;
+            SkipAllSubtitleTracks = jobProfile.SkipAllSubtitleTracks;
+
+            Logger.Debug($"SkipAllAudioTracks: {jobProfile.SkipAllAudioTracks}, SkipAllSubtitleTracks: {jobProfile.SkipAllSubtitleTracks}");
         }
 
         private void StartEac(string arguments, bool asyncRead)
@@ -294,6 +300,17 @@ namespace OKEGui.JobProcessor
             state = ProcessState.FetchStream;
             StartEac($"\"{sourceFile}\"", false);
 
+            if (SkipAllAudioTracks)
+            {
+                tracks.RemoveAll(track => track.Type == TrackType.Audio);
+                Logger.Debug("Skip all audio tracks");
+            }
+            if (SkipAllSubtitleTracks)
+            {
+                tracks.RemoveAll(track => track.Type == TrackType.Subtitle);
+                Logger.Debug("Skip all subtitle tracks");
+            }
+
             var args = new List<string>();
             var extractResult = new List<TrackInfo>();
             List<TrackInfo> srcAudio = new List<TrackInfo>();
@@ -462,6 +479,8 @@ namespace OKEGui.JobProcessor
                         break;
                 }
             }
+
+            Logger.Debug($"extract audio number: {audioId}, extract sub number: {subId}");
 
             return mf;
         }
