@@ -8,6 +8,8 @@ namespace OKEGui.Utils
         //QAAC encoder.
         public const string QAACPath = ".\\tools\\qaac\\qaac64.exe";
         public const int QAACBitrate = 192;
+        public const int QAACQualityMin = 0;
+        public const int QAACQualityMax = 127;
 
         //ffmpeg
         public const string ffmpegPath = ".\\tools\\ffmpeg\\ffmpeg.exe";

@@ -186,6 +186,21 @@ namespace OKEGui
                         MessageBox.Show("音轨未设置 OutputCodec，请检查大小写", "音轨编码错误", MessageBoxButton.OK, MessageBoxImage.Error);
                         return null;
                     }
+
+                    if (ai.Quality != null)
+                    {
+                        if (ai.Bitrate != Constants.QAACBitrate)
+                        {
+                            MessageBox.Show("音轨不能同时指定 Bitrate 和 Quality，请只保留其中一个", "音轨编码错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return null;
+                        }
+
+                        if (ai.Quality < Constants.QAACQualityMin || ai.Quality > Constants.QAACQualityMax)
+                        {
+                            MessageBox.Show($"音轨 Quality 的值必须介于 {Constants.QAACQualityMin}-${Constants.QAACQualityMax} 之间（闭区间），请检查", "音轨编码错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return null;
+                        }
+                    }
                 }
                 // 主音轨
                 json.AudioFormat = json.AudioTracks[0].OutputCodec;

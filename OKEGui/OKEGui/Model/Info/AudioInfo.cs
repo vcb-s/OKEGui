@@ -6,6 +6,7 @@ namespace OKEGui.Model
     {
         public string OutputCodec;
         public int Bitrate = Constants.QAACBitrate;
+        public int? Quality;
         public bool Lossy = false;
         public int Length;
 
