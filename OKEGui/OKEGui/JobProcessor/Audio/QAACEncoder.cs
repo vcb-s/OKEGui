@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 using OKEGui.Utils;
+using System.Text;
 
 namespace OKEGui.JobProcessor
 {
@@ -19,7 +20,19 @@ namespace OKEGui.JobProcessor
         public QAACEncoder(AudioJob ajob) : base(ajob)
         {
             executable = Constants.QAACPath;
-            commandLine = $"-i -v {AJob.Info.Bitrate} -q 2 --no-delay -o \"{AJob.Output}\" \"{AJob.Input}\"";
+
+            var sb = new StringBuilder("-i ");
+            if (AJob.Info.Quality != null)
+            {
+                sb.Append($"-V {AJob.Info.Quality} ");
+            }
+            else
+            {
+                sb.Append($"-v {AJob.Info.Bitrate} ");
+            }
+            sb.Append($"-q 2 --no-delay -o \"{AJob.Output}\" \"{AJob.Input}\"");
+            
+            commandLine = sb.ToString();
         }
 
         public QAACEncoder(string commandLine) : base(null)
