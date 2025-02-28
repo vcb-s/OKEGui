@@ -273,9 +273,28 @@ namespace OKEGui
                     inputSuffixPath = Regex.Replace(inputSuffixPath, @"[/\\]" + Regex.Escape(comp) + @"[/\\]", "\\");
                 }
                 string[] inputSuffixComponents = inputSuffixPath.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-                if (inputSuffixComponents.Length > 3)
+                if (inputSuffixComponents.Length > 3 && Initializer.Config.reducePath)
                 {
-                    string[] newInputSuffixComponents = new string[] {inputSuffixComponents[0], inputSuffixComponents[inputSuffixComponents.Length - 2], inputSuffixComponents[inputSuffixComponents.Length - 1]};
+                    // inputSuffixComponents[0] is drive number, inputSuffixComponents[-1] is filename, inputSuffixComponents[1:-2] is the effective path to be reduced.
+                    string effectivePathPrefix = string.Join("\\", inputSuffixComponents, 1, inputSuffixComponents.Length - 3);
+                    string effectivePathLast = inputSuffixComponents[inputSuffixComponents.Length - 2];
+                    Regex rVolNumber = new Regex(@".*Vol[.\- ]?(?<vol>\d+).*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                    Match mLast = rVolNumber.Match(effectivePathLast);
+
+                    string newEffectivePath;
+                    if (mLast.Success)
+                    {
+                        // If the last level path contains a volume number, keep the last level path unchanged.
+                        newEffectivePath = effectivePathLast;
+                    }
+                    else
+                    {
+                        // By default, the last level path is preserved and the crc of the prefix path is added to prevent naming conflicts.
+                        byte[] buffer = System.Text.Encoding.UTF8.GetBytes(effectivePathPrefix);
+                        var crc = CRC32.Compute(buffer);
+                        newEffectivePath = crc.ToString("X8") + "-" + effectivePathLast;
+                    }
+                    string[] newInputSuffixComponents = new string[] {inputSuffixComponents[0], newEffectivePath, inputSuffixComponents[inputSuffixComponents.Length - 1]};
                     inputSuffixPath = string.Join("\\", newInputSuffixComponents);
                 }
                 Logger.Debug("inputSuffixPathComponents: " + string.Join(", ", inputSuffixComponents));

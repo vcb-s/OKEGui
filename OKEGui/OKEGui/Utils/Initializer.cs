@@ -84,6 +84,17 @@ namespace OKEGui.Utils
             }
         }
 
+        private bool _reducePath = true;
+        public bool reducePath
+        {
+            get => _reducePath;
+            set
+            {
+                _reducePath = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         private int _memoryLimit;
         public int memoryLimit
         {
