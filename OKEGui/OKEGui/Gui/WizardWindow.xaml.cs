@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Forms;
@@ -225,6 +226,7 @@ namespace OKEGui
             // 2、新建脚本文件
             // 3、新建任务参数
             Cleaner cleaner = new Cleaner();
+            Dictionary<uint, string> reducePathHashMap = new Dictionary<uint, string>();
             foreach (string inputFile in wizardInfo.InputFile)
             {
                 List<TaskDetail> existing = workerManager.tm.GetTasksByInputFile(inputFile);
@@ -290,9 +292,13 @@ namespace OKEGui
                     else
                     {
                         // By default, the last level path is preserved and the crc of the prefix path is added to prevent naming conflicts.
-                        byte[] buffer = System.Text.Encoding.UTF8.GetBytes(effectivePathPrefix);
+                        byte[] buffer = Encoding.UTF8.GetBytes(effectivePathPrefix);
                         var crc = CRC32.Compute(buffer);
                         newEffectivePath = crc.ToString("X8") + "-" + effectivePathLast;
+                        if (!reducePathHashMap.ContainsKey(crc))
+                        {
+                            reducePathHashMap.Add(crc, effectivePathPrefix);
+                        }
                     }
                     string[] newInputSuffixComponents = new string[] {inputSuffixComponents[0], newEffectivePath, inputSuffixComponents[inputSuffixComponents.Length - 1]};
                     inputSuffixPath = string.Join("\\", newInputSuffixComponents);
@@ -352,6 +358,18 @@ namespace OKEGui
                     td.TaskType = TaskStatus.TaskTypeEnum.Normal;
 
                 workerManager.AddTask(td);
+            }
+
+            // 输出缩减路径后的hash映射关系
+            string reducePathMapFile = new DirectoryInfo(wizardInfo.ProjectFile).Parent.FullName + "\\output\\" + "ReducePathMap.log";
+            if (Initializer.Config.reducePath && reducePathHashMap.Count > 0)
+            {
+                string reducePathMapContent = "";
+                foreach (KeyValuePair<uint, string> kvp in reducePathHashMap)
+                {
+                    reducePathMapContent += kvp.Key.ToString("X8") + " " + kvp.Value + Environment.NewLine;
+                }
+                File.AppendAllText(reducePathMapFile, reducePathMapContent);
             }
           }
           catch (Exception ex)
