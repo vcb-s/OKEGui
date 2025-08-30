@@ -47,38 +47,97 @@ jobs:
         curl -s -o tools.zip -L https://github.com/vcb-s/OKEGui/releases/download/8.7.1/OKEGui-v8.7.1.zip
         7z x -otmp tools.zip
         # clean up unnecessary files
+        rm -rf tmp/OKEGui/tools/eac3to/*
+        rm -rf tmp/OKEGui/tools/flac/*
+        rm -f tmp/OKEGui/tools/qaac/libsox*.dll
+        rm -f tmp/OKEGui/tools/qaac/qaac64.exe
+        rm -f tmp/OKEGui/tools/qaac/refalac64.exe
+        rm -f tmp/OKEGui/tools/mkvtoolnix/gMKV*
+        rm -f tmp/OKEGui/tools/mkvtoolnix/Newtonsoft.Json.dll
         rm -f tmp/OKEGui/tools/x26x/*
-        rm -f tmp/OKEGui/tools/eac3to/*.wav
+        rm -f tmp/OKEGui/tools/rpc/*
         # tweak mkvtoolnix setting
         sed -i -e 's|chapterNameTemplate=.*|chapterNameTemplate=Chapter <NUM:2>|g' tmp/OKEGui/tools/mkvtoolnix/mkvtoolnix-gui.ini
         sed -i -e 's|updates\\checkForUpdates=true|updates\\checkForUpdates=false|g' tmp/OKEGui/tools/mkvtoolnix/mkvtoolnix-gui.ini
         sed -i -e 's|useLegacyFontMIMETypes=false|useLegacyFontMIMETypes=true|g' tmp/OKEGui/tools/mkvtoolnix/mkvtoolnix-gui.ini
-        # update eac3to's libdcadec.dll, see https://forum.videohelp.com/threads/400707-UsEac3to-1-3-0-DTS-HD-MA-to-FLAC#post2651323
-        curl -s -o dcadec.zip -L https://github.com/foo86/dcadec/releases/download/v0.2.0/dcadec-0.2.0-win32.zip
-        7z x -odcadec dcadec.zip
-        mv dcadec/libdcadec.dll tmp/OKEGui/tools/eac3to/libdcadec.dll
         # integrate into release
         mv tmp/OKEGui/tools "./OKEGui/OKEGui/bin/Release/"
         rm -rf tmp
 
-    - name: Integrate eac3to-wrapper
+    - name: Integrate eac3to and eac3to-wrapper
       shell: bash
       run: |
+        set -ex
         mkdir -p "./OKEGui/OKEGui/bin/Release/tools/eac3to"
+        #
+        curl -s -o eac3to.rar -L https://www.rationalqm.us/eac3to/eac3to_3.52.rar
+        7z x -oeac3to eac3to.rar
+        rm -f eac3to/*.wav
+        rm -f eac3to/libdcadec.dll
+        # update eac3to's libdcadec.dll, see https://forum.videohelp.com/threads/400707-UsEac3to-1-3-0-DTS-HD-MA-to-FLAC#post2651323
+        curl -s -o dcadec.zip -L https://github.com/foo86/dcadec/releases/download/v0.2.0/dcadec-0.2.0-win32.zip
+        7z x -odcadec dcadec.zip
+        mv dcadec/libdcadec.dll eac3to/libdcadec.dll
+        #
+        cp -r eac3to/* "./OKEGui/OKEGui/bin/Release/tools/eac3to"
         cp eac3to-wrapper/eac3to-wrapper.exe "./OKEGui/OKEGui/bin/Release/tools/eac3to"
 
-    - name: Integrate x264 tmod and x265 Yuuki
+    - name: Integrate qaac
+      shell: bash
+      run: |
+        set -ex
+        mkdir -p "./OKEGui/OKEGui/bin/Release/tools/qaac"
+        #
+        curl -s -o qaac.zip -L https://github.com/nu774/qaac/releases/download/v2.85/qaac_2.85.zip
+        7z x -oqaac qaac.zip
+        #
+        cp qaac/qaac_2.85/x64/* "./OKEGui/OKEGui/bin/Release/tools/qaac"
+
+    - name: Integrate flac
+      shell: bash
+      run: |
+        set -ex
+        mkdir -p "./OKEGui/OKEGui/bin/Release/tools/flac"
+        #
+        curl -s -o flac.zip -L https://www.rarewares.org/files/lossless/flac-1.5.0-AVX2.zip
+        7z x -oflac flac.zip
+        cp flac/flac.exe "./OKEGui/OKEGui/bin/Release/tools/flac"
+        #
+        curl -s -o flac_dll-x64.zip -L https://www.rarewares.org/files/lossless/flac_dll-1.5.0-x64.zip
+        7z x -oflac_dll-x64 flac_dll-x64.zip
+        # update qaac's libflac
+        rm -f "./OKEGui/OKEGui/bin/Release/tools/qaac/libFLAC.dll"
+        cp flac_dll-x64/libFLAC.dll "./OKEGui/OKEGui/bin/Release/tools/qaac"
+        #
+        curl -s -o flac_dll-x86.zip -L https://www.rarewares.org/files/lossless/flac_dll-1.5.0-x86.zip
+        7z x -oflac_dll-x86 flac_dll-x86.zip
+        # update eac3to's libflac
+        rm -f "./OKEGui/OKEGui/bin/Release/tools/eac3to/libFLAC.dll"
+        cp flac_dll-x86/libFLAC.dll "./OKEGui/OKEGui/bin/Release/tools/eac3to"
+
+    - name: Integrate gMKVExtractGUI
+      shell: bash
+      run: |
+        set -ex
+        mkdir -p "./OKEGui/OKEGui/bin/Release/tools/mkvtoolnix"
+        #
+        curl -s -o gMKVExtractGUI.7z -L https://github.com/Gpower2/gMKVExtractGUI/releases/download/v2.11.1/gMKVExtractGUI.v2.11.1.7z
+        7z x -ogMKVExtractGUI gMKVExtractGUI.7z
+        #
+        cp gMKVExtractGUI/* "./OKEGui/OKEGui/bin/Release/tools/mkvtoolnix"
+
+    - name: Integrate x264 tmod and x265 Kyouko
       shell: bash
       run: |
         set -ex
         mkdir -p "./OKEGui/OKEGui/bin/Release/tools/x26x"
         #
-        curl -s -o x264.7z -L https://github.com/jpsdr/x264/releases/download/r3075/x264_tmod_r3075.7z
+        curl -s -o x264.7z -L https://github.com/jpsdr/x264/releases/download/r3214/x264_tmod_r3214.7z
         7z x -otmp x264.7z
         cp -a tmp/posix/x264_x64.exe "./OKEGui/OKEGui/bin/Release/tools/x26x/x264.exe"
         rm -rf tmp
         #
-        curl -s -o x265.7z -L https://github.com/AmusementClub/x265/releases/download/Kyouko-3.5-AC2/x265-win64-skylake-clang.Kyouko-3.5-AC2.7z
+        curl -s -o x265.7z -L https://github.com/AmusementClub/x265/releases/download/Kyouko-4.1-AC1/x265-win64-skylake-clang.Kyouko-4.1-AC1.7z
         7z x -otmp x265.7z
         cp -a tmp/x265.exe "./OKEGui/OKEGui/bin/Release/tools/x26x/x265.exe"
         rm -rf tmp
@@ -93,7 +152,6 @@ jobs:
         mv RPChecker.exe "./OKEGui/OKEGui/bin/Release/tools/rpc/"
         #
         curl -s -o RpcTemplate.vpy https://raw.githubusercontent.com/AmusementClub/vapoursynth-script/master/RpcTemplate.vpy
-        mv "./OKEGui/OKEGui/bin/Release/tools/rpc/RpcTemplate.vpy" "./OKEGui/OKEGui/bin/Release/tools/rpc/RpcTemplate.vpy.old"
         mv RpcTemplate.vpy "./OKEGui/OKEGui/bin/Release/tools/rpc/"
 
     - name: Package release
