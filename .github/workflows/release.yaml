@@ -70,7 +70,7 @@ jobs:
         set -ex
         mkdir -p "./OKEGui/OKEGui/bin/Release/tools/eac3to"
         #
-        curl -s -o eac3to.rar -L https://www.rationalqm.us/eac3to/eac3to_3.52.rar
+        curl -s -o eac3to.rar -L https://github.com/vcb-s/OKEGui/releases/download/tools/eac3to_3.52.rar
         7z x -oeac3to eac3to.rar
         rm -f eac3to/*.wav
         rm -f eac3to/libdcadec.dll
