@@ -28,7 +28,7 @@ jobs:
     - name: Clone & Build eac3to-wrapper
       shell: bash
       run: |
-        git clone https://github.com/AkarinVS/eac3to-wrapper
+        git clone https://github.com/AmusementClub/eac3to-wrapper
         cd eac3to-wrapper
         go build -ldflags "-X main.version=$(git describe --tags)"
         cd ..
