@@ -306,10 +306,13 @@ namespace OKEGui
                 Logger.Debug("inputSuffixPathComponents: " + string.Join(", ", inputSuffixComponents));
                 Logger.Debug("Transformed input path: " + inputSuffixPath);
 
-                string newPath = new DirectoryInfo(wizardInfo.ProjectFile).Parent.FullName + "/" + inputSuffixPath;
+                string newPath = Path.Combine(new DirectoryInfo(wizardInfo.ProjectFile).Parent.FullName, inputSuffixPath);
                 Directory.CreateDirectory(new DirectoryInfo(newPath).Parent.FullName);
                 string outPath = Regex.Replace(newPath, @"[/\\]._[/\\]", "\\output\\");
                 Directory.CreateDirectory(new DirectoryInfo(outPath).Parent.FullName);
+
+                Logger.Debug($"WorkingPath: {newPath}");
+                Logger.Debug($"OutputPath: {outPath}");
 
                 DateTime time = DateTime.Now;
                 string fileName = newPath + "-" + time.ToString("MMddHHmm") + ".vpy";
