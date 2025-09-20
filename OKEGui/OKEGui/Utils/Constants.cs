@@ -39,7 +39,9 @@ namespace OKEGui.Utils
         public const string language = "jpn";
 
         //Error messages and summaries
-       
+        public const string eac3toErrorMsg = "eac3to出错: 退出代码{0}，请查看日志并手动运行eac3to获取更多信息。该文件{1}将跳过处理。请转告技术总监复查。";
+        public const string eac3toErrorSmr = "eac3to出错";
+
         public const string audioNumMismatchMsg = "当前的视频含有轨道数{0}，与json中指定的数量{1}必须+{2}可选不符合。该文件{3}将跳过处理。请转告技术总监复查。";
         public const string audioNumMismatchSmr = "音轨数不一致";
 

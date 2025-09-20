@@ -104,12 +104,25 @@ namespace OKEGui.JobProcessor
             Logger.Debug($"SkipAllAudioTracks: {jobProfile.SkipAllAudioTracks}, SkipAllSubtitleTracks: {jobProfile.SkipAllSubtitleTracks}");
         }
 
-        private void StartEac(string arguments, bool asyncRead)
+        private void StartEac(string arguments, string logPath, bool asyncRead)
         {
+            // Since eac3to does not support log paths containing spaces, we first calculate a short hash 
+            // from the intended log path to serve as the log filename. We then launch eac3to in the 
+            // working directory to generate the log, and finally rename the log file back to its full name.
+            var workingPathDir = Path.GetDirectoryName(WorkingPathPrefix);
+            var logPathFull = Path.Combine(workingPathDir, logPath);
+            byte[] buffer = Encoding.UTF8.GetBytes(logPathFull);
+            var crc = CRC32.Compute(buffer);
+            var logHashPath = crc.ToString("X8") + ".eac3to.log";
+
+            Logger.Trace($"workingPathDir: {workingPathDir}");
+            Logger.Trace($"eac3to logPathFull: {logPathFull}");
+            Logger.Trace($"eac3to logHashPath: {logHashPath}");
+
             var startInfo = new ProcessStartInfo
             {
                 FileName = _eacPath,
-                Arguments = arguments + " -progressnumbers",
+                Arguments = arguments + $" -log=\"{logHashPath}\"" + " -progressnumbers",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 StandardOutputEncoding = Encoding.UTF8,
@@ -117,6 +130,7 @@ namespace OKEGui.JobProcessor
                 UseShellExecute = false,
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true,
+                WorkingDirectory = workingPathDir,
             };
             Logger.Info(startInfo.FileName + " " + startInfo.Arguments);
 
@@ -134,6 +148,24 @@ namespace OKEGui.JobProcessor
                 {
                     readStream(proc.StandardOutput);
                     proc.WaitForExit();
+                }
+
+                FileInfo logFile = new FileInfo(Path.Combine(workingPathDir, logHashPath));
+                if (logFile.Exists)
+                {
+                    FileInfo logFileFinal = new FileInfo(logPathFull);
+                    if (logFileFinal.Exists)
+                    {
+                        logFileFinal.Delete();
+                    }
+                    logFile.MoveTo(logPathFull);
+                }
+
+                if (proc.ExitCode != 0)
+                {
+                    OKETaskException ex = new OKETaskException(Constants.eac3toErrorSmr);
+                    ex.Data["EXIT_CODE"] = proc.ExitCode;
+                    throw ex;
                 }
             }
             catch (Exception e) { throw e; }
@@ -295,10 +327,14 @@ namespace OKEGui.JobProcessor
             {
                 return null;
             }
+
+            var baseName = Path.GetFileNameWithoutExtension(sourceFile);
+            string logPath = $"{baseName}.eac3to.log";
+
             _progressCallback = progressCallback;
 
             state = ProcessState.FetchStream;
-            StartEac($"\"{sourceFile}\"", false);
+            StartEac($"\"{sourceFile}\"", logPath, false);
 
             if (SkipAllAudioTracks)
             {
@@ -390,7 +426,7 @@ namespace OKEGui.JobProcessor
             JobSub.RemoveAll(info => info.MuxOption == MuxOption.Skip);
 
             state = ProcessState.ExtractStream;
-            StartEac($"\"{sourceFile}\" {string.Join(" ", args)}", true);
+            StartEac($"\"{sourceFile}\" {string.Join(" ", args)}", logPath, true);
 
             foreach (TrackInfo track in extractResult)
             {
