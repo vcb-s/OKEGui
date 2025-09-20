@@ -23,6 +23,7 @@ namespace OKEGui.JobProcessor
             base.BuildCommandline();
 
             const string trackTemplate = " --default-track \"0:{0}\" --language 0:{1} --track-name \"0:{2}\" \"(\" \"{3}\" \")\"";
+            const string tagTemplate = " --no-track-tags --no-global-tags";
             List<string> trackOrder = new List<string>();
             int fileID = 0;
 
@@ -43,7 +44,7 @@ namespace OKEGui.JobProcessor
                 for (int i = 0; i < AudioTracks.Count; i++)
                 {
                     bool isDefault = MJob.MediaOutFile.VideoTrack != null && i == 0;
-                    commandLine += string.Format(trackTemplate, isDefault ? "1":"0", AudioTracks[i].Info.Language, AudioTracks[i].Info.Name, AudioTracks[i].File.GetFullPath());
+                    commandLine += tagTemplate + string.Format(trackTemplate, isDefault ? "1":"0", AudioTracks[i].Info.Language, AudioTracks[i].Info.Name, AudioTracks[i].File.GetFullPath());
                     trackOrder.Add($"{fileID++}:0");
                 }
             }
@@ -53,7 +54,7 @@ namespace OKEGui.JobProcessor
                 var SubTracks = MJob.MediaOutFile.SubtitleTracks.OrderBy(trk => trk.Info.Order).ToList();
                 for (int i = 0; i < SubTracks.Count; i++)
                 {
-                    commandLine += string.Format(trackTemplate, "0", SubTracks[i].Info.Language, SubTracks[i].Info.Name, SubTracks[i].File.GetFullPath());
+                    commandLine += tagTemplate + string.Format(trackTemplate, "0", SubTracks[i].Info.Language, SubTracks[i].Info.Name, SubTracks[i].File.GetFullPath());
                     trackOrder.Add($"{fileID++}:0");
                 }
             }
