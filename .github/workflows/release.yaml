@@ -115,6 +115,14 @@ jobs:
         rm -f "./OKEGui/OKEGui/bin/Release/tools/eac3to/libFLAC.dll"
         cp flac_dll-x86/libFLAC.dll "./OKEGui/OKEGui/bin/Release/tools/eac3to"
 
+    - name: Get dependency msvcr120.dll
+      shell: cmd
+      run: |
+        @echo on
+        curl -s -o vcredist_x86.exe -L https://aka.ms/highdpimfc2013x86enu
+        .\vcredist_x86.exe /install /quiet /norestart
+        cp "C:\Windows\SysWOW64\msvcr120.dll" "./OKEGui/OKEGui/bin/Release/tools/eac3to"
+
     - name: Integrate gMKVExtractGUI
       shell: bash
       run: |
