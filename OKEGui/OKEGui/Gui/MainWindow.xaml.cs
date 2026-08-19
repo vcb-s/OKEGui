@@ -10,7 +10,6 @@ using OKEGui.Task;
 using OKEGui.Utils;
 using OKEGui.Worker;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace OKEGui
 {
@@ -69,11 +68,6 @@ namespace OKEGui
                 wm.AddWorker(WorkerCount);
             }
             UpdateWorkerCount();
-
-            if (Initializer.Config.memoryTotal == WmiUtils.GetTotalPhysicalMemory())
-            {
-                TxtFreeMemory.Text = Initializer.Config.memoryLimit.ToString();
-            }
         }
 
         private void UpdateActiveRelatedButtons()
@@ -115,45 +109,22 @@ namespace OKEGui
 
         private void BtnNew_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(TxtFreeMemory.Text))
+            // 新建任务。具体实现请见Gui/wizardWindow
+            try
             {
-                int availMB = WmiUtils.GetAvailablePhysicalMemory();
-                if (availMB < 0)
+                var wizard = new WizardWindow(wm)
                 {
-                    MessageBox.Show("无法获取当前空闲内存！请自行检查当前可用内存。", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                else if (int.Parse(TxtFreeMemory.Text) < availMB)
-                {
-                    Initializer.Config.memoryTotal = WmiUtils.GetTotalPhysicalMemory();
-                }
-                else
-                {
-                    MessageBox.Show("内存设置大于系统可用空闲内存！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-                Initializer.Config.memoryLimit = int.Parse(TxtFreeMemory.Text);
-                Initializer.WriteConfig();
-                // 新建任务。具体实现请见Gui/wizardWindow
-                try
-                {
-                    var wizard = new WizardWindow(wm)
-                    {
-                        Owner = this
-                    };
-                    wizard.ShowDialog();
-                    UpdateActiveRelatedButtons();
-                    UpdateCountRelatedButtons();
-                    UpdateWorkerCount();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Fatal(ex.StackTrace);
-                    Environment.Exit(0);
-                }
+                    Owner = this
+                };
+                wizard.ShowDialog();
+                UpdateActiveRelatedButtons();
+                UpdateCountRelatedButtons();
+                UpdateWorkerCount();
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("请输入系统可用空闲内存！", "OKEGui", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Fatal(ex.StackTrace);
+                Environment.Exit(0);
             }
         }
 
@@ -481,13 +452,6 @@ namespace OKEGui
                 Logger.Debug("Running python {}", arg);
                 Process.Start(Path.Combine(Path.GetDirectoryName(Initializer.Config.vspipePath), "python.exe"), arg);
             }
-        }
-
-        private void TxtFreeMemory_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
-        {
-            Regex re = new Regex("[^0-9]+");
-
-            e.Handled = re.IsMatch(e.Text);
         }
     }
 }

@@ -94,28 +94,6 @@ namespace OKEGui.Utils
                 NotifyPropertyChanged();
             }
         }
-
-        private int _memoryLimit;
-        public int memoryLimit
-        {
-            get => _memoryLimit;
-            set
-            {
-                _memoryLimit = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private int _memoryTotal;
-        public int memoryTotal
-        {
-            get => _memoryTotal;
-            set
-            {
-                _memoryTotal = value;
-                NotifyPropertyChanged();
-            }
-        }
     }
 
     static class Initializer

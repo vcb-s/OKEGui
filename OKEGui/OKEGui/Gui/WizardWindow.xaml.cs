@@ -65,7 +65,6 @@ namespace OKEGui
         private readonly WorkerManager workerManager;
         private TaskProfile json;
         private string vsScript;
-        private int eachFreeMemory;
         public WizardWindow(WorkerManager w)
         {
             InitializeComponent();
@@ -78,15 +77,6 @@ namespace OKEGui
             DataContext = wizardInfo;
 
             workerManager = w;
-
-            if (Initializer.Config.memoryLimit > 2000)
-            {
-                eachFreeMemory = (Initializer.Config.memoryLimit - workerManager.GetWorkerCount() * 2000) / workerManager.GetWorkerCount();
-            }
-            else
-            {
-                eachFreeMemory = 0;
-            }
         }
 
         // 读入json文件，检查项目设置，并生成预览信息
@@ -199,13 +189,6 @@ namespace OKEGui
             }
 
             string updatedVsScript = vsScript;
-
-            // 处理MEMORY标签
-            if (eachFreeMemory > 0 && Constants.memoryRegex.IsMatch(updatedVsScript))
-            {
-                string[] memoryTag = Constants.memoryRegex.Split(updatedVsScript);
-                updatedVsScript = memoryTag[0] + memoryTag[1] + eachFreeMemory.ToString() + memoryTag[3];
-            }
 
             // 处理DEBUG标签
             if (Constants.debugRegex.IsMatch(updatedVsScript))

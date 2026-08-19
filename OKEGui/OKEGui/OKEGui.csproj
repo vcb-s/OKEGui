@@ -175,7 +175,6 @@
     <Compile Include="Utils\SystemMenu.cs" />
     <Compile Include="Utils\TChapterExtension.cs" />
     <Compile Include="Utils\Timecode.cs" />
-    <Compile Include="Utils\WmiUtils.cs" />
     <Compile Include="Utils\Cleaner.cs" />
     <Compile Include="Utils\Initializer.cs" />
     <Compile Include="Utils\Constants.cs" />

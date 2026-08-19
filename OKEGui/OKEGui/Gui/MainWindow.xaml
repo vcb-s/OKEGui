@@ -165,8 +165,6 @@
                 <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
-                <ColumnDefinition Width="auto"></ColumnDefinition>
-                <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
@@ -177,10 +175,8 @@
                 <!--<ComboBoxItem Content="运行程序" />-->
             </ComboBox>
             <Button Grid.Column="2" Margin="0,0,6,0" x:Name="BtnCancelShutdown" HorizontalAlignment="Left" Click="BtnCancelShutdown_Click" Content="点这里取消关机" Width="100" />
-            <Button Grid.Column="3"  Margin="0,0,6,0" HorizontalAlignment="Left" Click="BtnConfig_Click" Content="设置" Width="50" />
-            <TextBlock Grid.Column="4" Text="空闲内存数（MB）:" VerticalAlignment="Center" Margin="0,0,6,0"></TextBlock>
-            <TextBox Grid.Column="5" x:Name="TxtFreeMemory" Width="100" VerticalContentAlignment="Center" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="TxtFreeMemory_PreviewTextInput"/>
-            <Button Grid.Column="6" Margin="0,0,0,0" x:Name="BtnDeleteWorker" HorizontalAlignment="Right" Click="BtnDeleteWorker_Click" Content="删除工作单元" Width="100" />
+            <Button Grid.Column="3" Margin="0,0,6,0" x:Name="BtnConfig" HorizontalAlignment="Left" Click="BtnConfig_Click" Content="设置" Width="50" />
+            <Button Grid.Column="5" Margin="0,0,0,0" x:Name="BtnDeleteWorker" HorizontalAlignment="Right" Click="BtnDeleteWorker_Click" Content="删除工作单元" Width="100" />
         </Grid>
     </Grid>
 </Window>
