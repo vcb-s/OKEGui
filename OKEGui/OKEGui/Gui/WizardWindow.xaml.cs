@@ -108,13 +108,35 @@ namespace OKEGui
             return true;
         }
 
+        internal bool LoadProjectFile(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            {
+                return false;
+            }
+
+            string extension = Path.GetExtension(filePath);
+            if (!string.Equals(extension, ".json", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(extension, ".yaml", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(extension, ".yml", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            wizardInfo.ProjectFile = new FileInfo(filePath).FullName;
+            SelectProjectFile.CanSelectNextPage = LoadJsonProfile(wizardInfo.ProjectFile);
+            return SelectProjectFile.CanSelectNextPage.GetValueOrDefault(false);
+        }
+
         //拖拽输入
         private void SelectProjectFile_Drop(object sender, System.Windows.DragEventArgs e)
         {
-            string fileName = (e.Data.GetData(System.Windows.DataFormats.FileDrop) as string[])[0];
-
-            wizardInfo.ProjectFile = fileName;
-            SelectProjectFile.CanSelectNextPage = LoadJsonProfile(wizardInfo.ProjectFile);
+            string[] files = e.Data.GetData(System.Windows.DataFormats.FileDrop) as string[];
+            if (files != null && files.Length == 1)
+            {
+                LoadProjectFile(files[0]);
+            }
+            e.Handled = true;
         }
 
 
@@ -143,8 +165,7 @@ namespace OKEGui
                 return;
             }
 
-            wizardInfo.ProjectFile = ofd.FileName;
-            SelectProjectFile.CanSelectNextPage = LoadJsonProfile(wizardInfo.ProjectFile);
+            LoadProjectFile(ofd.FileName);
         }
 
         private void OpenInputFile_Click(object sender, RoutedEventArgs e)

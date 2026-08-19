@@ -109,13 +109,21 @@ namespace OKEGui
 
         private void BtnNew_Click(object sender, RoutedEventArgs e)
         {
-            // 新建任务。具体实现请见Gui/wizardWindow
+            OpenNewTaskWizard();
+        }
+
+        private void OpenNewTaskWizard(string projectFile = null)
+        {
             try
             {
                 var wizard = new WizardWindow(wm)
                 {
                     Owner = this
                 };
+                if (!string.IsNullOrEmpty(projectFile))
+                {
+                    wizard.LoadProjectFile(projectFile);
+                }
                 wizard.ShowDialog();
                 UpdateActiveRelatedButtons();
                 UpdateCountRelatedButtons();
@@ -126,6 +134,50 @@ namespace OKEGui
                 Logger.Fatal(ex.StackTrace);
                 Environment.Exit(0);
             }
+        }
+
+        private void MainWindow_PreviewDrop(object sender, DragEventArgs e)
+        {
+            if (!TryGetProjectFile(e, out string projectFile))
+            {
+                e.Handled = true;
+                e.Effects = DragDropEffects.None;
+            }
+        }
+
+        private void MainWindow_Drop(object sender, DragEventArgs e)
+        {
+            e.Handled = true;
+            if (TryGetProjectFile(e, out string projectFile))
+            {
+                Dispatcher.BeginInvoke(new Action(() => OpenNewTaskWizard(projectFile)));
+            }
+        }
+
+        private bool TryGetProjectFile(DragEventArgs e, out string projectFile)
+        {
+            projectFile = null;
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                return false;
+            }
+
+            string[] files = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (files == null || files.Length != 1 || !File.Exists(files[0]))
+            {
+                return false;
+            }
+
+            string extension = Path.GetExtension(files[0]);
+            if (!string.Equals(extension, ".json", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(extension, ".yaml", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(extension, ".yml", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            projectFile = new FileInfo(files[0]).FullName;
+            return true;
         }
 
         private void BtnPause_Click(object sender, RoutedEventArgs e)

@@ -6,6 +6,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Closing="MainWindow_Closing"
+        AllowDrop="True"
+        PreviewDrop="MainWindow_PreviewDrop"
+        Drop="MainWindow_Drop"
         Title="OKEGui" Height="700" Width="1200" WindowStartupLocation="CenterScreen" Icon="App.ico" FontFamily="Segoe UI, Microsoft YaHei">
     <Window.Resources>
         <Style TargetType="ListViewItem">
