@@ -238,6 +238,7 @@ namespace OKEGui
             {
                 task.Progress = TaskStatus.TaskProgress.ERROR;
                 task.CurrentStatus = "已终止";
+                tm.ReleaseInput(task);
             }
             BtnRun.IsEnabled = tm.HasNextTask();
         }

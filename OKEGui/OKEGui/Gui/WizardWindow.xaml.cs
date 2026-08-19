@@ -172,13 +172,14 @@ namespace OKEGui
 
                 foreach (var filename in ofd.FileNames)
                 {
-                    if (!wizardInfo.InputFile.Contains(filename))
+                    string normalizedFilename = new FileInfo(filename).FullName;
+                    if (!wizardInfo.InputFile.Contains(normalizedFilename))
                     {
-                        wizardInfo.InputFile.Add(filename);
+                        wizardInfo.InputFile.Add(normalizedFilename);
                     }
                     else
                     {
-                        System.Windows.MessageBox.Show(filename + "被重复选择，已取消添加。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        System.Windows.MessageBox.Show(normalizedFilename + "被重复选择，已取消添加。", "新建任务向导", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
 
@@ -229,12 +230,9 @@ namespace OKEGui
             Dictionary<uint, string> reducePathHashMap = new Dictionary<uint, string>();
             foreach (string inputFile in wizardInfo.InputFile)
             {
-                List<TaskDetail> existing = workerManager.tm.GetTasksByInputFile(inputFile);
-                bool skip = existing.Any(i => i.Progress == TaskStatus.TaskProgress.RUNNING || i.Progress == TaskStatus.TaskProgress.WAITING);
-
-                if (skip)
+                if (workerManager.tm.HasActiveTask(json.ConfigFilePath, inputFile))
                 {
-                    System.Windows.MessageBox.Show($"{inputFile}已经在任务列表里，将跳过处理。", $"{inputFile}已经在任务列表里", MessageBoxButton.OK, MessageBoxImage.Error);
+                    System.Windows.MessageBox.Show($"{inputFile}已经使用此配置添加到任务列表，将跳过处理。", $"{inputFile}已经在任务列表里", MessageBoxButton.OK, MessageBoxImage.Error);
                     continue;
                 }
 
@@ -401,9 +399,10 @@ namespace OKEGui
 
             foreach (string inputFile in inputFileList)
             {
-                if (!wizardInfo.InputFile.Contains(inputFile))
+                string normalizedInputFile = new FileInfo(inputFile).FullName;
+                if (!wizardInfo.InputFile.Contains(normalizedInputFile))
                 {
-                    wizardInfo.InputFile.Add(inputFile);
+                    wizardInfo.InputFile.Add(normalizedInputFile);
                 }
             }
 

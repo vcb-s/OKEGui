@@ -95,7 +95,6 @@ namespace OKEGui.Worker
                 try
                 {
                     task.WorkerName = args.Name;
-                    task.Progress = TaskStatus.TaskProgress.RUNNING;
                     task.MediaOutFile = new MediaFile();
                     task.MkaOutFile = new MediaFile();
 
@@ -141,6 +140,7 @@ namespace OKEGui.Worker
                     {
                         task.Progress = TaskStatus.TaskProgress.ERROR;
                         task.CurrentStatus = "已终止";
+                        args.taskManager.ReleaseInput(task);
                         e.Cancel = true;
                         return;
                     }
@@ -180,6 +180,7 @@ namespace OKEGui.Worker
 
                     Logger.Info("任务完成");
                     Logger.Info("-------------------------------------------------------------------");
+                    args.taskManager.ReleaseInput(task);
                 }
                 catch (OKETaskException ex)
                 {
@@ -190,6 +191,7 @@ namespace OKEGui.Worker
                     task.Progress = TaskStatus.TaskProgress.ERROR;
                     task.CurrentStatus = ex.summary;
                     task.ProgressValue = ex.progress.GetValueOrDefault(task.ProgressValue);
+                    args.taskManager.ReleaseInput(task);
                     continue;
                 }
                 catch (Exception ex)
@@ -200,6 +202,7 @@ namespace OKEGui.Worker
                             System.Windows.MessageBox.Show(ex.Message, fileinfo.Name)).Start();
                     task.Progress = TaskStatus.TaskProgress.ERROR;
                     task.CurrentStatus = "未知错误";
+                    args.taskManager.ReleaseInput(task);
                     continue;
                 }
             }

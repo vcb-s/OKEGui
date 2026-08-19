@@ -40,7 +40,7 @@ namespace OKEGui
                 return null;
             }
 
-
+            json.ConfigFilePath = new FileInfo(filePath).FullName;
             return ProcessJsonProfile(json, jsonDir);
         }
 

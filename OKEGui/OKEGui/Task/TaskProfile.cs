@@ -37,6 +37,8 @@ namespace OKEGui.Model
 
         public string WorkingPathPrefix;
         public string OutputPathPrefix;
+        // OKEGui运行时填写，仅用于任务去重
+        public string ConfigFilePath;
 
         public bool IsReEncode;
 

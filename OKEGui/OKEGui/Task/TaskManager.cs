@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 using System.Windows.Threading;
 
 namespace OKEGui
@@ -42,7 +43,36 @@ namespace OKEGui
 
         private int tidCount = 0;
 
+        private readonly HashSet<string> runningInputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         private readonly object o = new object(); // dummy object used for locking threads.
+
+        private static string NormalizePath(string path)
+        {
+            return new FileInfo(path).FullName;
+        }
+
+        private static string TaskIdentity(string configFilePath, string inputFile)
+        {
+            return NormalizePath(configFilePath) + "\0" + NormalizePath(inputFile);
+        }
+
+        public bool HasActiveTask(string configFilePath, string inputFile)
+        {
+            lock (o)
+            {
+                string identity = TaskIdentity(configFilePath, inputFile);
+                foreach (TaskDetail task in taskStatus)
+                {
+                    if ((task.Progress == TaskStatus.TaskProgress.WAITING || task.Progress == TaskStatus.TaskProgress.RUNNING) &&
+                        TaskIdentity(task.Taskfile.ConfigFilePath, task.InputFile) == identity)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
 
         public int AddTask(TaskDetail detail)
         {
@@ -160,18 +190,40 @@ namespace OKEGui
         {
             lock (o)
             {
-                // 找出下一个可用任务
                 foreach (var task in taskStatus)
                 {
-                    if (task.IsEnabled && task.Progress == TaskStatus.TaskProgress.WAITING)
+                    if (!task.IsEnabled || task.Progress != TaskStatus.TaskProgress.WAITING)
                     {
-                        task.IsEnabled = false;
-                        return task;
+                        continue;
                     }
+
+                    string inputKey = NormalizePath(task.InputFile);
+                    if (runningInputs.Contains(inputKey))
+                    {
+                        continue;
+                    }
+
+                    runningInputs.Add(inputKey);
+                    task.IsEnabled = false;
+                    task.Progress = TaskStatus.TaskProgress.RUNNING;
+                    return task;
                 }
             }
 
             return null;
+        }
+
+        public void ReleaseInput(TaskDetail task)
+        {
+            if (task == null || string.IsNullOrEmpty(task.InputFile))
+            {
+                return;
+            }
+
+            lock (o)
+            {
+                runningInputs.Remove(NormalizePath(task.InputFile));
+            }
         }
 
         public bool HasNextTask()
