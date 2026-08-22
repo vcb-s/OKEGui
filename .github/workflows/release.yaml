@@ -10,17 +10,17 @@ jobs:
     runs-on: windows-2022
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         submodules: recursive
 
     - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2
+      uses: microsoft/setup-msbuild@v3
 
     - name: Setup Go
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@v7
       with:
-        go-version: '1.17'
+        go-version: '1.26.5'
 
     - name: Navigate to Workspace
       run: cd $GITHUB_WORKSPACE
@@ -173,14 +173,14 @@ jobs:
         zip -9r ../../../"OKEGui-v$(git describe --tags).zip" OKEGui
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: release
         path: |
            OKEGui-*.zip
 
     - name: Release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with:
         files: OKEGui-*.zip
         draft: true
