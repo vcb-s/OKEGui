@@ -26,6 +26,12 @@ namespace OKEGui.Utils
         //x265
         public const string x265Path = ".\\tools\\x26x\\x265.exe";
 
+        //svt-av1
+        public const string svtav1Path = ".\\tools\\svtav1\\SvtAv1EncApp.exe";
+
+        //NVEncC
+        public const string nvenccPath = ".\\tools\\NVEncC\\NVEncC64.exe";
+
         //mkvmerge
         public const string mkvmergePath = ".\\tools\\mkvtoolnix\\mkvmerge.exe";
 
@@ -60,6 +66,9 @@ namespace OKEGui.Utils
         public const string svtav1ErrorMsg = "svt-av1出错: {0}。该文件{1}将跳过处理。请转告技术总监复查。";
         public const string svtav1ErrorSmr = "svt-av1出错";
 
+        public const string nvenccErrorMsg = "NVEncC出错: {0}。该文件{1}将跳过处理。请转告技术总监复查。";
+        public const string nvenccErrorSmr = "NVEncC出错";
+
         public const string vpyErrorMsg = "vpy出错: {0}。\n该文件{1}将跳过处理。请转告技术总监复查。";
         public const string vpyErrorSmr = "vpy出错";
 
@@ -83,6 +92,9 @@ namespace OKEGui.Utils
 
         public const string svtav1CrashMsg = "压制未能完成，预计是svt-av1崩溃。该文件{0}将跳过处理，半成品以HEVC形式保留在目录中。请转告技术总监复查。";
         public const string svtav1CrashSmr = "svt-av1崩溃";
+
+        public const string nvenccCrashMsg = "压制未能完成，预计是NVEncC崩溃。该文件{0}将跳过处理，半成品保留在目录中。请转告技术总监复查。";
+        public const string nvenccCrashSmr = "NVEncC崩溃";
 
         public const string qaacErrorMsg = "QAAC无法正常运行。请确保你安装了Apple Application Support 64bit";
         public const string qaacErrorSmr = "QAAC无法运行";

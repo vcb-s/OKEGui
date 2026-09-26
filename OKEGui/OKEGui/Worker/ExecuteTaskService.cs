@@ -299,7 +299,7 @@ namespace OKEGui.Worker
                 chapterIFrameInfo = vsInfo.videoInfo.vfr
                     ? ChapterService.GetChapterIFrameInfo(chapterInfo, timecode)
                     : ChapterService.GetChapterIFrameInfo(chapterInfo, vsInfo.videoInfo.fps);
-                qpFile = GenerateQpFile(chapterIFrameInfo, qpFileName, profile.VideoFormat);
+                qpFile = GenerateQpFile(chapterIFrameInfo, qpFileName, profile.VideoFormat, profile.EncoderType);
             }
             else
                 task.ChapterStatus = ChapterStatus.No;
@@ -311,13 +311,20 @@ namespace OKEGui.Worker
             return info;
         }
 
-        private string GenerateQpFile(IFrameInfo chapterIFrameInfo, string qpFileName, string videoFormat)
+        private string GenerateQpFile(IFrameInfo chapterIFrameInfo, string qpFileName, string videoFormat, string encoderType)
         {
             string qpFile = ChapterService.GenerateQpFile(chapterIFrameInfo);
 
             if (videoFormat == "AV1")
             {
                 qpFile = String.Join(",", qpFile.Replace(" I", "f").Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries));
+            }
+            else if (encoderType == "nvencc")
+            {
+                // NVEncC的--keyfile每行只有帧号
+                qpFile = qpFile.Replace(" I", "");
+                File.WriteAllText(qpFileName, qpFile);
+                qpFile = qpFileName;
             }
             else
             {
@@ -396,6 +403,7 @@ namespace OKEGui.Worker
 
             vJob.Input = profile.InputScript;
             vJob.EncoderPath = profile.Encoder;
+            vJob.EncoderType = profile.EncoderType;
             vJob.EncodeParam = profile.EncoderParam;
             vJob.NumaNode = numaNode;
             vJob.IsPartialEncode = isPartialEncode;
@@ -416,18 +424,20 @@ namespace OKEGui.Worker
                 vJob.VspipeArgs.AddRange(profile.Config.VspipeArgs);
 
             vJob.Output = profile.WorkingPathPrefix + (vJob.IsPartialEncode ? $"_part{vJob.PartId}" : "");
+            bool isNvencc = profile.EncoderType == "nvencc";
             if (profile.VideoFormat == "HEVC")
             {
                 vJob.Output += ".hevc";
-                if (!profile.EncoderParam.ToLower().Contains("--pools"))
+                if (!isNvencc && !profile.EncoderParam.ToLower().Contains("--pools"))
                 {
                     vJob.EncodeParam += " --pools " + NumaNode.X265PoolsParam(vJob.NumaNode);
                 }
             }
             else if (profile.VideoFormat == "AVC")
             {
-                vJob.Output += profile.ContainerFormat == "MKV" ? "_.mkv" : ".h264";
-                if (!profile.EncoderParam.ToLower().Contains("--threads") && NumaNode.UsableCoreCount > 10)
+                // NVEncC只输出裸流，x264在MKV封装时直接输出mkv
+                vJob.Output += (!isNvencc && profile.ContainerFormat == "MKV") ? "_.mkv" : ".h264";
+                if (!isNvencc && !profile.EncoderParam.ToLower().Contains("--threads") && NumaNode.UsableCoreCount > 10)
                 {
                     vJob.EncodeParam += " --threads 16";
                 }
@@ -448,7 +458,9 @@ namespace OKEGui.Worker
             // 添加qpfile参数
             if (vJob.Info.QpFile != null)
             {
-                if (vJob.CodecString == "AV1")
+                if (isNvencc)
+                    vJob.EncodeParam += $" --keyfile \"{vJob.Info.QpFile}\"";
+                else if (vJob.CodecString == "AV1")
                     vJob.EncodeParam += $" --force-key-frames \"{vJob.Info.QpFile}\"";
                 else
                     vJob.EncodeParam += $" --qpfile \"{vJob.Info.QpFile}\"";
@@ -605,7 +617,11 @@ namespace OKEGui.Worker
                     case VideoJob vJob:
                     {
                         CommandlineVideoEncoder processor;
-                        if (vJob.CodecString == "HEVC")
+                        if (vJob.EncoderType == "nvencc")
+                        {
+                            processor = new NVEncCEncoder(vJob);
+                        }
+                        else if (vJob.CodecString == "HEVC")
                         {
                             processor = new X265Encoder(vJob);
                         }
@@ -800,7 +816,7 @@ namespace OKEGui.Worker
                     {
                         newChapterSlice = new IFrameInfo(info.ChapterIFrameInfo.GetRange((int)index.begin, (int)(index.GetLength() + 1)));
                         newChapterSlice = new IFrameInfo(newChapterSlice.Select(x => x -= curr_s.begin));
-                        qpFile = GenerateQpFile(newChapterSlice, qpFileName, profile.VideoFormat);
+                        qpFile = GenerateQpFile(newChapterSlice, qpFileName, profile.VideoFormat, profile.EncoderType);
                     }
                 }
                 reEncodeInfoList.Add(new VideoSliceInfo(true, curr_s, partId++, qpFile, newChapterSlice, info));

@@ -97,6 +97,10 @@ namespace OKEGui.JobProcessor
                     msg.errorMsg = string.Format(Constants.svtav1ErrorMsg, ex.Data["SVTAV1_ERROR"], task.InputFile);
                     break;
 
+                case Constants.nvenccErrorSmr:
+                    msg.errorMsg = string.Format(Constants.nvenccErrorMsg, ex.Data["NVENCC_ERROR"], task.InputFile);
+                    break;
+
                 case Constants.vpyErrorSmr:
                     msg.errorMsg = string.Format(Constants.vpyErrorMsg, ex.Data["VPY_ERROR"], task.InputFile);
                     break;
@@ -123,6 +127,10 @@ namespace OKEGui.JobProcessor
 
                 case Constants.svtav1CrashSmr:
                     msg.errorMsg = string.Format(Constants.svtav1CrashMsg, task.InputFile);
+                    break;
+
+                case Constants.nvenccCrashSmr:
+                    msg.errorMsg = string.Format(Constants.nvenccCrashMsg, task.InputFile);
                     break;
 
                 case Constants.qaacErrorSmr:

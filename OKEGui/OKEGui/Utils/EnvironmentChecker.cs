@@ -229,6 +229,8 @@ namespace OKEGui.Utils
             var encoders = new List<FileInfo> {
                 new FileInfo(Constants.x264Path),
                 new FileInfo(Constants.x265Path),
+                new FileInfo(Constants.svtav1Path),
+                new FileInfo(Constants.nvenccPath),
             };
             foreach (FileInfo fi in encoders)
             {

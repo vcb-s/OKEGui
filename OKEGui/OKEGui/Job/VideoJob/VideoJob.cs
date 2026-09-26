@@ -8,6 +8,7 @@ namespace OKEGui
     {
         public readonly VideoInfo Info;
         public string EncoderPath;
+        public string EncoderType;
         public string EncodeParam;
         public List<string> VspipeArgs = new List<string>();
         public int NumaNode;

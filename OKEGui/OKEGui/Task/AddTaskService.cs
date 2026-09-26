@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
 using YamlDotNet.Serialization;
 
@@ -81,7 +82,7 @@ namespace OKEGui
                 }
             }
 
-            // 编码器设置，目前只允许x264/x265/svtav1
+            // 编码器设置，目前只允许x264/x265/svtav1/nvencc
             json.EncoderType = json.EncoderType.ToLower();
             switch (json.EncoderType)
             {
@@ -94,8 +95,16 @@ namespace OKEGui
                 case "svtav1":
                     json.VideoFormat = "AV1";
                     break;
+                case "nvencc":
+                    json.VideoFormat = ParseNvenccVideoFormat(json.EncoderParam);
+                    if (json.VideoFormat == null)
+                    {
+                        MessageBox.Show("nvencc的EncoderParam中--codec只支持h264/avc或hevc/h265，未指定时默认h264", "编码器参数错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return null;
+                    }
+                    break;
                 default:
-                    MessageBox.Show("EncoderType请填写x264/x265/svtav1", "编码器版本错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("EncoderType请填写x264/x265/svtav1/nvencc", "编码器版本错误", MessageBoxButton.OK, MessageBoxImage.Error);
                     return null;
             }
 
@@ -244,6 +253,12 @@ namespace OKEGui
                     case "x265":
                         encoder = new FileInfo(Constants.x265Path);
                         break;
+                    case "svtav1":
+                        encoder = new FileInfo(Constants.svtav1Path);
+                        break;
+                    case "nvencc":
+                        encoder = new FileInfo(Constants.nvenccPath);
+                        break;
                     default:
                         // shouldn't happen.
                         return null;
@@ -265,6 +280,33 @@ namespace OKEGui
             }
 
             return json;
+        }
+
+        // 从nvencc参数中解析--codec/-c，未指定时默认AVC，仅支持h264与hevc
+        private static string ParseNvenccVideoFormat(string encoderParam)
+        {
+            if (string.IsNullOrWhiteSpace(encoderParam))
+            {
+                return "AVC";
+            }
+
+            Match match = Regex.Match(encoderParam, @"(?:^|\s)(?:--codec|-c)(?:\s+|=)(\S+)", RegexOptions.IgnoreCase);
+            if (!match.Success)
+            {
+                return "AVC";
+            }
+
+            switch (match.Groups[1].Value.ToLower())
+            {
+                case "h264":
+                case "avc":
+                    return "AVC";
+                case "hevc":
+                case "h265":
+                    return "HEVC";
+                default:
+                    return null;
+            }
         }
 
         // 读入vs脚本，并检查OKE:INPUTFILE标签

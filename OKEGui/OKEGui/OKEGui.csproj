@@ -140,6 +140,7 @@
     <Compile Include="JobProcessor\Video\X264Encoder.cs" />
     <Compile Include="JobProcessor\Video\X265Encoder.cs" />
     <Compile Include="JobProcessor\Video\SVTAV1Encoder.cs" />
+    <Compile Include="JobProcessor\Video\NVEncCEncoder.cs" />
     <Compile Include="JobProcessor\Video\VSPipeInfoProcessor.cs" />
     <Compile Include="JobProcessor\Video\IFrameInfoGenerator.cs" />
     <Compile Include="JobProcessor\CommandlineJobProcessor.cs" />
