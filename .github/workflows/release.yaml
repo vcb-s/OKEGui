@@ -70,7 +70,7 @@ jobs:
         set -ex
         mkdir -p "./OKEGui/OKEGui/bin/Release/tools/eac3to"
         #
-        curl -s -o eac3to.rar -L https://github.com/vcb-s/OKEGui/releases/download/tools/eac3to_3.52.rar
+        curl -s -o eac3to.rar -L https://github.com/vcb-s/OKEGui/releases/download/tools/eac3to_3.66.rar
         7z x -oeac3to eac3to.rar
         rm -f eac3to/*.wav
         rm -f eac3to/libdcadec.dll
@@ -88,10 +88,10 @@ jobs:
         set -ex
         mkdir -p "./OKEGui/OKEGui/bin/Release/tools/qaac"
         #
-        curl -s -o qaac.zip -L https://github.com/nu774/qaac/releases/download/v2.85/qaac_2.85.zip
+        curl -s -o qaac.zip -L https://github.com/nu774/qaac/releases/download/v2.89/qaac_2.89.zip
         7z x -oqaac qaac.zip
         #
-        cp qaac/qaac_2.85/x64/* "./OKEGui/OKEGui/bin/Release/tools/qaac"
+        cp qaac/qaac_2.89/x64/* "./OKEGui/OKEGui/bin/Release/tools/qaac"
 
     - name: Integrate flac
       shell: bash
@@ -148,6 +148,28 @@ jobs:
         curl -s -o x265.7z -L https://github.com/AmusementClub/x265/releases/download/Kyouko-4.1-AC1/x265-win64-skylake-clang.Kyouko-4.1-AC1.7z
         7z x -otmp x265.7z
         cp -a tmp/x265.exe "./OKEGui/OKEGui/bin/Release/tools/x26x/x265.exe"
+        rm -rf tmp
+
+    - name: Integrate svt-av1
+      shell: bash
+      run: |
+        set -ex
+        mkdir -p "./OKEGui/OKEGui/bin/Release/tools/svtav1"
+        #
+        curl -s -o svtav1.zip -L https://github.com/BlueSwordM/svt-av1-psyex/releases/download/v3.0.2-B/windows_svt-av1-psyex-v3.0.2B_x86-64-v3.zip
+        7z x -otmp svtav1.zip
+        mv tmp/* "./OKEGui/OKEGui/bin/Release/tools/svtav1"
+        rm -rf tmp
+
+    - name: Integrate NVEncC
+      shell: bash
+      run: |
+        set -ex
+        mkdir -p "./OKEGui/OKEGui/bin/Release/tools/NVEncC"
+        #
+        curl -s -o NVEncC.7z -L https://github.com/rigaya/NVEnc/releases/download/9.35/NVEncC_9.35_x64.7z
+        7z x -otmp NVEncC.7z
+        mv tmp/* "./OKEGui/OKEGui/bin/Release/tools/NVEncC"
         rm -rf tmp
 
     - name: Integrate RP-Checker
