@@ -187,24 +187,23 @@ jobs:
     - name: Package release
       shell: bash
       run: |
-        git clone https://github.com/AkarinVS/exe
-        export PATH=`pwd`/exe/:$PATH
         cp -r dist/windows/examples ./OKEGui/OKEGui/bin/Release
         pushd ./OKEGui/OKEGui/bin
         mv Release OKEGui
-        zip -9r ../../../"OKEGui-v$(git describe --tags).zip" OKEGui
+        7z a -t7z -mx=9 ../../../"OKEGui-v$(git describe --tags).7z" OKEGui
 
     - name: Upload artifact
       uses: actions/upload-artifact@v7
       with:
         name: release
         path: |
-           OKEGui-*.zip
+           OKEGui-*.7z
+        archive: false
 
     - name: Release
       uses: softprops/action-gh-release@v3
       with:
-        files: OKEGui-*.zip
+        files: OKEGui-*.7z
         draft: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
