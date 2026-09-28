@@ -63,6 +63,7 @@ namespace OKEGui.JobProcessor
         private static List<EacOutputTrackType> s_eacOutputs = new List<EacOutputTrackType> {
             new EacOutputTrackType(TrackCodec.RAW_PCM,    "RAW/PCM",            "flac",    true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.DTSMA,      "DTS Master Audio",   "flac",    true,  TrackType.Audio),
+            new EacOutputTrackType(TrackCodec.DTSMA,      "DTS-HD Master Audio","flac",    true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD/AC3",         "flac",    true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.TRUEHD_AC3, "TrueHD",             "flac",    true,  TrackType.Audio),
             new EacOutputTrackType(TrackCodec.AC3,        "AC3",                "ac3",     true,  TrackType.Audio),
